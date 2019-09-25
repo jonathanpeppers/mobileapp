@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:local="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <ImageView
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_noise_login"
+        android:src="@drawable/login_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     <ScrollView
@@ -23,7 +24,7 @@
             android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/LoginLogo"
-                android:src="@drawable/logo_black"
+                android:src="@drawable/ic_toggl_logo"
                 android:layout_width="102dp"
                 android:layout_height="32dp"
                 android:layout_marginTop="64dp"
@@ -31,7 +32,7 @@
                 android:layout_centerHorizontal="true" />
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/LoginEmail"
-                android:hint="@string/Email"
+                tools:hint="Email"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
                 android:layout_marginBottom="20dp"
@@ -47,8 +48,8 @@
             </android.support.design.widget.TextInputLayout>
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/LoginPassword"
-                android:hint="@string/Password"
-                local:passwordToggleEnabled="true"
+                tools:hint="Password"
+                app:passwordToggleEnabled="true"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
                 android:layout_marginBottom="20dp"
@@ -76,8 +77,8 @@
                 android:layout_below="@+id/LoginPassword" />
             <Button
                 android:id="@+id/LoginLoginButton"
-                android:background="@color/buttonBlue"
-                android:textColor="@color/BlueButtonTextColor"
+                android:background="@color/raisedButtonBackground"
+                android:textColor="@color/RaisedButtonTextColor"
                 android:foreground="?attr/selectableItemBackground"
                 android:layout_height="36dp"
                 android:layout_marginLeft="24dp"
@@ -100,8 +101,8 @@
             <TextView
                 android:id="@+id/LoginForgotPassword"
                 android:textSize="13sp"
-                android:textColor="@color/grey"
-                android:text="@string/ForgotPassword"
+                android:textColor="@color/secondaryText"
+                tools:text="Forgot your password? Get help logging in"
                 android:layout_marginTop="60dp"
                 android:layout_marginBottom="24dp"
                 android:layout_width="wrap_content"
@@ -128,7 +129,7 @@
                 android:layout_toLeftOf="@+id/LoginOrLabel" />
             <TextView
                 android:id="@+id/LoginOrLabel"
-                android:text="@string/Or"
+                tools:text="Or"
                 android:textAllCaps="true"
                 android:layout_marginBottom="24dp"
                 android:layout_width="wrap_content"
@@ -140,7 +141,7 @@
                 android:elevation="2dp"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:background="@android:color/white"
+                android:background="@color/cardBackground"
                 android:layout_height="36dp"
                 android:layout_marginLeft="24dp"
                 android:layout_marginRight="24dp"
@@ -152,13 +153,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <TextView
+                    android:id="@+id/LoginGoogleLoginLabel"
                     android:textSize="13sp"
                     android:textStyle="normal"
                     android:paddingStart="18dp"
                     android:letterSpacing="0.02"
-                    android:textColor="#8a000000"
+                    android:textColor="@color/primaryText"
                     android:fontFamily="sans-serif-medium"
-                    android:text="@string/SignInWithGoogle"
+                    tools:text="Sign in With Google"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -166,7 +168,8 @@
     </ScrollView>
     <android.support.v7.widget.CardView
         android:id="@+id/LoginSignupCardView"
-        local:cardCornerRadius="8dp"
+        app:cardBackgroundColor="@color/cardBackground"
+        app:cardCornerRadius="8dp"
         android:layout_height="80dp"
         android:layout_gravity="bottom"
         android:layout_marginLeft="24dp"
@@ -174,7 +177,6 @@
         android:layout_marginBottom="-8dp"
         android:layout_width="match_parent">
         <android.support.constraint.ConstraintLayout
-            android:background="@android:color/white"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
@@ -184,14 +186,14 @@
                 android:letterSpacing="-0.02"
                 android:lineSpacingExtra="4sp"
                 android:fontFamily="sans-serif-medium"
-                android:textColor="@android:color/black"
-                android:text="@string/DontHaveAnAccount"
-                local:layout_constraintTop_toTopOf="parent"
-                local:layout_constraintLeft_toLeftOf="parent"
-                local:layout_constraintVertical_chainStyle="packed"
-                local:layout_constraintBottom_toTopOf="@+id/SignUpLabel"
-                local:layout_constraintRight_toLeftOf="@+id/BicyleImageView"
-                local:layout_constraintHorizontal_chainStyle="spread_inside"
+                android:textColor="@color/primaryText"
+                tools:text="Don\'t have an account?"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintBottom_toTopOf="@+id/SignUpLabel"
+                app:layout_constraintRight_toLeftOf="@+id/BicyleImageView"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
                 android:layout_marginLeft="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -200,12 +202,12 @@
                 android:textSize="14dp"
                 android:letterSpacing="-0.02"
                 android:lineSpacingExtra="4sp"
-                android:text="@string/SignUpForFree"
-                android:textColor="@color/buttonBlue"
+                tools:text="Sign up for free"
+                android:textColor="@color/flatButtonText"
                 android:fontFamily="sans-serif-medium"
-                local:layout_constraintBottom_toBottomOf="parent"
-                local:layout_constraintLeft_toLeftOf="@id/HaveAnAccountLabel"
-                local:layout_constraintTop_toBottomOf="@id/HaveAnAccountLabel"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/HaveAnAccountLabel"
+                app:layout_constraintTop_toBottomOf="@id/HaveAnAccountLabel"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="4dp"
                 android:layout_width="wrap_content"
@@ -213,10 +215,10 @@
             <ImageView
                 android:id="@id/BicyleImageView"
                 android:src="@drawable/bike"
-                local:layout_constraintTop_toTopOf="parent"
-                local:layout_constraintRight_toRightOf="parent"
-                local:layout_constraintBottom_toBottomOf="parent"
-                local:layout_constraintLeft_toRightOf="@id/HaveAnAccountLabel"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/HaveAnAccountLabel"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:layout_marginBottom="4dp"

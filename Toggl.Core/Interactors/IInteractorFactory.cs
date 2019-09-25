@@ -111,6 +111,10 @@ namespace Toggl.Core.Interactors
 
         IInteractor<IObservable<bool>> ContainsPlaceholders();
 
+        IInteractor<IObservable<SyncOutcome>> RunPushNotificationInitiatedSyncInForeground();
+
+        IInteractor<IObservable<SyncOutcome>> RunPushNotificationInitiatedSyncInBackground();
+
         #endregion
 
         #region Autocomplete Suggestions
@@ -231,6 +235,14 @@ namespace Toggl.Core.Interactors
 
         IInteractor<IObservable<IEnumerable<Suggestion>>> GetSuggestions(int count);
         IInteractor<IObservable<IReadOnlyList<ISuggestionProvider>>> GetSuggestionProviders(int count);
+
+        #endregion
+
+        #region PushNotifications
+
+        IInteractor<IObservable<Unit>> UnsubscribeFromPushNotifications();
+
+        IInteractor<IObservable<Unit>> SubscribeToPushNotifications();
 
         #endregion
     }

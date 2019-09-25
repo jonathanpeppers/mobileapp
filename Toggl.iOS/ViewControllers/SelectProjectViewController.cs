@@ -9,6 +9,7 @@ using Toggl.iOS.Extensions;
 using Toggl.iOS.Extensions.Reactive;
 using Toggl.iOS.ViewSources;
 using UIKit;
+using Toggl.Shared;
 using static Toggl.Shared.Extensions.ReactiveExtensions;
 
 namespace Toggl.iOS.ViewControllers
@@ -26,6 +27,9 @@ namespace Toggl.iOS.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            TitleLabel.Text = Resources.Projects;
+            EmptyStateLabel.Text = Resources.EmptyProjectText;
 
             var source = new SelectProjectTableViewSource();
             source.RegisterViewCells(ProjectsTableView);

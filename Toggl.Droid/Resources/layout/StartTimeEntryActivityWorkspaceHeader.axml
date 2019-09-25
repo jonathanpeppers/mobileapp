@@ -15,14 +15,14 @@
         android:textStyle="normal"
         android:letterSpacing="0.04"
         android:fontFamily="sans-serif-medium"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/secondaryText"
         android:layout_marginLeft="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true" />
     <View
-        android:background="@drawable/TransparentToWhiteGradient"
+        android:background="@drawable/TransparentToBackgroundGradient"
         android:layout_width="40dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true" />

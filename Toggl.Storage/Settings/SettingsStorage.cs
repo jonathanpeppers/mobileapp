@@ -349,11 +349,8 @@ namespace Toggl.Storage.Settings
         public IObservable<bool> AreRunningTimerNotificationsEnabledObservable { get; }
         public IObservable<bool> AreStoppedTimerNotificationsEnabledObservable { get; }
         public IObservable<bool> SwipeActionsEnabled { get; }
-
         public IObservable<List<string>> EnabledCalendars { get; }
-
         public IObservable<bool> CalendarNotificationsEnabled { get; }
-
         public IObservable<TimeSpan> TimeSpanBeforeCalendarNotifications { get; }
 
         public bool IsManualModeEnabled

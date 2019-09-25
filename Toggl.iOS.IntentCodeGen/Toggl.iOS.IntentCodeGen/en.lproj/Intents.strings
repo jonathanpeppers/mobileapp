@@ -46,6 +46,8 @@
 
 "E8rYzi" = "Start timer from clipboard";
 
+"EA0ujz" = "Stops the currently running timer";
+
 "Emkvsq-EagY8C" = "Here is the report for This Week.";
 
 "Emkvsq-LRmygz" = "Here is the report for Yesterday.";
@@ -71,6 +73,8 @@
 "JuvQpB" = "There's no timer running. ";
 
 "KKrxVY" = "${entryDescription}";
+
+"KPcGYj" = "Opens the reports section";
 
 "Mr6glC" = "${entryDescription}";
 
@@ -153,4 +157,6 @@
 "xGukxu" = "Start timer";
 
 "yhKeN0" = "App data is outdated.";
+
+"z4KrEF" = "Continues the last timer";
 

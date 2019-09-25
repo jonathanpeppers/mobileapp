@@ -1,14 +1,53 @@
 using System;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using static Toggl.Core.Helper.Constants;
 
 namespace Toggl.Core.UI
 {
     public sealed class AppStart
     {
+        private const char dotNetLanguageCodeSeparator = '-';
+        private const char nativeLanguageCodeSeparator = '_';
+        
         private readonly UIDependencyContainer dependencyContainer;
 
         public AppStart(UIDependencyContainer dependencyContainer)
         {
             this.dependencyContainer = dependencyContainer;
+        }
+
+        public void LoadLocalizationConfiguration()
+        {
+            var platformInfo = dependencyContainer.PlatformInfo;
+            
+            var currentLanguageCode = platformInfo.CurrentNativeLanguageCode ?? DefaultLanguageCode;
+            var nonEmptyCurrentLanguageCode = string.IsNullOrEmpty(currentLanguageCode) ? DefaultLanguageCode : currentLanguageCode;
+            var dotNetLanguageCode = convertNativeLanguageCodeToDotNetStandards(nonEmptyCurrentLanguageCode);
+
+            CultureInfo cultureInfo = null;
+            try
+            {
+                if (CultureInfo.GetCultures(CultureTypes.AllCultures).Any(info => info.Name == dotNetLanguageCode))
+                {
+                    cultureInfo = new CultureInfo(dotNetLanguageCode);
+                }
+                else
+                {
+                    var twoLettersLanguageCode = getTwoLettersLanguageCode(dotNetLanguageCode);
+                    if (CultureInfo.GetCultures(CultureTypes.NeutralCultures).Any(info => info.TwoLetterISOLanguageName == twoLettersLanguageCode))
+                        cultureInfo = new CultureInfo(twoLettersLanguageCode);
+                }
+            }
+            catch (Exception)
+            {
+                cultureInfo = new CultureInfo(DefaultLanguageCode);
+            }
+            finally
+            {
+                setLocale(cultureInfo ?? new CultureInfo(DefaultLanguageCode));
+            }
         }
 
         public void SetupBackgroundSync()
@@ -60,6 +99,18 @@ namespace Toggl.Core.UI
         public void ForceFullSync()
         {
             dependencyContainer.SyncManager.ForceFullSync().Subscribe();
+        }
+        
+        private string getTwoLettersLanguageCode(string dotNetLanguageCode)
+            => dotNetLanguageCode.Split(dotNetLanguageCodeSeparator)[0];
+
+        private string convertNativeLanguageCodeToDotNetStandards(string currentLanguageCode)
+            => currentLanguageCode.Replace(nativeLanguageCodeSeparator, dotNetLanguageCodeSeparator);
+
+        private void setLocale(CultureInfo cultureInfo)
+        {
+            Thread.CurrentThread.CurrentCulture = cultureInfo;
+            Thread.CurrentThread.CurrentUICulture = cultureInfo;
         }
     }
 }

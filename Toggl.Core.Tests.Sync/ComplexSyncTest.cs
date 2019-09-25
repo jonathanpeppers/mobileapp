@@ -44,7 +44,7 @@ namespace Toggl.Core.Tests.Sync
             await storage.Store(definedDatabaseState);
 
             // Act
-            await Act(appServices.SyncManager);
+            await Act(appServices.SyncManager, appServices);
 
             // Assert
             var finalDatabaseState = await storage.LoadCurrentState();
@@ -56,7 +56,7 @@ namespace Toggl.Core.Tests.Sync
         protected abstract ServerState ArrangeServerState(ServerState initialServerState);
         protected abstract DatabaseState ArrangeDatabaseState(ServerState serverState);
 
-        protected virtual async Task Act(ISyncManager syncManager)
+        protected virtual async Task Act(ISyncManager syncManager, AppServices services)
         {
             var progressMonitoring = MonitorProgress(syncManager);
             await syncManager.ForceFullSync();

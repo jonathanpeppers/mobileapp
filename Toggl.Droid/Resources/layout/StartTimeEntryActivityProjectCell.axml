@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:elevation="1dp"
     android:foreground="?android:attr/selectableItemBackground"
-    android:background="@android:color/white"
+    android:background="@color/cardBackground"
     android:layout_height="48dp"
     android:layout_width="match_parent">
     <TextView
@@ -34,12 +34,12 @@
         android:layout_toRightOf="@+id/ProjectLabel" />
     <View
         android:id="@+id/Fade"
-        android:background="@drawable/TransparentToWhiteGradient"
+        android:background="@drawable/TransparentToCardColorGradient"
         android:layout_width="20dp"
         android:layout_height="match_parent"
         android:layout_toLeftOf="@+id/Caret" />
     <View
-        android:background="@android:color/white"
+        android:background="@color/cardBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_toRightOf="@+id/Fade" />
@@ -48,7 +48,7 @@
         tools:text="3 tasks"
         android:textSize="13sp"
         android:lineSpacingExtra="3sp"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/secondaryText"
         android:layout_marginRight="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

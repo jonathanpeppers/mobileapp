@@ -21,6 +21,7 @@ namespace Toggl.iOS.ViewControllers
             HeadingLabel.Text = Resources.Oops;
             TextLabel.Text = Resources.AppOutdatedMessage;
             UpdateButton.SetTitle(Resources.UpdateTheApp, UIControlState.Normal);
+            WebsiteButton.SetTitle(Resources.OutdatedAppTryTogglCom, UIControlState.Normal);
 
             UpdateButton.Rx()
                 .BindAction(ViewModel.UpdateApp)

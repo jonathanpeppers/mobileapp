@@ -44,6 +44,7 @@ namespace Toggl.Core.Interactors
                 .SetWorkspaceId(dto.WorkspaceId)
                 .SetAt(timeService.CurrentDateTime)
                 .SetSyncStatus(SyncStatus.SyncNeeded)
+                .SetIsPrivate(dto.IsPrivate)
                 .Build()
                 .Apply(dataSource.Create);
     }

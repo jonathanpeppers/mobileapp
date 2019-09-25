@@ -107,16 +107,18 @@
 	<key>INIntentDefinitionModelVersion</key>
 	<string>1.0</string>
 	<key>INIntentDefinitionSystemVersion</key>
-	<string>18E226</string>
+	<string>18G95</string>
 	<key>INIntentDefinitionToolsBuildVersion</key>
-	<string>10E125</string>
+	<string>10G8</string>
 	<key>INIntentDefinitionToolsVersion</key>
-	<string>10.2</string>
+	<string>10.3</string>
 	<key>INIntents</key>
 	<array>
 		<dict>
 			<key>INIntentCategory</key>
 			<string>generic</string>
+			<key>INIntentDescription</key>
+			<string>Stops the currently running timer</string>
 			<key>INIntentDescriptionID</key>
 			<string>EA0ujz</string>
 			<key>INIntentLastParameterTag</key>
@@ -409,6 +411,8 @@
 		<dict>
 			<key>INIntentCategory</key>
 			<string>generic</string>
+			<key>INIntentDescription</key>
+			<string>Opens the reports section</string>
 			<key>INIntentDescriptionID</key>
 			<string>KPcGYj</string>
 			<key>INIntentLastParameterTag</key>
@@ -726,6 +730,8 @@
 		<dict>
 			<key>INIntentCategory</key>
 			<string>start</string>
+			<key>INIntentDescription</key>
+			<string>Continues the last timer</string>
 			<key>INIntentDescriptionID</key>
 			<string>z4KrEF</string>
 			<key>INIntentLastParameterTag</key>

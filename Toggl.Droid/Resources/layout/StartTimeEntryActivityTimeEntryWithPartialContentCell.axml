@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:elevation="1dp"
     android:foreground="?attr/selectableItemBackground"
@@ -12,7 +11,7 @@
         android:maxLines="1"
         android:gravity="left"
         android:textSize="15sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/primaryText"
         tools:text="Exporting assets to Zeplin and organizing some things that might not be listed elsewhere"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="16dp"
@@ -62,7 +61,7 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/TaskLabel" />
     <View
-        android:background="@drawable/TransparentToWhiteGradient"
+        android:background="@drawable/TransparentToCardColorGradient"
         android:layout_width="40dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true" />

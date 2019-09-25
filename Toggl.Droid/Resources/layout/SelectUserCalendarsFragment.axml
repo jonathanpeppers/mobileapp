@@ -4,6 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/cardBackground"
         android:orientation="vertical">
     <include layout="@layout/selectusercalendarsbase"/>
     <View
@@ -26,11 +27,11 @@
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
             android:textStyle="normal"
-            android:textColor="@color/bluelinktextcolor"
+            android:textColor="@color/LinkTextColor"
             android:letterSpacing="0.04"
             android:lineSpacingExtra="2sp"
             android:textAllCaps="false"
-            android:text="@string/Cancel"/>
+            tools:text="Cancel"/>
         <Button
             android:id="@+id/DoneButton"
             android:layout_width="wrap_content"
@@ -42,10 +43,10 @@
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium"
             android:textStyle="normal"
-            android:textColor="@color/bluelinktextcolor"
+            android:textColor="@color/LinkTextColor"
             android:letterSpacing="0.04"
             android:lineSpacingExtra="2sp"
             android:textAllCaps="false"
-            android:text="@string/Done"/>
+            tools:text="Done"/>
     </LinearLayout>
 </LinearLayout>

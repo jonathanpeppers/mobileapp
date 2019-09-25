@@ -36,12 +36,6 @@ namespace Toggl.Core.UI.ViewModels
 
         public IObservable<bool?> Impression { get; }
 
-        public IObservable<string> CallToActionTitle { get; }
-
-        public IObservable<string> CallToActionDescription { get; }
-
-        public IObservable<string> CallToActionButtonTitle { get; }
-
         public IObservable<bool> IsFeedbackSuccessViewShowing { get; }
 
         public IObservable<Unit> HideRatingView { get; }
@@ -73,18 +67,6 @@ namespace Toggl.Core.UI.ViewModels
 
             Impression = impressionSubject.AsDriver(this.schedulerProvider);
 
-            CallToActionTitle = impressionSubject
-                .Select(callToActionTitle)
-                .AsDriver(this.schedulerProvider);
-
-            CallToActionDescription = impressionSubject
-                .Select(callToActionDescription)
-                .AsDriver(this.schedulerProvider);
-
-            CallToActionButtonTitle = impressionSubject
-                .Select(callToActionButtonTitle)
-                .AsDriver(this.schedulerProvider);
-
             IsFeedbackSuccessViewShowing = isFeedbackSuccessViewShowing.AsDriver(this.schedulerProvider);
 
             HideRatingView = hideRatingView.AsDriver(this.schedulerProvider);
@@ -114,36 +96,6 @@ namespace Toggl.Core.UI.ViewModels
                     RatingViewOutcome.NegativeImpression,
                     analyticsService.RatingViewFirstStepDislike);
             }
-        }
-
-        private string callToActionTitle(bool? impressionIsPositive)
-        {
-            if (impressionIsPositive == null)
-                return string.Empty;
-
-            return impressionIsPositive.Value
-                   ? Resources.RatingViewPositiveCallToActionTitle
-                   : Resources.RatingViewNegativeCallToActionTitle;
-        }
-
-        private string callToActionDescription(bool? impressionIsPositive)
-        {
-            if (impressionIsPositive == null)
-                return string.Empty;
-
-            return impressionIsPositive.Value
-                   ? Resources.RatingViewPositiveCallToActionDescription
-                   : Resources.RatingViewNegativeCallToActionDescription;
-        }
-
-        private string callToActionButtonTitle(bool? impressionIsPositive)
-        {
-            if (impressionIsPositive == null)
-                return string.Empty;
-
-            return impressionIsPositive.Value
-                   ? Resources.RatingViewPositiveCallToActionButtonTitle
-                   : Resources.RatingViewNegativeCallToActionButtonTitle;
         }
 
         private async Task performMainAction()

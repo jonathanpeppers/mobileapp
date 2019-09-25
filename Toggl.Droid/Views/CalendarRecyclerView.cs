@@ -45,17 +45,8 @@ namespace Toggl.Droid.Views
         private ImmutableArray<float> hoursYs = ImmutableArray<float>.Empty;
 
         private PointF lastTouch;
-
-        private readonly Paint hoursLabelPaint = new Paint(PaintFlags.AntiAlias)
-        {
-            Color = Color.ParseColor("#757575"),
-            TextAlign = Paint.Align.Right
-        };
-
-        private readonly Paint linesPaint = new Paint(PaintFlags.AntiAlias)
-        {
-            Color = Color.ParseColor("#19000000")
-        };
+        private Paint hoursLabelPaint;
+        private Paint linesPaint;
 
         private int maxDistanceBetweenDownAndUpTouches;
 
@@ -63,29 +54,31 @@ namespace Toggl.Droid.Views
             => emptySpaceTouchedSubject.Select(pointToDateTimeOffset);
 
         #region Constructors
-        protected CalendarRecyclerView(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+        protected CalendarRecyclerView(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
         {
         }
 
-        public CalendarRecyclerView(Context context) : base(context)
-        {
-            init();
-        }
-
-        public CalendarRecyclerView(Context context, IAttributeSet attrs) : base(context, attrs)
+        public CalendarRecyclerView(Context context)
+            : base(context)
         {
             init();
         }
 
-        public CalendarRecyclerView(Context context, IAttributeSet attrs, int defStyle) : base(context, attrs, defStyle)
+        public CalendarRecyclerView(Context context, IAttributeSet attrs)
+            : base(context, attrs)
+        {
+            init();
+        }
+
+        public CalendarRecyclerView(Context context, IAttributeSet attrs, int defStyle)
+            : base(context, attrs, defStyle)
         {
             init();
         }
 
         private void init()
         {
-            hoursLabelPaint.TextSize = 12.SpToPixels(Context);
-            linesPaint.StrokeWidth = 1.DpToPixels(Context);
             hourHeight = 56.DpToPixels(Context);
             timeSliceStartX = 60.DpToPixels(Context);
             timeSlicesTopPadding = 0;
@@ -93,6 +86,19 @@ namespace Toggl.Droid.Views
             hoursDistanceFromTimeLine = 12.DpToPixels(Context);
             hoursX = timeSliceStartX - hoursDistanceFromTimeLine;
             maxDistanceBetweenDownAndUpTouches = 6.DpToPixels(Context);
+
+            linesPaint = new Paint(PaintFlags.AntiAlias)
+            {
+                Color = Context.SafeGetColor(Resource.Color.separator),
+                StrokeWidth = 1.DpToPixels(Context)
+            };
+
+            hoursLabelPaint = new Paint(PaintFlags.AntiAlias)
+            {
+                Color = Context.SafeGetColor(Resource.Color.reportsLabel),
+                TextAlign = Paint.Align.Right,
+                TextSize = 12.SpToPixels(Context)
+            };
         }
 
         #endregion
@@ -223,7 +229,7 @@ namespace Toggl.Droid.Views
         }
 
         private string formatHour(DateTime hour)
-            => hour.ToString(fixedHoursFormat(), CultureInfo.InvariantCulture);
+            => hour.ToString(fixedHoursFormat(), CultureInfo.CurrentCulture);
 
         private string fixedHoursFormat()
             => timeOfDayFormat.IsTwentyFourHoursFormat ? twentyFourHoursFormat : twelveHoursFormat;

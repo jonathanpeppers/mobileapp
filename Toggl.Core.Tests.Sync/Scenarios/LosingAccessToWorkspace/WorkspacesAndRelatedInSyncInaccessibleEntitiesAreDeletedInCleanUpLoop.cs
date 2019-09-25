@@ -53,7 +53,7 @@ namespace Toggl.Core.Tests.Sync.Scenarios.LosingAccessToWorkspace
                     new MockTimeEntry { Id = 2, Start = DateTimeOffset.Now - TimeSpan.FromDays(1), Duration = 10 * 60, WorkspaceId = 2, ProjectId = 2, TagIds = new long[] { 2 }, SyncStatus = SyncStatus.InSync }
                 });
 
-        protected override async Task Act(ISyncManager syncManager)
+        protected override async Task Act(ISyncManager syncManager, AppServices appServices)
         {
             await syncManager.CleanUp();
         }

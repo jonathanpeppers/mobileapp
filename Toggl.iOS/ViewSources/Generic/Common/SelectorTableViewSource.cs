@@ -1,0 +1,59 @@
+﻿using System;
+using System.Collections.Immutable;
+using System.Reactive;
+using Foundation;
+using Toggl.Core.UI.Collections;
+using Toggl.Core.UI.Helper;
+using Toggl.Core.UI.Views;
+using Toggl.iOS.Cells.Common;
+using Toggl.iOS.Extensions;
+using UIKit;
+
+namespace Toggl.iOS.ViewSources.Common
+{
+    public sealed class SelectorTableViewSource<T> : BaseTableViewSource<SectionModel<Unit, SelectOption<T>>, Unit, SelectOption<T>>
+    {
+        private readonly int initialSelection;
+        private readonly Action<int> selectItem;
+
+        public SelectorTableViewSource(UITableView tableView, ImmutableList<SelectOption<T>> items, int initialSelection, Action<int> selectItem) : base(items)
+        {
+            this.initialSelection = initialSelection;
+            this.selectItem = selectItem;
+
+            tableView.RegisterNibForCellReuse(SelectorCell.Nib, SelectorCell.Identifier);
+        }
+
+        public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
+        {
+            var model = ModelAt(indexPath);
+            var cell = (SelectorCell)tableView.DequeueReusableCell(SelectorCell.Identifier);
+            cell.Item = model.ItemName;
+            cell.OptionSelected = indexPath.Row == initialSelection;
+            if (indexPath.Row == Sections[indexPath.Section].Items.Count - 1)
+            {
+                cell.SeparatorInset = UIEdgeInsets.Zero;
+            }
+
+            return cell;
+        }
+
+        public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+        {
+            base.RowSelected(tableView, indexPath);
+            selectItem(indexPath.Row);
+        }
+        
+        public override nfloat GetHeightForHeader(UITableView tableView, nint section)
+        {
+            return 1;
+        }
+
+        public override UIView GetViewForHeader(UITableView tableView, nint section)
+        {
+            var headerView = new UIView();
+            headerView.BackgroundColor = Colors.Settings.SeparatorColor.ToNativeColor();
+            return headerView;
+        }
+    }
+}

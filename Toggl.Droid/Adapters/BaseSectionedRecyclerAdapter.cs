@@ -5,6 +5,7 @@ using Android.Support.V7.Widget;
 using Android.Views;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -25,8 +26,8 @@ namespace Toggl.Droid.Adapters
         private readonly object updateLock = new object();
         private bool isUpdateRunning;
 
-        private IList<Either<TSection, TItem>> currentItems = new List<Either<TSection, TItem>>();
-        private IList<Either<TSection, TItem>> nextUpdate;
+        private IImmutableList<Either<TSection, TItem>> currentItems = ImmutableList<Either<TSection, TItem>>.Empty;
+        private IImmutableList<Either<TSection, TItem>> nextUpdate;
 
         private readonly Subject<TItem> itemTapSubject = new Subject<TItem>();
         private readonly Subject<TSection> headerTapSubject = new Subject<TSection>();
@@ -34,11 +35,11 @@ namespace Toggl.Droid.Adapters
         private readonly Subject<Unit> itemsUpdateCompletedSubject = new Subject<Unit>();
         public IObservable<Unit> ItemsUpdateCompleted { get; }
 
-        private IList<SectionModel<TSection, TItem>> items;
-        public IList<SectionModel<TSection, TItem>> Items
+        private IImmutableList<SectionModel<TSection, TItem>> items;
+        public IImmutableList<SectionModel<TSection, TItem>> Items
         {
             get => items;
-            set => setItems(value ?? new List<SectionModel<TSection, TItem>>());
+            set => setItems(value ?? ImmutableList<SectionModel<TSection, TItem>>.Empty);
         }
 
         public IObservable<TItem> ItemTapObservable => itemTapSubject.AsObservable();
@@ -119,7 +120,7 @@ namespace Toggl.Droid.Adapters
             }
         }
 
-        private void setItems(IList<SectionModel<TSection, TItem>> newItems)
+        private void setItems(IImmutableList<SectionModel<TSection, TItem>> newItems)
         {
             lock (updateLock)
             {
@@ -136,12 +137,12 @@ namespace Toggl.Droid.Adapters
             }
         }
 
-        private IList<Either<TSection, TItem>> flattenItems(IList<SectionModel<TSection, TItem>> newItems)
+        private IImmutableList<Either<TSection, TItem>> flattenItems(IImmutableList<SectionModel<TSection, TItem>> newItems)
         {
             var flattenedItems = new List<Either<TSection, TItem>>();
 
             if (newItems == null)
-                return flattenedItems;
+                return flattenedItems.ToImmutableList();
 
             var hasMultipleSections = newItems.Count > 1;
 
@@ -157,10 +158,10 @@ namespace Toggl.Droid.Adapters
                 }
             }
 
-            return flattenedItems;
+            return flattenedItems.ToImmutableList();
         }
 
-        private void processUpdate(IList<Either<TSection, TItem>> newItems)
+        private void processUpdate(IImmutableList<Either<TSection, TItem>> newItems)
         {
             var oldItems = currentItems;
             var handler = new Handler();
@@ -174,7 +175,7 @@ namespace Toggl.Droid.Adapters
             });
         }
 
-        private void dispatchUpdates(IList<Either<TSection, TItem>> newItems, DiffUtil.DiffResult diffResult)
+        private void dispatchUpdates(IImmutableList<Either<TSection, TItem>> newItems, DiffUtil.DiffResult diffResult)
         {
             currentItems = newItems;
             diffResult.DispatchUpdatesTo(this);
@@ -195,10 +196,10 @@ namespace Toggl.Droid.Adapters
 
         private sealed class BaseSectionedDiffCallBack : DiffUtil.Callback
         {
-            private IList<Either<TSection, TItem>> oldItems;
-            private IList<Either<TSection, TItem>> newItems;
+            private IImmutableList<Either<TSection, TItem>> oldItems;
+            private IImmutableList<Either<TSection, TItem>> newItems;
 
-            public BaseSectionedDiffCallBack(IList<Either<TSection, TItem>> oldItems, IList<Either<TSection, TItem>> newItems)
+            public BaseSectionedDiffCallBack(IImmutableList<Either<TSection, TItem>> oldItems, IImmutableList<Either<TSection, TItem>> newItems)
             {
                 this.oldItems = oldItems;
                 this.newItems = newItems;

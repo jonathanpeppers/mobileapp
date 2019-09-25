@@ -61,6 +61,8 @@ The `ViewModelCache` is initialized in the `AndroidDependencyContainer` and is u
 
 On the `ReactiveActivity`, the `ViewModelCache` is used in the `OnCreate` to fetch the `ViewModel`, being safe to use it after calling the base constructor on `Activities` that inherit it. The `ViewModelCache` is called to clear a `ReactiveActivity`'s ViewModel cache when the `ViewModel`'s `Close` method is called.
 
+Due to constraints on restoration, the `ReactiveActivity` needs to have a sealed `OnCreate` method. This is to ensure that our bailing out mechanism (the one that falls back to the `SplashScreen` if needed) is called. There are other extension points (some of which are mandatory), so there's no need for other activities to override that method.
+
 On the `ReactiveDialogFragment`, the `ViewModelCache` is used to get the `ViewModel` in the `OnViewCreated` and cleared similarly when the `ViewModel`'s `Close` is called. Please note that the `OnCreateView` should only be used to initialize the views (call `InitializeViews`) and the Dialog won't have a reference to the `ViewModel` at that point.
 It's only safe to use the `ViewModel` after calling `base.OnViewCreated` in the classes that inherit from the `ReactiveDialogFragment`.
 

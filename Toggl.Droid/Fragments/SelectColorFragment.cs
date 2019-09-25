@@ -18,7 +18,7 @@ namespace Toggl.Droid.Fragments
 {
     public sealed partial class SelectColorFragment : ReactiveDialogFragment<SelectColorViewModel>
     {
-        private const int customColorEnabledHeight = 425;
+        private const int customColorEnabledHeight = 437;
         private const int customColorDisabledHeight = 270;
 
         public SelectColorFragment() { }
@@ -39,17 +39,11 @@ namespace Toggl.Droid.Fragments
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             base.OnViewCreated(view, savedInstanceState);
-            recyclerView.SetLayoutManager(new GridLayoutManager(Context, 5));
-
-            selectableColorsAdapter = new SimpleAdapter<SelectableColorViewModel>(
-                Resource.Layout.SelectColorFragmentCell, ColorSelectionViewHolder.Create);
 
             selectableColorsAdapter.ItemTapObservable
                 .Select(x => x.Color)
                 .Subscribe(ViewModel.SelectColor.Inputs)
                 .DisposedBy(DisposeBag);
-
-            recyclerView.SetAdapter(selectableColorsAdapter);
 
             ViewModel.Hue
                 .Subscribe(hueSaturationPicker.Rx().HueObserver())
@@ -93,16 +87,11 @@ namespace Toggl.Droid.Fragments
                 .DisposedBy(DisposeBag);
 
             ViewModel.SelectableColors
-                     .Subscribe(updateColors)
-                     .DisposedBy(DisposeBag);
+                .Subscribe(selectableColorsAdapter.Rx().Items())
+                .DisposedBy(DisposeBag);
 
             hueSaturationPicker.Visibility = ViewModel.AllowCustomColors.ToVisibility();
             valueSlider.Visibility = ViewModel.AllowCustomColors.ToVisibility();
-        }
-
-        private void updateColors(IEnumerable<SelectableColorViewModel> colors)
-        {
-            selectableColorsAdapter.Items = colors.ToList();
         }
 
         public override void OnResume()

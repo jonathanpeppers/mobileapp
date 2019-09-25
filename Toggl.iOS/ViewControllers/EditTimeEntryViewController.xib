@@ -325,7 +325,7 @@
                                         </view>
                                     </subviews>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <accessibility key="accessibilityConfiguration" label="EditTimeEntryTags">
+                                    <accessibility key="accessibilityConfiguration" identifier="EditTimeEntryTags">
                                         <bool key="isElement" value="YES"/>
                                     </accessibility>
                                     <constraints>
@@ -363,6 +363,7 @@
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0lZ-m7-Epd">
                                                     <rect key="frame" x="42" y="31.666666666666625" width="28" height="14.333333333333332"/>
+                                                    <accessibility key="accessibilityConfiguration" identifier="EditTimeEntryStartTime"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <color key="textColor" red="0.36862745098039218" green="0.35686274509803922" blue="0.35686274509803922" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -417,6 +418,7 @@
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="14:30" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SJr-Ox-SV2">
                                                     <rect key="frame" x="16" y="11.666666666666629" width="39" height="18"/>
+                                                    <accessibility key="accessibilityConfiguration" identifier="EditTimeEntryStopTime"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -429,6 +431,7 @@
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fcT-2a-vU7">
                                                     <rect key="frame" x="16" y="0.66666666666662877" width="44" height="40"/>
+                                                    <accessibility key="accessibilityConfiguration" identifier="EditTimeEntryStopButton"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="44" id="5Ca-SW-jU9"/>
                                                         <constraint firstAttribute="height" constant="40" id="Cdz-G4-Iiq"/>
@@ -504,6 +507,7 @@
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1:30:12" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EW6-cw-AXE">
                                             <rect key="frame" x="42" y="11.666666666666629" width="49.333333333333343" height="18"/>
+                                            <accessibility key="accessibilityConfiguration" identifier="EditTimeEntryDuration"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -564,6 +568,7 @@
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tue, 26 Jan" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xIz-dZ-hk9">
                                             <rect key="frame" x="42" y="11.666666666666629" width="80" height="18"/>
+                                            <accessibility key="accessibilityConfiguration" identifier="EditTimeEntryStartDate"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -618,6 +623,7 @@
                                         </label>
                                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vWw-JK-JJ7">
                                             <rect key="frame" x="255" y="12.666666666666742" width="51" height="31"/>
+                                            <accessibility key="accessibilityConfiguration" identifier="EditTimeEntryBillable"/>
                                         </switch>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QYo-4t-LJe" userLabel="Separator">
                                             <rect key="frame" x="0.0" y="55" width="320" height="1"/>
@@ -720,6 +726,9 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <accessibility key="accessibilityConfiguration" label="EditTimeEntryView">
+                <bool key="isElement" value="YES"/>
+            </accessibility>
             <constraints>
                 <constraint firstItem="qah-wA-pc3" firstAttribute="bottom" secondItem="f5j-k9-aHB" secondAttribute="bottom" id="0Bo-Yw-Lzr"/>
                 <constraint firstItem="f5j-k9-aHB" firstAttribute="centerX" secondItem="2" secondAttribute="centerX" id="3JN-mu-ET3"/>
@@ -756,7 +765,7 @@
                     <exclude reference="gNx-N3-DUE"/>
                 </mask>
             </variation>
-            <point key="canvasLocation" x="127" y="-167"/>
+            <point key="canvasLocation" x="126.08695652173914" y="-167.41071428571428"/>
         </view>
     </objects>
     <resources>

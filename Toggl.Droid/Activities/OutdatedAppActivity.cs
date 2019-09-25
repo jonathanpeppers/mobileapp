@@ -1,8 +1,10 @@
 ﻿using Android.App;
 using Android.Content.PM;
-using Android.OS;
+using Android.Runtime;
+using System;
 using Toggl.Core.UI.ViewModels;
 using Toggl.Droid.Extensions.Reactive;
+using Toggl.Droid.Presentation;
 using Toggl.Shared.Extensions;
 
 namespace Toggl.Droid.Activities
@@ -12,19 +14,19 @@ namespace Toggl.Droid.Activities
               ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public sealed partial class OutdatedAppActivity : ReactiveActivity<OutdatedAppViewModel>
     {
-        protected override void OnCreate(Bundle bundle)
-        {
-            SetTheme(Resource.Style.AppTheme_Light_OutdatedAppStatusBarColor);
-            base.OnCreate(bundle);
-            if (ViewModelWasNotCached())
-            {
-                BailOutToSplashScreen();
-                return;
-            }
-            SetContentView(Resource.Layout.OutdatedAppActivity);
-            OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_fade_out);
-            InitializeViews();
+        public OutdatedAppActivity() : base(
+            Resource.Layout.OutdatedAppActivity,
+            Resource.Style.AppTheme_OutdatedAppStatusBarColor,
+            Transitions.Fade)
+        { }
 
+        public OutdatedAppActivity(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
+        {
+        }
+
+        protected override void InitializeBindings()
+        {
             updateAppButton.Rx()
                 .BindAction(ViewModel.UpdateApp)
                 .DisposedBy(DisposeBag);

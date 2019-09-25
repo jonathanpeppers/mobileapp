@@ -1,6 +1,8 @@
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V4.App;
+using Android.Support.V7.App;
+using Android.Support.V7.Widget;
 using Android.Views;
 using System;
 using System.Reactive.Disposables;
@@ -84,6 +86,17 @@ namespace Toggl.Droid.Fragments
 
             if (!disposing) return;
             DisposeBag?.Dispose();
+        }
+
+        public void SetupToolbar(View fragmentView, string title = "")
+        {
+            var activity = Activity as AppCompatActivity;
+            var toolbar = fragmentView.FindViewById<Toolbar>(Resource.Id.Toolbar);
+            toolbar.Title = title;
+            activity.SetSupportActionBar(toolbar);
+
+            activity.SupportActionBar.SetDisplayHomeAsUpEnabled(false);
+            activity.SupportActionBar.SetDisplayShowHomeEnabled(false);
         }
 
         public void Close()

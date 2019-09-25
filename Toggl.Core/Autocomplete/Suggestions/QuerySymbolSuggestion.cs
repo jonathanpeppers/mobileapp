@@ -17,7 +17,7 @@ namespace Toggl.Core.Autocomplete.Suggestions
         private QuerySymbolSuggestion(string symbol, string suggestionName)
         {
             Symbol = symbol;
-            Description = $"Search {suggestionName}";
+            Description = $"{Resources.Search} {suggestionName}";
         }
 
         public override int GetHashCode()

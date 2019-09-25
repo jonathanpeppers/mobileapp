@@ -1,14 +1,13 @@
 using Android.App;
 using Android.Content.PM;
-using Android.OS;
-using Android.Support.V7.Widget;
+using Android.Runtime;
 using System;
-using System.Linq;
 using System.Reactive.Linq;
+using Android.Views;
 using Toggl.Core.UI.Extensions;
 using Toggl.Core.UI.ViewModels;
-using Toggl.Droid.Adapters;
 using Toggl.Droid.Extensions.Reactive;
+using Toggl.Droid.Presentation;
 using Toggl.Shared.Extensions;
 
 namespace Toggl.Droid.Activities
@@ -18,53 +17,44 @@ namespace Toggl.Droid.Activities
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public partial class SelectTagsActivity : ReactiveActivity<SelectTagsViewModel>
     {
-        private SelectTagsRecyclerAdapter selectTagsRecyclerAdapter = new SelectTagsRecyclerAdapter();
+        private IMenuItem doneMenuItem;
+        private IMenuItem clearMenuItem;
 
-        protected override void OnCreate(Bundle bundle)
+        public SelectTagsActivity() : base(
+            Resource.Layout.SelectTagsActivity,
+            Resource.Style.AppTheme,
+            Transitions.SlideInFromBottom)
         {
-            SetTheme(Resource.Style.AppTheme_Light_WhiteBackground);
-            base.OnCreate(bundle);
-            if (ViewModelWasNotCached())
-            {
-                BailOutToSplashScreen();
-                return;
-            }
-            SetContentView(Resource.Layout.SelectTagsActivity);
-            OverridePendingTransition(Resource.Animation.abc_slide_in_bottom, Resource.Animation.abc_fade_out);
+        }
 
-            InitializeViews();
+        public SelectTagsActivity(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
+        {
+        }
 
-            setupLayoutManager(selectTagsRecyclerAdapter);
+        protected override void OnStart()
+        {
+            base.OnStart();
+            textField.RequestFocus();
+        }
 
+        protected override void InitializeBindings()
+        {
             ViewModel.Tags
-                .Select(tags => tags.ToList())
                 .Subscribe(selectTagsRecyclerAdapter.Rx().Items())
                 .DisposedBy(DisposeBag);
 
             ViewModel.FilterText
                 .Select(text => text == string.Empty)
                 .DistinctUntilChanged()
-                .Subscribe(saveButton.Rx().IsVisible())
+                .Subscribe(isEmpty => doneMenuItem?.SetVisible(isEmpty))
                 .DisposedBy(DisposeBag);
 
             ViewModel.FilterText
                 .Select(text => text == string.Empty)
                 .DistinctUntilChanged()
                 .Invert()
-                .Subscribe(clearIcon.Rx().IsVisible())
-                .DisposedBy(DisposeBag);
-
-            backIcon.Rx().Tap()
-                .Subscribe(ViewModel.CloseWithDefaultResult)
-                .DisposedBy(DisposeBag);
-
-            clearIcon.Click += (sender, e) =>
-            {
-                textField.Text = string.Empty;
-            };
-
-            saveButton.Rx()
-                .BindAction(ViewModel.Save)
+                .Subscribe(isNonEmpty => clearMenuItem?.SetVisible(isNonEmpty))
                 .DisposedBy(DisposeBag);
 
             textField.Rx().Text()
@@ -76,19 +66,31 @@ namespace Toggl.Droid.Activities
                 .DisposedBy(DisposeBag);
         }
 
-        private void setupLayoutManager(SelectTagsRecyclerAdapter adapter)
+        public override bool OnCreateOptionsMenu(IMenu menu)
         {
-            var layoutManager = new LinearLayoutManager(this);
-            layoutManager.ItemPrefetchEnabled = true;
-            layoutManager.InitialPrefetchItemCount = 4;
-            selectTagsRecyclerView.SetLayoutManager(layoutManager);
-            selectTagsRecyclerView.SetAdapter(adapter);
+            MenuInflater.Inflate(Resource.Menu.DoneOrClearMenu, menu);
+            
+            doneMenuItem = menu.FindItem(Resource.Id.ButtonMenuItem);
+            doneMenuItem.SetTitle(Shared.Resources.Done);
+
+            clearMenuItem = menu.FindItem(Resource.Id.ClearMenuItem);
+
+            return true;
         }
 
-        public override void Finish()
+        public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            base.Finish();
-            OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_slide_out_bottom);
+            if (item.ItemId == Resource.Id.ButtonMenuItem)
+            {
+                ViewModel.Save.Execute();
+                return true;
+            }
+            else if (item.ItemId == Resource.Id.ClearMenuItem)
+            {
+                textField.Text = string.Empty;
+            }
+
+            return base.OnOptionsItemSelected(item);
         }
     }
 }

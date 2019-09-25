@@ -1,4 +1,5 @@
 ﻿using CoreGraphics;
+using Foundation;
 using System;
 using System.Reactive.Linq;
 using Toggl.Core.UI.Helper;
@@ -27,6 +28,21 @@ namespace Toggl.iOS.ViewControllers
             CreateWorkspaceButton.SetTitle(Resources.CreateNewWorkspace, UIControlState.Normal);
             HeadingLabel.Text = Resources.UhOh;
             TextLabel.Text = Resources.NoWorkspaceErrorMessage;
+
+            var tryAgainString = string.Format(Resources.NoWorkspaceOr, Resources.NoWorkspaceTryAgain);
+
+            var rangeStart = tryAgainString.IndexOf(Resources.NoWorkspaceTryAgain, System.StringComparison.CurrentCulture);
+            var rangeEnd = Resources.NoWorkspaceTryAgain.Length;
+            var range = new NSRange(rangeStart, rangeEnd);
+
+            var attributedString = new NSMutableAttributedString(
+                tryAgainString,
+                new UIStringAttributes { ForegroundColor = UIColor.Black });
+            attributedString.AddAttributes(
+                new UIStringAttributes { ForegroundColor = Colors.NoWorkspace.ActivityIndicator.ToNativeColor() },
+                range);
+
+            TryAgainButton.SetAttributedTitle(attributedString, UIControlState.Normal);
 
             var screenWidth = UIScreen.MainScreen.Bounds.Width;
             PreferredContentSize = new CGSize

@@ -13,6 +13,9 @@ namespace Toggl.iOS.ViewControllers
 	partial class EditProjectViewController
 	{
 		[Outlet]
+		UIKit.UIView BottomSeparator { get; set; }
+
+		[Outlet]
 		UIKit.UILabel ClientLabel { get; set; }
 
 		[Outlet]
@@ -34,6 +37,9 @@ namespace Toggl.iOS.ViewControllers
 		UIKit.UITextField NameTextField { get; set; }
 
 		[Outlet]
+		UIKit.UILabel PrivateProjectLabel { get; set; }
+
+		[Outlet]
 		UIKit.UISwitch PrivateProjectSwitch { get; set; }
 
 		[Outlet]
@@ -53,9 +59,14 @@ namespace Toggl.iOS.ViewControllers
 
 		[Outlet]
 		UIKit.UILabel WorkspaceLabel { get; set; }
-
+		
 		void ReleaseDesignerOutlets ()
 		{
+			if (BottomSeparator != null) {
+				BottomSeparator.Dispose ();
+				BottomSeparator = null;
+			}
+
 			if (ClientLabel != null) {
 				ClientLabel.Dispose ();
 				ClientLabel = null;
@@ -89,6 +100,11 @@ namespace Toggl.iOS.ViewControllers
 			if (NameTextField != null) {
 				NameTextField.Dispose ();
 				NameTextField = null;
+			}
+
+			if (PrivateProjectLabel != null) {
+				PrivateProjectLabel.Dispose ();
+				PrivateProjectLabel = null;
 			}
 
 			if (PrivateProjectSwitch != null) {

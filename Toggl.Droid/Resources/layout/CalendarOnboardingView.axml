@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/defaultBackground">
+    android:background="@color/background">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -23,10 +24,10 @@
                 android:textSize="20sp"
                 android:fontFamily="sans-serif"
                 android:textStyle="normal"
-                android:textColor="@android:color/black"
+                android:textColor="@color/primaryText"
                 android:letterSpacing="-0.01"
                 android:lineSpacingExtra="4sp"
-                android:text="@string/CalendarOnboardingTitle" />
+                tools:text="Get started with Calendar" />
         <TextView
                 android:id="@+id/CalendarOnboardingMessage"
                 android:layout_width="wrap_content"
@@ -38,10 +39,10 @@
                 android:textSize="15sp"
                 android:fontFamily="sans-serif"
                 android:textStyle="normal"
-                android:textColor="@color/defaultText"
+                android:textColor="@color/secondaryText"
                 android:letterSpacing="-0.01"
                 android:lineSpacingExtra="4sp"
-                android:text="@string/CalendarOnboardingMessage" />
+                tools:text="View your calendar events in Toggl and turn them into time entries with a tap" />
         <Button
                 android:id="@+id/CalendarOnboardingGetStartedButton"
                 android:layout_width="wrap_content"
@@ -49,7 +50,7 @@
                 android:layout_marginTop="24dp"
                 android:paddingLeft="30dp"
                 android:paddingRight="30dp"
-                android:background="@drawable/BlueButton"
+                android:background="@drawable/RaisedButton"
                 android:topLeftRadius="4dp"
                 android:topRightRadius="4dp"
                 android:bottomLeftRadius="4dp"
@@ -57,9 +58,9 @@
                 android:textSize="14sp"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="normal"
-                android:textColor="@android:color/white"
+                android:textColor="@color/RaisedButtonTextColor"
                 android:textAllCaps="false"
-                android:text="@string/LinkYourCalendars" />
+                tools:text="Link your calendars" />
         <TextView
                 android:id="@+id/CalendarOnboardingSkipButton"
                 android:gravity="center"
@@ -69,9 +70,9 @@
                 android:textSize="14sp"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="normal"
-                android:textColor="@color/buttonBlue"
+                android:textColor="@color/flatButtonText"
                 android:letterSpacing="0.04"
                 android:lineSpacingExtra="2sp"
-                android:text="@string/Skip" />
+                tools:text="Skip" />
     </LinearLayout>
 </RelativeLayout>

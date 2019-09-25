@@ -48,7 +48,7 @@ namespace Toggl.Core.Tests.Sync.Scenarios.SyncLight
                 preferences: serverState.Preferences.ToSyncable(),
                 workspaces: serverState.Workspaces.ToSyncable());
 
-        protected override async Task Act(ISyncManager syncManager)
+        protected override async Task Act(ISyncManager syncManager, AppServices appServices)
         {
             var progressMonitoring = MonitorProgress(syncManager);
             await syncManager.PullTimeEntries();

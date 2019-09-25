@@ -7,6 +7,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <TextView
+        android:id="@+id/SelectCalendarsTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -15,10 +16,11 @@
         android:textSize="20sp"
         android:fontFamily="sans-serif-medium"
         android:textStyle="normal"
-        android:textColor="@android:color/black"
+        android:textColor="@color/primaryText"
         android:lineSpacingExtra="8sp"
-        android:text="@string/SelectCalendars"/>
+        tools:text="Select calendars"/>
     <TextView
+        android:id="@+id/SelectCalendarsMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -27,10 +29,10 @@
         android:textSize="16sp"
         android:fontFamily="sans-serif"
         android:textStyle="normal"
-        android:textColor="@android:color/black"
+        android:textColor="@color/primaryText"
         android:letterSpacing="0.01"
         android:lineSpacingExtra="8sp"
-        android:text="@string/SelectCalendarsMessage"/>
+        tools:text="Choose the calendars containing events you\u{2019}d like to log in Toggl"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"

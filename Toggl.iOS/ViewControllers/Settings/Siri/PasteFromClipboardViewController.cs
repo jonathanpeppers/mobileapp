@@ -43,7 +43,7 @@ namespace Toggl.iOS.ViewControllers.Settings.Siri
         {
             TitleLabel.Text = Resources.SiriClipboardInstructionTitle;
             DescriptionLabel.Text = Resources.SiriClipboardInstructionDescription;
-            OkayButton.SetTitle(Resources.Ok, UIControlState.Normal);
+            OkayButton.SetTitle(Resources.SiriClipboardInstructionConfirm, UIControlState.Normal);
             DoNotShowAgainButton.SetTitle(Resources.SiriClipboardInstructionDoNotShowAgain, UIControlState.Normal);
         }
     }

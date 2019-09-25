@@ -31,9 +31,17 @@ namespace Toggl.Core.UI
         public override IUserAccessManager UserAccessManager
             => MockUserAccessManager ?? base.UserAccessManager;
 
+        internal IFetchRemoteConfigService MockFetchRemoteConfigService { get; set; }
+        protected override IFetchRemoteConfigService CreateFetchRemoteConfigService()
+            => MockFetchRemoteConfigService;
+
         internal IAccessRestrictionStorage MockAccessRestrictionStorage { get; set; }
         protected override IAccessRestrictionStorage CreateAccessRestrictionStorage()
             => MockAccessRestrictionStorage;
+
+        internal IUpdateRemoteConfigCacheService MockUpdateRemoteConfigCacheService { get; set; }
+        protected override IUpdateRemoteConfigCacheService CreateUpdateRemoteConfigCacheService()
+            => MockUpdateRemoteConfigCacheService;
 
         internal IAnalyticsService MockAnalyticsService { get; set; }
         protected override IAnalyticsService CreateAnalyticsService()
@@ -102,6 +110,10 @@ namespace Toggl.Core.UI
         internal IApplicationShortcutCreator MockShortcutCreator { get; set; }
         protected override IApplicationShortcutCreator CreateShortcutCreator()
             => MockShortcutCreator;
+        
+        internal IPushNotificationsTokenService MockPushNotificationsTokenService { get; set; }
+        protected override IPushNotificationsTokenService CreatePushNotificationsTokenService()
+            => MockPushNotificationsTokenService;
 
         internal IUserPreferences MockUserPreferences { get; set; }
         protected override IUserPreferences CreateUserPreferences()
@@ -126,5 +138,9 @@ namespace Toggl.Core.UI
         internal IAccessibilityService MockAccessibilityService { get; set; }
         protected override IAccessibilityService CreateAccessibilityService()
             => MockAccessibilityService;
+
+        internal IPushNotificationsTokenStorage MockPushNotificationsTokenStorage { get; set; }
+        protected override IPushNotificationsTokenStorage CreatePushNotificationsTokenStorage()
+            => MockPushNotificationsTokenStorage;
     }
 }

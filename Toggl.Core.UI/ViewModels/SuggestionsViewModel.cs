@@ -2,7 +2,6 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Toggl.Core.DataSources;
 using Toggl.Core.Interactors;
 using Toggl.Core.Models.Interfaces;
 using Toggl.Core.Services;
@@ -11,15 +10,14 @@ using Toggl.Core.UI.Navigation;
 using Toggl.Shared;
 using Toggl.Shared.Extensions;
 using Toggl.Storage.Settings;
-using Toggl.Core.Services;
 using System.Collections.Immutable;
 using Toggl.Core.Analytics;
 using System.Linq;
 using Toggl.Core.UI.Services;
-using Toggl.Core.UI.Navigation;
 using System.Reactive.Subjects;
 using Toggl.Core.Extensions;
 using Toggl.Core.Sync;
+using System.Collections.Generic;
 
 namespace Toggl.Core.UI.ViewModels
 {
@@ -27,6 +25,7 @@ namespace Toggl.Core.UI.ViewModels
     public sealed class SuggestionsViewModel : ViewModel
     {
         private const int suggestionCount = 3;
+        private static readonly SuggestionsComparer suggestionsComparer = new SuggestionsComparer();
         private static readonly TimeSpan recalculationThrottleDuration = TimeSpan.FromMilliseconds(500);
 
         private readonly IInteractorFactory interactorFactory;
@@ -39,8 +38,6 @@ namespace Toggl.Core.UI.ViewModels
         private readonly IBackgroundService backgroundService;
         private readonly IUserPreferences userPreferences;
         private readonly ISyncManager syncManager;
-
-        private Subject<Unit> recalculationRequested = new Subject<Unit>();
 
         public IObservable<IImmutableList<Suggestion>> Suggestions { get; private set; }
         public IObservable<bool> IsEmpty { get; private set; }
@@ -96,21 +93,23 @@ namespace Toggl.Core.UI.ViewModels
 
             var userCalendarPreferencesChanged = userPreferences
                 .EnabledCalendars
+                .DistinctUntilChanged()
                 .SelectUnit()
                 .Skip(1);
 
-            Suggestions = syncManager.ProgressObservable
+            var syncingFinishedWhenInForeground = syncManager.ProgressObservable
                 .Where(progress => progress != SyncProgress.Syncing && progress != SyncProgress.Unknown && !backgroundService.AppIsInBackground)
-                .Throttle(recalculationThrottleDuration, schedulerProvider.DefaultScheduler)
-                .SelectUnit()
-                .StartWith(Unit.Default)
-                .Merge(recalculationRequested)
-                .Merge(appResumedFromBackground)
-                .Merge(userCalendarPreferencesChanged)
-                .SelectMany(_ => getSuggestions())
-                .WithLatestFrom(permissionsChecker.CalendarPermissionGranted, (suggestions, isCalendarAuthorized) => (suggestions, isCalendarAuthorized))
-                .Do(item => trackPresentedSuggestions(item.suggestions, item.isCalendarAuthorized))
-                .Select(item => item.suggestions)
+                .SelectUnit();
+
+            Suggestions = permissionsChecker.CalendarPermissionGranted
+                .ReemitWhen(appResumedFromBackground)
+                .ReemitWhen(userCalendarPreferencesChanged)
+                .ReemitWhen(syncingFinishedWhenInForeground)
+                .Throttle(recalculationThrottleDuration, schedulerProvider.BackgroundScheduler)
+                .SelectMany(isCalendarAuthorized => getSuggestions()
+                    .Do(suggestions => trackPresentedSuggestions(suggestions, isCalendarAuthorized)))
+                .DistinctUntilChanged(suggestionsComparer)
+                .ObserveOn(schedulerProvider.BackgroundScheduler)
                 .AsDriver(onErrorJustReturn: ImmutableList.Create<Suggestion>(), schedulerProvider: schedulerProvider);
 
             IsEmpty = Suggestions
@@ -166,10 +165,24 @@ namespace Toggl.Core.UI.ViewModels
             analyticsService.Track(new CalendarSuggestionContinuedEvent(offset));
         }
 
-        public override void ViewAppeared()
+        private class SuggestionsComparer : IEqualityComparer<IImmutableList<Suggestion>>
         {
-            base.ViewAppeared();
-            recalculationRequested.OnNext(Unit.Default);
+            public bool Equals(IImmutableList<Suggestion> x, IImmutableList<Suggestion> y)
+            {
+                if (x.Count != y.Count)
+                    return false;
+
+                for (int i = 0; i < x.Count; i++)
+                {
+                    if (!x[i].Equals(y[i]))
+                        return false;
+                }
+
+                return true;
+            }
+
+            public int GetHashCode(IImmutableList<Suggestion> obj)
+                => obj.GetHashCode();
         }
     }
 }

@@ -44,7 +44,7 @@ namespace Toggl.Droid.Extensions
             var javaClass = Java.Lang.Class.FromType(typeof(BackgroundSyncJobSchedulerService));
             var component = new ComponentName(context, javaClass);
 
-            var builder = new JobInfo.Builder(BackgroundSyncJobSchedulerService.JobId, component)
+            var builder = new JobInfo.Builder(JobServicesConstants.BackgroundSyncJobServiceJobId, component)
                 .SetRequiredNetworkType(NetworkType.Any)
                 .SetPeriodic(periodicity)
                 .SetPersisted(true);
@@ -107,7 +107,8 @@ namespace Toggl.Droid.Extensions
                         return;
                     }
 
-                    var builder = new AlertDialog.Builder(activity, Resource.Style.TogglDialog).SetMessage(message)
+                    var builder = new AlertDialog.Builder(activity)
+                        .SetMessage(message)
                         .SetPositiveButton(confirmButtonText, (s, e) => observer.CompleteWith(true));
 
                     if (!string.IsNullOrWhiteSpace(title))
@@ -121,9 +122,9 @@ namespace Toggl.Droid.Extensions
                     }
 
                     var dialog = builder.Create();
-                    dialog.CancelEvent += (s, e) => observer.CompleteWith(false);
-
                     dialog.Show();
+
+                    dialog.CancelEvent += (s, e) => observer.CompleteWith(false);
                 }
 
                 activity.RunOnUiThread(showDialogIfActivityIsThere);

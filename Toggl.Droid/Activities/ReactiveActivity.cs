@@ -3,25 +3,37 @@ using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
+using Android.Support.V7.Widget;
+using Android.Views;
 using System;
 using System.Reactive.Disposables;
-using System.Threading.Tasks;
 using Toggl.Core.UI.ViewModels;
 using Toggl.Core.UI.Views;
+using Toggl.Droid.Presentation;
 
 namespace Toggl.Droid.Activities
 {
     public abstract partial class ReactiveActivity<TViewModel> : AppCompatActivity, IView
         where TViewModel : class, IViewModel
     {
-        public CompositeDisposable DisposeBag { get; private set; } = new CompositeDisposable();
+        private readonly int layoutResId;
+        private readonly int correctTheme;
+        private readonly ActivityTransitionSet transitions;
 
         protected abstract void InitializeViews();
+        protected abstract void InitializeBindings();
+        protected CompositeDisposable DisposeBag { get; private set; } = new CompositeDisposable();
 
         public TViewModel ViewModel { get; private set; }
 
-        protected ReactiveActivity()
+        protected ReactiveActivity(
+            int layoutResId,
+            int correctTheme,
+            ActivityTransitionSet transitions)
         {
+            this.layoutResId = layoutResId;
+            this.transitions = transitions;
+            this.correctTheme = correctTheme;
         }
 
         protected ReactiveActivity(IntPtr javaReference, JniHandleOwnership transfer)
@@ -29,30 +41,35 @@ namespace Toggl.Droid.Activities
         {
         }
 
-        public bool ViewModelWasNotCached()
-            => ViewModel == null;
-
-        public void BailOutToSplashScreen()
+        protected sealed override void OnCreate(Bundle bundle)
         {
-            StartActivity(new Intent(this, typeof(SplashScreen)).AddFlags(ActivityFlags.TaskOnHome));
-            Finish();
-        }
-
-        protected override void OnCreate(Bundle bundle)
-        {
+            SetTheme(correctTheme);
             base.OnCreate(bundle);
-            ViewModel = AndroidDependencyContainer.Instance
-                .ViewModelCache
-                .Get<TViewModel>();
+
+            var cache = AndroidDependencyContainer.Instance.ViewModelCache;
+            ViewModel = cache.Get<TViewModel>();
+
+            if (ViewModel == null)
+            {
+                bailOutToSplashScreen();
+                return;
+            }
 
             ViewModel?.AttachView(this);
+            SetContentView(layoutResId);
+            OverridePendingTransition(transitions.SelfIn, transitions.OtherOut);
+
+            InitializeViews();
+            RestoreViewModelStateFromBundle(bundle);
+            InitializeBindings();
         }
 
-        protected override void OnDestroy()
+        /// <summary>
+        /// Use this to rehydrate the ViewModel after tombstoning
+        /// </summary>
+        /// <param name="bundle"></param>
+        protected virtual void RestoreViewModelStateFromBundle(Bundle bundle)
         {
-            ViewModel?.DetachView();
-            base.OnDestroy();
-            ViewModel?.ViewDestroyed();
         }
 
         protected override void OnStart()
@@ -79,6 +96,19 @@ namespace Toggl.Droid.Activities
             ViewModel?.ViewDisappeared();
         }
 
+        protected override void OnDestroy()
+        {
+            ViewModel?.DetachView();
+            base.OnDestroy();
+            ViewModel?.ViewDestroyed();
+        }
+
+        public override void Finish()
+        {
+            base.Finish();
+            OverridePendingTransition(transitions.OtherIn, transitions.SelfOut);
+        }
+
         public override void OnBackPressed()
         {
             if (ViewModel == null)
@@ -88,6 +118,26 @@ namespace Toggl.Droid.Activities
             }
 
             ViewModel.CloseWithDefaultResult();
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            if (item.ItemId == Android.Resource.Id.Home)
+            {
+                ViewModel.CloseWithDefaultResult();
+                return true;
+            }
+
+            return base.OnOptionsItemSelected(item);
+        }
+
+        public void Close()
+        {
+            AndroidDependencyContainer.Instance
+                .ViewModelCache
+                .Clear<TViewModel>();
+
+            Finish();
         }
 
         protected override void Dispose(bool disposing)
@@ -110,12 +160,19 @@ namespace Toggl.Droid.Activities
             }
         }
 
-        public void Close()
+        protected void SetupToolbar(string title = "", bool showHomeAsUp = true)
         {
-            AndroidDependencyContainer.Instance
-                .ViewModelCache
-                .Clear<TViewModel>();
+            var toolbar = FindViewById<Toolbar>(Resource.Id.Toolbar);
+            toolbar.Title = title;
+            SetSupportActionBar(toolbar);
 
+            SupportActionBar.SetDisplayHomeAsUpEnabled(showHomeAsUp);
+            SupportActionBar.SetDisplayShowHomeEnabled(showHomeAsUp);
+        }
+
+        private void bailOutToSplashScreen()
+        {
+            StartActivity(new Intent(this, typeof(SplashScreen)).AddFlags(ActivityFlags.TaskOnHome));
             Finish();
         }
     }

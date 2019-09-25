@@ -1,4 +1,5 @@
-﻿using Android.Support.Constraints;
+using Android.Arch.Lifecycle;
+using Android.Support.Constraints;
 using Android.Support.V7.Widget;
 using Firebase.Provider;
 using Newtonsoft.Json.Converters;
@@ -85,6 +86,12 @@ namespace Toggl.Droid
             guideline = new Guideline(null, null);
             guideline = new Guideline(null, null, 1);
             guideline = new Guideline(null, null, 1, 1);
+        }
+
+        public void Include(ProcessLifecycleOwner processLifecycleOwner, ProcessLifecycleOwnerInitializer processLifecycleOwnerInitializer)
+        {
+            var proccessLifecycleOwner = ProcessLifecycleOwner.Get();
+            var initializer = new ProcessLifecycleOwnerInitializer();
         }
     }
 }

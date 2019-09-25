@@ -16,7 +16,6 @@ namespace Toggl.iOS.Presentation
             typeof(ForgotPasswordViewModel),
             typeof(LicensesViewModel),
             typeof(NotificationSettingsViewModel),
-            typeof(SettingsViewModel),
             typeof(SiriShortcutsCustomTimeEntryViewModel),
             typeof(SiriShortcutsSelectReportPeriodViewModel),
             typeof(SiriShortcutsViewModel),

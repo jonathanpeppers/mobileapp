@@ -342,7 +342,7 @@ namespace Toggl.Core.UI.ViewModels.Calendar
                 options.Add(option);
             }
 
-            var selectedOption = await View.Select(Resources.CalendarWhatToDoWithCalendarEvent, options, initialSelectionIndex: 0);
+            var selectedOption = await View.SelectAction(Resources.CalendarWhatToDoWithCalendarEvent, options);
             if (selectedOption.HasValue)
             {
                 await createTimeEntryFromCalendarItem(selectedOption.Value);

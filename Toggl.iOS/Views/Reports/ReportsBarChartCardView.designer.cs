@@ -47,6 +47,9 @@ namespace Toggl.iOS.Views.Reports
 		[Outlet]
 		UIKit.UILabel StartDateLabel { get; set; }
 
+		[Outlet]
+		UIKit.UILabel ZeroHoursLabel { get; set; }
+		
 		void ReleaseDesignerOutlets ()
 		{
 			if (BarChartCardView != null) {
@@ -97,6 +100,11 @@ namespace Toggl.iOS.Views.Reports
 			if (MaximumHoursLabel != null) {
 				MaximumHoursLabel.Dispose ();
 				MaximumHoursLabel = null;
+			}
+
+			if (ZeroHoursLabel != null) {
+				ZeroHoursLabel.Dispose ();
+				ZeroHoursLabel = null;
 			}
 
 			if (NonBillableLegendLabel != null) {

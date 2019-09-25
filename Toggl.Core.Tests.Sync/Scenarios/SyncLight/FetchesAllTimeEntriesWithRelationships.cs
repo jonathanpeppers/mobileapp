@@ -72,7 +72,7 @@ namespace Toggl.Core.Tests.Sync.Scenarios.SyncLight
                 tasks: serverState.Tasks.ToSyncable(),
                 tags: serverState.Tags.ToSyncable());
 
-        protected override async Task Act(ISyncManager syncManager)
+        protected override async Task Act(ISyncManager syncManager, AppServices appServices)
         {
             await syncManager.PullTimeEntries();
         }

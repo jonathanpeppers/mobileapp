@@ -1,8 +1,9 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FsCheck;
 using FsCheck.Xunit;
 using NSubstitute;
 using System;
+using System.Threading.Tasks;
 using Toggl.Core.Analytics;
 using Toggl.Core.Services;
 using Toggl.Core.Tests.Generators;
@@ -16,11 +17,13 @@ namespace Toggl.Core.Tests.Services
         {
             protected ITimeService TimeService { get; }
             protected IAnalyticsService AnalyticsService { get; }
+            protected IUpdateRemoteConfigCacheService UpdateRemoteConfigCacheService { get; }
 
             public BackgroundServiceTest()
             {
                 TimeService = Substitute.For<ITimeService>();
                 AnalyticsService = Substitute.For<IAnalyticsService>();
+                UpdateRemoteConfigCacheService = Substitute.For<IUpdateRemoteConfigCacheService>();
             }
         }
 
@@ -28,11 +31,12 @@ namespace Toggl.Core.Tests.Services
         {
             [Theory, LogIfTooSlow]
             [ConstructorData]
-            public void ThrowsWhenTheArgumentIsNull(bool useTimeService, bool useAnalyticsService)
+            public void ThrowsWhenTheArgumentIsNull(bool useTimeService, bool useAnalyticsService, bool useRemoteConfigUpdateService)
             {
                 var timeService = useTimeService ? Substitute.For<ITimeService>() : null;
                 var analyticsService = useAnalyticsService ? Substitute.For<IAnalyticsService>() : null;
-                Action constructor = () => new BackgroundService(timeService, analyticsService);
+                var updateRemoteConfigCacheService = useRemoteConfigUpdateService ? Substitute.For<IUpdateRemoteConfigCacheService>() : null;
+                Action constructor = () => new BackgroundService(timeService, analyticsService, updateRemoteConfigCacheService);
 
                 constructor.Should().Throw<ArgumentNullException>();
             }
@@ -46,7 +50,7 @@ namespace Toggl.Core.Tests.Services
             public void DoesNotEmitAnythingWhenItHasNotEnterBackgroundFirst()
             {
                 bool emitted = false;
-                var backgroundService = new BackgroundService(TimeService, AnalyticsService);
+                var backgroundService = new BackgroundService(TimeService, AnalyticsService, UpdateRemoteConfigCacheService);
                 backgroundService
                     .AppResumedFromBackground
                     .Subscribe(_ => emitted = true);
@@ -60,7 +64,7 @@ namespace Toggl.Core.Tests.Services
             public void EmitsValueWhenEnteringForegroundAfterBeingInBackground()
             {
                 bool emitted = false;
-                var backgroundService = new BackgroundService(TimeService, AnalyticsService);
+                var backgroundService = new BackgroundService(TimeService, AnalyticsService, UpdateRemoteConfigCacheService);
                 TimeService.CurrentDateTime.Returns(now);
                 backgroundService
                     .AppResumedFromBackground
@@ -76,7 +80,7 @@ namespace Toggl.Core.Tests.Services
             public void DoesNotEmitAnythingWhenTheEnterForegroundIsCalledMultipleTimes()
             {
                 bool emitted = false;
-                var backgroundService = new BackgroundService(TimeService, AnalyticsService);
+                var backgroundService = new BackgroundService(TimeService, AnalyticsService, UpdateRemoteConfigCacheService);
                 TimeService.CurrentDateTime.Returns(now);
                 backgroundService.EnterBackground();
                 TimeService.CurrentDateTime.Returns(now.AddMinutes(1));
@@ -95,7 +99,7 @@ namespace Toggl.Core.Tests.Services
             public void EmitsAValueWhenEnteringForegroundAfterBeingInBackgroundForMoreThanTheLimit(NonNegativeInt waitingTime)
             {
                 TimeSpan? resumedAfter = null;
-                var backgroundService = new BackgroundService(TimeService, AnalyticsService);
+                var backgroundService = new BackgroundService(TimeService, AnalyticsService, UpdateRemoteConfigCacheService);
                 backgroundService
                     .AppResumedFromBackground
                     .Subscribe(timeInBackground => resumedAfter = timeInBackground);
@@ -112,7 +116,7 @@ namespace Toggl.Core.Tests.Services
             [Fact]
             public void TracksEventWhenAppResumed()
             {
-                var backgroundService = new BackgroundService(TimeService, AnalyticsService);
+                var backgroundService = new BackgroundService(TimeService, AnalyticsService, UpdateRemoteConfigCacheService);
                 backgroundService.EnterBackground();
                 backgroundService.EnterForeground();
                 AnalyticsService.Received().AppDidEnterForeground.Track();
@@ -121,9 +125,42 @@ namespace Toggl.Core.Tests.Services
             [Fact]
             public void TracksEventWhenAppGoesToBackground()
             {
-                var backgroundService = new BackgroundService(TimeService, AnalyticsService);
+                var backgroundService = new BackgroundService(TimeService, AnalyticsService, UpdateRemoteConfigCacheService);
                 backgroundService.EnterBackground();
                 AnalyticsService.Received().AppSentToBackground.Track();
+            }
+        }
+
+        public sealed class TheEnterForegroundMethod : BackgroundServiceTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task TriggersRemoteConfigUpdateWhenRemoteConfigDataNeedsToBeUpdated()
+            {
+                var updateRemoteConfigCacheService = Substitute.For<IUpdateRemoteConfigCacheService>();
+                updateRemoteConfigCacheService.NeedsToUpdateStoredRemoteConfigData().Returns(true);
+                var backgroundService = new BackgroundService(TimeService, AnalyticsService, updateRemoteConfigCacheService);
+
+                backgroundService.EnterForeground();
+
+                // This delay is make sure FetchAndStoreRemoteConfigData has time to execute, since it's called inside a
+                // fire and forget TaskTask.Run(() => {}).ConfigureAwait(false))
+                await Task.Delay(1);
+                updateRemoteConfigCacheService.Received().FetchAndStoreRemoteConfigData();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task DoesNotTriggerRemoteConfigUpdateWhenRemoteConfigDataDoesNotNeedToBeUpdated()
+            {
+                var updateRemoteConfigCacheService = Substitute.For<IUpdateRemoteConfigCacheService>();
+                updateRemoteConfigCacheService.NeedsToUpdateStoredRemoteConfigData().Returns(false);
+                var backgroundService = new BackgroundService(TimeService, AnalyticsService, updateRemoteConfigCacheService);
+
+                backgroundService.EnterForeground();
+
+                // This delay is make sure FetchAndStoreRemoteConfigData has time to execute, since it's called inside a
+                // fire and forget TaskTask.Run(() => {}).ConfigureAwait(false))
+                await Task.Delay(1);
+                updateRemoteConfigCacheService.DidNotReceive().FetchAndStoreRemoteConfigData();
             }
         }
     }

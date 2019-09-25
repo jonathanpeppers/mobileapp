@@ -1,48 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Toggl.Core.Autocomplete;
 using Toggl.Core.Autocomplete.Span;
 using Toggl.Core.Autocomplete.Suggestions;
-using Toggl.Core.UI.Collections;
 
 namespace Toggl.Core.UI.Extensions
 {
-    using WorkspaceGroupedSuggestionsCollection = WorkspaceGroupedCollection<AutocompleteSuggestion>;
-    using WorkspaceSuggestionsGrouping = IGrouping<(long workspaceId, string workspaceName), AutocompleteSuggestion>;
-
     public static class AutocompleteExtensions
     {
-        public static IEnumerable<WorkspaceGroupedSuggestionsCollection> GroupByWorkspace(
-            this IEnumerable<AutocompleteSuggestion> suggestions)
-            => suggestions
-                .Where(suggestion => !string.IsNullOrEmpty(suggestion.WorkspaceName))
-                .GroupBy(suggestion => (suggestion.WorkspaceId, suggestion.WorkspaceName))
-                .Select(createWorkspaceGroupedCollection);
-
-        public static IEnumerable<WorkspaceGroupedSuggestionsCollection> GroupByWorkspaceAddingNoProject(
-            this IEnumerable<AutocompleteSuggestion> suggestions)
-            => suggestions
-                .GroupByWorkspace()
-                .Select(withNoProject);
-
-        public static IEnumerable<WorkspaceGroupedSuggestionsCollection> OrderByDefaultWorkspaceAndName(
-            this IEnumerable<WorkspaceGroupedSuggestionsCollection> suggestions, long defaultWorkSpaceId)
-        {
-            return suggestions
-                .OrderByDescending(suggestion => suggestion.WorkspaceId == defaultWorkSpaceId)
-                .ThenBy(s => s.WorkspaceName);
-        }
-
-        private static WorkspaceGroupedSuggestionsCollection withNoProject(WorkspaceGroupedSuggestionsCollection collection)
-        {
-            collection.Insert(0, ProjectSuggestion.NoProject(collection.WorkspaceId, collection.WorkspaceName));
-            return collection;
-        }
-
-        private static WorkspaceGroupedSuggestionsCollection createWorkspaceGroupedCollection(WorkspaceSuggestionsGrouping grouping)
-            => new WorkspaceGroupedSuggestionsCollection(grouping.Key.workspaceName, grouping.Key.workspaceId, grouping);
-
         public static TextFieldInfo FromQuerySymbolSuggestion(
             this TextFieldInfo textFieldInfo,
             QuerySymbolSuggestion querySymbolSuggestion)

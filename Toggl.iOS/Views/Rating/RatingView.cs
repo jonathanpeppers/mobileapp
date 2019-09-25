@@ -52,21 +52,25 @@ namespace Toggl.iOS
 
         private void updateBindings()
         {
-            ViewModel.CallToActionTitle
-                .Subscribe(CtaTitle.Rx().Text())
-                .DisposedBy(DisposeBag);
-
-            ViewModel.CallToActionButtonTitle
-                .Subscribe(CtaButton.Rx().Title())
-                .DisposedBy(DisposeBag);
-
             ViewModel.Impression
                 .Select(impression => impression.HasValue)
                 .Subscribe(CtaView.Rx().IsVisibleWithFade())
                 .DisposedBy(DisposeBag);
 
-            ViewModel.CallToActionDescription.Select(attributedDescription)
+            ViewModel.Impression
+                .Select(callToActionTitle)
+                .Subscribe(CtaTitle.Rx().Text())
+                .DisposedBy(DisposeBag);
+
+            ViewModel.Impression
+                .Select(callToActionDescription)
+                .Select(attributedDescription)
                 .Subscribe(CtaDescription.Rx().AttributedText())
+                .DisposedBy(DisposeBag);
+
+            ViewModel.Impression
+                .Select(callToActionButtonTitle)
+                .Subscribe(CtaButton.Rx().Title())
                 .DisposedBy(DisposeBag);
 
             ViewModel.Impression
@@ -116,6 +120,10 @@ namespace Toggl.iOS
         {
             base.LayoutSubviews();
 
+            TitleLabel.Text = Resources.RatingTitle;
+            YesLabel.Text = Resources.RatingYes;
+            NotReallyLabel.Text = Resources.RatingNotReally;
+
             CtaButton.SetTitle(Resources.RatingCallToActionTitle, UIControlState.Normal);
             DismissButton.SetTitle(Resources.NoThanks, UIControlState.Normal);
 
@@ -141,6 +149,36 @@ namespace Toggl.iOS
             view.Layer.MasksToBounds = false;
             view.Layer.ShadowOffset = new CGSize(0, 2);
             view.Layer.ShadowColor = UIColor.Black.CGColor;
+        }
+
+        private string callToActionTitle(bool? impressionIsPositive)
+        {
+            if (impressionIsPositive == null)
+                return string.Empty;
+
+            return impressionIsPositive.Value
+                   ? Resources.RatingViewPositiveCallToActionTitle
+                   : Resources.RatingViewNegativeCallToActionTitle;
+        }
+
+        private string callToActionDescription(bool? impressionIsPositive)
+        {
+            if (impressionIsPositive == null)
+                return string.Empty;
+
+            return impressionIsPositive.Value
+                   ? Resources.RatingViewPositiveCallToActionDescriptionIos
+                   : Resources.RatingViewNegativeCallToActionDescription;
+        }
+
+        private string callToActionButtonTitle(bool? impressionIsPositive)
+        {
+            if (impressionIsPositive == null)
+                return string.Empty;
+
+            return impressionIsPositive.Value
+                   ? Resources.RatingViewPositiveCallToActionButtonTitle
+                   : Resources.RatingViewNegativeCallToActionButtonTitle;
         }
     }
 }

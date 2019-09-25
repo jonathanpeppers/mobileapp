@@ -11,7 +11,6 @@ using Toggl.Core.DataSources;
 using Toggl.Core.DTOs;
 using Toggl.Core.Extensions;
 using Toggl.Core.Interactors;
-using Toggl.Core.Login;
 using Toggl.Core.Models.Interfaces;
 using Toggl.Core.Services;
 using Toggl.Core.Sync;
@@ -21,6 +20,7 @@ using Toggl.Core.UI.Parameters;
 using Toggl.Core.UI.Services;
 using Toggl.Core.UI.Transformations;
 using Toggl.Core.UI.ViewModels.Settings;
+using Toggl.Core.UI.Views;
 using Toggl.Shared;
 using Toggl.Shared.Extensions;
 using Toggl.Storage.Settings;
@@ -29,8 +29,6 @@ using static Toggl.Shared.Extensions.CommonFunctions;
 
 namespace Toggl.Core.UI.ViewModels
 {
-    using WorkspaceToSelectableWorkspaceLambda = Func<IEnumerable<IThreadSafeWorkspace>, IList<SelectableWorkspaceViewModel>>;
-
     [Preserve(AllMembers = true)]
     public sealed class SettingsViewModel : ViewModel
     {
@@ -173,7 +171,7 @@ namespace Toggl.Core.UI.ViewModels
                 dataSource.User.Current
                     .Select(user => user.BeginningOfWeek)
                     .DistinctUntilChanged()
-                    .Select(beginningOfWeek => beginningOfWeek.ToString())
+                    .Select(beginningOfWeek => beginningOfWeek.ToLocalizedString())
                     .AsDriver(schedulerProvider);
 
             DateFormat =
@@ -184,8 +182,7 @@ namespace Toggl.Core.UI.ViewModels
 
             DurationFormat =
                 dataSource.Preferences.Current
-                    .Select(preferences => preferences.DurationFormat)
-                    .Select(DurationFormatToString.Convert)
+                    .Select(preferences => preferences.DurationFormat.ToFormattedString())
                     .DistinctUntilChanged()
                     .AsDriver(schedulerProvider);
 
@@ -388,28 +385,41 @@ namespace Toggl.Core.UI.ViewModels
 
         private async Task selectDateFormat()
         {
-            var newDateFormat = await Navigate<SelectDateFormatViewModel, DateFormat, DateFormat>(currentPreferences.DateFormat);
+            var validDateFormats = Shared.DateFormat.ValidDateFormats;
+            var dayFormatSelections = validDateFormats.Select(selectOptionFromDateFormat);
+            var selectedDayFormatIndex = validDateFormats
+                .IndexOf(pref => pref.Long == currentPreferences.DateFormat.Long);
+
+            var newDateFormat = await View
+                .Select(Resources.DateFormat, dayFormatSelections, selectedDayFormatIndex);
 
             if (currentPreferences.DateFormat == newDateFormat)
                 return;
 
             await updatePreferences(dateFormat: newDateFormat);
+
+            SelectOption<DateFormat> selectOptionFromDateFormat(DateFormat dateFormat)
+                => new SelectOption<DateFormat>(dateFormat, dateFormat.Localized);
         }
 
         private async Task pickDefaultWorkspace()
         {
-            var defaultWorkspace = await interactorFactory.GetDefaultWorkspace()
-                .TrackException<InvalidOperationException, IThreadSafeWorkspace>("SettingsViewModel.PickDefaultWorkspace")
-                .Execute();
+            var validWorkspaces = await interactorFactory.GetAllWorkspaces().Execute();
+            var workspaceSelections = validWorkspaces.Select(selectOptionFromWorkspace);
+            var selectedWorkspaceIndex = validWorkspaces
+                .IndexOf(ws => ws.Id == currentUser.DefaultWorkspaceId);
 
-            var selectedWorkspaceId =
-                await Navigate<SelectWorkspaceViewModel, SelectWorkspaceParameters, long>(new SelectWorkspaceParameters(Resources.SetDefaultWorkspace, defaultWorkspace.Id));
+            var newWorkspace = await View
+                .Select(Resources.DefaultWorkspace, workspaceSelections, selectedWorkspaceIndex);
 
-            if (selectedWorkspaceId == currentUser.DefaultWorkspaceId)
+            if (currentUser.DefaultWorkspaceId == newWorkspace.Id)
                 return;
 
-            await interactorFactory.UpdateDefaultWorkspace(selectedWorkspaceId).Execute();
+            await interactorFactory.UpdateDefaultWorkspace(newWorkspace.Id).Execute();
             syncManager.InitiatePushSync();
+
+            SelectOption<IThreadSafeWorkspace> selectOptionFromWorkspace(IThreadSafeWorkspace workspace)
+                => new SelectOption<IThreadSafeWorkspace>(workspace, workspace.Name);
         }
 
         private async Task toggleTimeEntriesGrouping()
@@ -421,24 +431,43 @@ namespace Toggl.Core.UI.ViewModels
 
         private async Task selectDurationFormat()
         {
-            var newDurationFormat = await Navigate<SelectDurationFormatViewModel, DurationFormat, DurationFormat>(currentPreferences.DurationFormat);
+            var validDurationFormats = Enum.GetValues(typeof(DurationFormat)).Cast<DurationFormat>();
+            var durationFormats = validDurationFormats.Select(selectOptionFromDurationFormat);
+            var selectedDurationFormatIndex = validDurationFormats
+                .IndexOf(durationFormat => durationFormat == currentPreferences.DurationFormat);
+
+            var newDurationFormat = await View
+                .Select(Resources.DurationFormat, durationFormats, selectedDurationFormatIndex);
 
             if (currentPreferences.DurationFormat == newDurationFormat)
                 return;
 
             await updatePreferences(newDurationFormat);
+
+            SelectOption<DurationFormat> selectOptionFromDurationFormat(DurationFormat durationFormat)
+                => new SelectOption<DurationFormat>(durationFormat, durationFormat.ToFormattedString());
         }
 
         private async Task selectBeginningOfWeek()
         {
-            var newBeginningOfWeek = await Navigate<SelectBeginningOfWeekViewModel, BeginningOfWeek, BeginningOfWeek>(currentUser
-                    .BeginningOfWeek);
+            var validDaysOfWeek = Enum.GetValues(typeof(BeginningOfWeek)).Cast<BeginningOfWeek>();
+            var beginningOfWeekSelections = validDaysOfWeek.Select(selectOptionFromBeginningOfWeek);
+            var selectedDayIndex = validDaysOfWeek
+                .IndexOf(beginningOfWeek => beginningOfWeek == currentUser.BeginningOfWeek);
+
+            var newBeginningOfWeek = await View
+                .Select(Resources.FirstDayOfTheWeek, beginningOfWeekSelections, selectedDayIndex);
 
             if (currentUser.BeginningOfWeek == newBeginningOfWeek)
                 return;
 
-            await interactorFactory.UpdateUser(new EditUserDTO { BeginningOfWeek = newBeginningOfWeek }).Execute();
+            await interactorFactory
+                .UpdateUser(new EditUserDTO { BeginningOfWeek = newBeginningOfWeek })
+                .Execute();
             syncManager.InitiatePushSync();
+
+            SelectOption<BeginningOfWeek> selectOptionFromBeginningOfWeek(BeginningOfWeek beginningOfWeek)
+                => new SelectOption<BeginningOfWeek>(beginningOfWeek, beginningOfWeek.ToLocalizedString());
         }
 
         private void checkCalendarPermissions()

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -86,14 +87,15 @@ namespace Toggl.Core.UI.ViewModels.Reports
 
         public ReportsCalendarViewModel CalendarViewModel { get; }
 
-        public IObservable<IReadOnlyList<ChartSegment>> SegmentsObservable { get; private set; }
+        public IObservable<IImmutableList<ChartSegment>> SegmentsObservable { get; private set; }
 
-        public IObservable<IReadOnlyList<ChartSegment>> GroupedSegmentsObservable { get; private set; }
+        public IObservable<IImmutableList<ChartSegment>> GroupedSegmentsObservable { get; private set; }
 
         public IObservable<bool> ShowEmptyStateObservable { get; private set; }
 
         public IObservable<string> CurrentDateRange { get; }
 
+        public IObservable<long> WorkspaceId { get; }
         public IObservable<string> WorkspaceNameObservable { get; }
         public ICollection<SelectOption<IThreadSafeWorkspace>> Workspaces { get; private set; }
         public IObservable<ICollection<SelectOption<IThreadSafeWorkspace>>> WorkspacesObservable { get; }
@@ -133,11 +135,16 @@ namespace Toggl.Core.UI.ViewModels.Reports
                 .Where(report => report != null);
             BarChartViewModel = new ReportsBarChartViewModel(schedulerProvider, dataSource.Preferences, totalsObservable, navigationService);
 
-            IsLoadingObservable = isLoading.AsObservable().StartWith(true).AsDriver(schedulerProvider);
+            IsLoadingObservable = isLoading.AsObservable().AsDriver(schedulerProvider);
             StartDate = startDateSubject.AsObservable().AsDriver(schedulerProvider);
             EndDate = endDateSubject.AsObservable().AsDriver(schedulerProvider);
 
             SelectWorkspace = rxActionFactory.FromAsync(selectWorkspace);
+
+            WorkspaceId = workspaceSubject
+                .Select(workspace => workspace.Id)
+                .DistinctUntilChanged()
+                .AsDriver(schedulerProvider);
 
             WorkspaceNameObservable = workspaceSubject
                 .Select(workspace => workspace?.Name ?? string.Empty)
@@ -153,7 +160,9 @@ namespace Toggl.Core.UI.ViewModels.Reports
                 .AsDriver(schedulerProvider);
 
             CurrentDateRange = currentDateRangeStringSubject
-                .Select(text => !string.IsNullOrEmpty(text) ? $"{text} ▾" : "")
+                .StartWith(Resources.ThisWeek)
+                .Where(text => !string.IsNullOrEmpty(text))
+                .Select(text => $"{text} ▾")
                 .DistinctUntilChanged()
                 .AsDriver(schedulerProvider);
 
@@ -218,6 +227,21 @@ namespace Toggl.Core.UI.ViewModels.Reports
                 .Select(currentUser => currentUser.BeginningOfWeek)
                 .Subscribe(onBeginningOfWeekChanged)
                 .DisposedBy(disposeBag);
+            
+            interactorFactory.ObserveDefaultWorkspaceId()
+                .Execute()
+                .Where(newWorkspaceId => newWorkspaceId != workspaceId)
+                .SelectMany(id => interactorFactory.GetWorkspaceById(id).Execute())
+                .Where(ws => !ws.IsInaccessible)
+                .Subscribe(updateWorkspace)
+                .DisposedBy(disposeBag);
+        }
+
+        private void updateWorkspace(IThreadSafeWorkspace newWorkspace)
+        {
+            if (viewAppearedForTheFirstTime()) return;
+            
+            loadReport(newWorkspace, startDate, endDate, source);
         }
 
         public override void ViewAppeared()
@@ -339,8 +363,8 @@ namespace Toggl.Core.UI.ViewModels.Reports
             }
             else
             {
-                var startDateText = startDate.ToString(dateFormat.Short, CultureInfo.InvariantCulture);
-                var endDateText = endDate.ToString(dateFormat.Short, CultureInfo.InvariantCulture);
+                var startDateText = startDate.ToString(dateFormat.Short, CultureInfo.CurrentCulture);
+                var endDateText = endDate.ToString(dateFormat.Short, CultureInfo.CurrentCulture);
                 var dateRangeText = $"{startDateText} - {endDateText}";
                 currentDateRangeStringSubject.OnNext(dateRangeText);
             }
@@ -358,17 +382,16 @@ namespace Toggl.Core.UI.ViewModels.Reports
             updateCurrentDateRangeString();
         }
 
-        private IReadOnlyList<ChartSegment> applyDurationFormat(IReadOnlyList<ChartSegment> chartSegments, DurationFormat durationFormat)
+        private IImmutableList<ChartSegment> applyDurationFormat(IReadOnlyList<ChartSegment> chartSegments, DurationFormat durationFormat)
         {
             return chartSegments.Select(segment => segment.WithDurationFormat(durationFormat))
-                .ToList()
-                .AsReadOnly();
+                .ToImmutableList();
         }
 
         private bool shouldShowEmptyState(IReadOnlyList<ChartSegment> chartSegments, bool isLoading)
             => chartSegments.None() && !isLoading;
 
-        private IReadOnlyList<ChartSegment> groupSegments(IReadOnlyList<ChartSegment> segments, DurationFormat durationFormat)
+        private IImmutableList<ChartSegment> groupSegments(IReadOnlyList<ChartSegment> segments, DurationFormat durationFormat)
         {
             var groupedData = segments.GroupBy(segment => segment.Percentage >= minimumSegmentPercentageToBeOnItsOwn).ToList();
 
@@ -402,9 +425,7 @@ namespace Toggl.Core.UI.ViewModels.Reports
             }
 
             if (!finalOtherProjects.Any())
-            {
-                return segments;
-            }
+                return segments.ToImmutableList();
 
             var leftOutOfOther = remainingOtherProjectCandidates.Except(finalOtherProjects).ToList();
             aboveStandAloneThresholdSegments.AddRange(leftOutOfOther);
@@ -439,8 +460,7 @@ namespace Toggl.Core.UI.ViewModels.Reports
 
             return onTheirOwnSegments
                 .Append(lastSegment)
-                .ToList()
-                .AsReadOnly();
+                .ToImmutableList();
         }
 
         private async Task selectWorkspace()

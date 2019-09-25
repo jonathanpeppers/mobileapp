@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -28,7 +29,7 @@ namespace Toggl.Core.UI.ViewModels
 
         public InputAction<SelectableClientBaseViewModel> SelectClient { get; }
         public ISubject<string> FilterText { get; } = new BehaviorSubject<string>(string.Empty);
-        public IObservable<IEnumerable<SelectableClientBaseViewModel>> Clients { get; private set; }
+        public IObservable<IImmutableList<SelectableClientBaseViewModel>> Clients { get; private set; }
 
         public SelectClientViewModel(
             IInteractorFactory interactorFactory,
@@ -64,10 +65,10 @@ namespace Toggl.Core.UI.ViewModels
                 .Select(text => text?.Trim() ?? string.Empty)
                 .DistinctUntilChanged()
                 .Select(trimmedText => filterClientsByText(trimmedText, allClients))
-                .AsDriver(Enumerable.Empty<SelectableClientBaseViewModel>(), schedulerProvider);
+                .AsDriver(ImmutableList<SelectableClientBaseViewModel>.Empty, schedulerProvider);
         }
 
-        private IEnumerable<SelectableClientBaseViewModel> filterClientsByText(string trimmedText, IEnumerable<IThreadSafeClient> allClients)
+        private IImmutableList<SelectableClientBaseViewModel> filterClientsByText(string trimmedText, IEnumerable<IThreadSafeClient> allClients)
         {
             var selectableViewModels = allClients
                 .Where(c => c.Name.ContainsIgnoringCase(trimmedText))
@@ -89,7 +90,7 @@ namespace Toggl.Core.UI.ViewModels
                 selectableViewModels = selectableViewModels.Prepend(noClient);
             }
 
-            return selectableViewModels;
+            return selectableViewModels.ToImmutableList();
         }
 
         private SelectableClientBaseViewModel toSelectableViewModel(IThreadSafeClient client)

@@ -1,6 +1,7 @@
 ﻿using Foundation;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Toggl.Core.UI.Collections;
 using Toggl.Shared;
 using UIKit;
@@ -19,14 +20,14 @@ namespace Toggl.iOS.ViewSources.Generic.TableView
 
         public CustomTableViewSource(
             CellConfiguration<TItem> configureCell,
-            IEnumerable<TItem> items = null)
+            IImmutableList<TItem> items = null)
             : this(configureCell, null, items)
         {
         }
 
         public CustomTableViewSource(
             CellConfiguration<TItem> configureCell,
-            IEnumerable<TSection> sections)
+            IImmutableList<TSection> sections)
             : this(configureCell, null, sections)
         {
         }
@@ -34,7 +35,7 @@ namespace Toggl.iOS.ViewSources.Generic.TableView
         public CustomTableViewSource(
             CellConfiguration<TItem> configureCell,
             HeaderConfiguration<THeader> configureHeader,
-            IEnumerable<TItem> items = null)
+            IImmutableList<TItem> items = null)
             : base(items)
         {
             Ensure.Argument.IsNotNull(configureCell, nameof(configureCell));
@@ -46,7 +47,7 @@ namespace Toggl.iOS.ViewSources.Generic.TableView
         public CustomTableViewSource(
             CellConfiguration<TItem> configureCell,
             HeaderConfiguration<THeader> configureHeader,
-            IEnumerable<TSection> sections = null)
+            IImmutableList<TSection> sections = null)
             : base(sections)
         {
             Ensure.Argument.IsNotNull(configureCell, nameof(configureCell));

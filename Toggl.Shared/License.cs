@@ -1,15 +1,20 @@
-﻿namespace Toggl.Shared
+﻿using System;
+
+namespace Toggl.Shared
 {
-    public struct License
+    public struct License : IEquatable<License>
     {
-        public string Subject { get; set; }
+        public string LibraryName { get; set; }
 
         public string Text { get; set; }
 
-        public License(string subject, string text)
+        public License(string libraryName, string text)
         {
-            Subject = subject;
+            LibraryName = libraryName;
             Text = text;
         }
+
+        public bool Equals(License other)
+            => LibraryName == other.LibraryName && Text == other.Text;
     }
 }

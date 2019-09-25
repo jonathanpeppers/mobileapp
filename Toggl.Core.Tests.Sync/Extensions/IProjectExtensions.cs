@@ -12,6 +12,7 @@ namespace Toggl.Core.Tests.Sync.Extensions
     {
         public static IProject With(
             this IProject project,
+            New<bool> active = default(New<bool>),
             New<long> workspaceId = default(New<long>),
             New<long?> clientId = default(New<long?>))
             => new Project
@@ -23,7 +24,7 @@ namespace Toggl.Core.Tests.Sync.Extensions
                 ClientId = clientId.ValueOr(project.ClientId),
                 Name = project.Name,
                 IsPrivate = project.IsPrivate,
-                Active = project.Active,
+                Active = active.ValueOr(project.Active),
                 Color = project.Color,
                 Billable = project.Billable,
                 Template = project.Template,

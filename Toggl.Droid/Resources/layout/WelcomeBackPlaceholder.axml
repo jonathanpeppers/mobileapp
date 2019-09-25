@@ -11,13 +11,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal" />
     <TextView
+        android:id="@+id/WelcomeBackTitle"
         android:textSize="16sp"
         android:textStyle="normal"
         android:textColor="#000000"
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="4sp"
         android:fontFamily="sans-serif"
-        android:text="@string/WelcomeBack"
+        tools:text="Welcome Back!"
         android:gravity="center_horizontal"
         android:layout_marginTop="36dp"
         android:layout_marginLeft="16dp"
@@ -25,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
+        android:id="@+id/WelcomeBackSubText"
         android:textSize="15sp"
         android:textStyle="normal"
         android:textColor="#9f9f9f"
@@ -32,7 +34,7 @@
         android:lineSpacingExtra="5sp"
         android:fontFamily="sans-serif"
         android:gravity="center_horizontal"
-        android:text="@string/WelcomeBackSubText"
+        tools:text="You haven\u{2019}t tracked your time in a while.\nMake some new entries or view past activity in Reports"
         android:layout_marginTop="6dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"

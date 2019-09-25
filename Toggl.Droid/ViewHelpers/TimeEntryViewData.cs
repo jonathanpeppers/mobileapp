@@ -1,10 +1,9 @@
+using Android.Content;
 using Android.Graphics;
 using Android.Text;
-using Android.Text.Style;
 using Android.Views;
 using Toggl.Core.UI.ViewModels.TimeEntriesLog;
 using Toggl.Droid.Extensions;
-using static Toggl.Core.Helper.Colors;
 
 namespace Toggl.Droid.ViewHelpers
 {
@@ -24,36 +23,28 @@ namespace Toggl.Droid.ViewHelpers
         public ViewStates AddDescriptionLabelVisibility { get; }
         public ViewStates DescriptionVisibility { get; }
 
-        public TimeEntryViewData(LogItemViewModel viewModel)
+        public TimeEntryViewData(Context context, LogItemViewModel viewModel)
         {
             ViewModel = viewModel;
-
-            var spannableString = new SpannableStringBuilder();
             if (viewModel.HasProject)
             {
-                spannableString.Append(viewModel.ProjectName, new ForegroundColorSpan(Color.ParseColor(viewModel.ProjectColor)), SpanTypes.ExclusiveInclusive);
                 ProjectArchivedIconTintColor = Color.ParseColor(viewModel.ProjectColor);
                 ProjectArchivedIconVisibility = (!viewModel.IsActive).ToVisibility();
-
-                if (!string.IsNullOrEmpty(viewModel.TaskName))
-                {
-                    spannableString.Append($": {viewModel.TaskName}");
-                }
-
-                if (!string.IsNullOrEmpty(viewModel.ClientName))
-                {
-                    spannableString.Append($" {viewModel.ClientName}", new ForegroundColorSpan(Color.ParseColor(ClientNameColor)), SpanTypes.ExclusiveExclusive);
-                }
-
-                ProjectTaskClientText = spannableString;
-                ProjectTaskClientVisibility = ViewStates.Visible;
             }
             else
             {
-                ProjectTaskClientText = new SpannableString(string.Empty);
-                ProjectTaskClientVisibility = ViewStates.Gone;
                 ProjectArchivedIconVisibility = ViewStates.Gone;
             }
+            ProjectTaskClientText = TimeEntryExtensions.ToProjectTaskClient(context,
+                ViewModel.HasProject,
+                ViewModel.ProjectName,
+                ViewModel.ProjectColor,
+                ViewModel.TaskName,
+                ViewModel.ClientName,
+                ViewModel.ProjectIsPlaceholder,
+                ViewModel.TaskIsPlaceholder,
+                displayPlaceholders: true);
+            ProjectTaskClientVisibility = viewModel.HasProject.ToVisibility();
             DescriptionVisibility = viewModel.HasDescription.ToVisibility();
             AddDescriptionLabelVisibility = (!viewModel.HasDescription).ToVisibility();
             ContinueImageVisibility = viewModel.CanContinue.ToVisibility();

@@ -126,7 +126,7 @@ namespace Toggl.iOS.ViewSources
             {
                 var reusableView = collectionView.DequeueReusableSupplementaryView(elementKind, hourReuseIdentifier, indexPath) as HourSupplementaryView;
                 var hour = date.AddHours((int)indexPath.Item);
-                reusableView.SetLabel(hour.ToString(supplementaryHourFormat(), CultureInfo.InvariantCulture));
+                reusableView.SetLabel(hour.ToString(supplementaryHourFormat(), CultureInfo.CurrentCulture));
                 return reusableView;
             }
             else if (elementKind == CalendarCollectionViewLayout.EditingHourSupplementaryViewKind)
@@ -134,7 +134,7 @@ namespace Toggl.iOS.ViewSources
                 var reusableView = collectionView.DequeueReusableSupplementaryView(elementKind, editingHourReuseIdentifier, indexPath) as EditingHourSupplementaryView;
                 var attrs = layoutAttributes[(int)editingItemIndexPath.Item];
                 var hour = (int)indexPath.Item == 0 ? attrs.StartTime.ToLocalTime() : attrs.EndTime.ToLocalTime();
-                reusableView.SetLabel(hour.ToString(editingHourFormat(), CultureInfo.InvariantCulture));
+                reusableView.SetLabel(hour.ToString(editingHourFormat(), CultureInfo.CurrentCulture));
                 return reusableView;
             }
 
@@ -354,12 +354,12 @@ namespace Toggl.iOS.ViewSources
             if (startEditingHour != null)
             {
                 var hour = attrs.StartTime.ToLocalTime();
-                startEditingHour.SetLabel(hour.ToString(editingHourFormat(), CultureInfo.InvariantCulture));
+                startEditingHour.SetLabel(hour.ToString(editingHourFormat(), CultureInfo.CurrentCulture));
             }
             if (endEditingHour != null)
             {
                 var hour = attrs.EndTime.ToLocalTime();
-                endEditingHour.SetLabel(hour.ToString(editingHourFormat(), CultureInfo.InvariantCulture));
+                endEditingHour.SetLabel(hour.ToString(editingHourFormat(), CultureInfo.CurrentCulture));
             }
         }
 

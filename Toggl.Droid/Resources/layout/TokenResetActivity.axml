@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:local="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:fitsSystemWindows="true"
     android:animateLayoutChanges="true"
@@ -9,16 +9,12 @@
     android:layout_height="match_parent">
     <android.support.v7.widget.Toolbar
         android:id="@+id/Toolbar"
-        android:minHeight="?attr/actionBarSize"
-        local:popupTheme="@style/ThemeOverlay.AppCompat"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />   
+        style="@style/ToolbarStyle" />
     <android.support.design.widget.TextInputLayout
         android:id="@+id/TokenResetPasswordLayout"
-        android:hint="@string/Password"
-        local:hintEnabled="false"
-        local:passwordToggleEnabled="true"
+        tools:hint="Password"
+        app:hintEnabled="false"
+        app:passwordToggleEnabled="true"
         android:layout_marginTop="160dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="50dp"
@@ -28,13 +24,13 @@
             android:id="@+id/TokenResetPassword"
             android:lines="1"
             android:maxLines="1"
-            android:hint="Password"
+            tools:hint="Password"
             android:textSize="24sp"
             android:focusable="true"
             android:singleLine="true"
             android:inputType="textPassword"
             android:focusableInTouchMode="true"
-            android:textColor="@color/defaultEditText"
+            android:textColor="@color/primaryText"
             android:textColorHint="@color/placeholderText"
             android:background="@android:color/transparent"
             android:layout_height="30dp"
@@ -53,8 +49,8 @@
         android:textSize="12sp"
         android:textStyle="bold"
         android:paddingLeft="16dp"
-        android:textColor="@color/defaultEditText"
-        android:text="@string/YourTokenWasReset"
+        android:textColor="@color/primaryText"
+        tools:text="Your API token has been reset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/TokenResetPasswordLayout" />
@@ -63,8 +59,8 @@
         android:textSize="12sp"
         android:paddingLeft="16dp"
         android:fontFamily="sans-serif-medium"
-        android:textColor="@color/defaultEditText"
-        android:text="@string/LoginBackRequest"
+        android:textColor="@color/primaryText"
+        tools:text="Enter your password to log back in to your account:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/TokenResetMessageWarning" />
@@ -74,7 +70,7 @@
         tools:text="something@toggl.com"
         android:paddingLeft="16dp"
         android:fontFamily="sans-serif-medium"
-        android:textColor="@color/defaultEditText"
+        android:textColor="@color/primaryText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/TokenResetMessageEnterPasswordLabel" />
@@ -85,9 +81,9 @@
         android:gravity="bottom"
         android:textAllCaps="true"
         android:textStyle="normal"
-        android:text="@string/SignOutOption"
+        tools:text="Or sign out"
         android:lineSpacingExtra="6sp"
-        android:textColor="@color/defaultText"
+        android:textColor="@color/secondaryText"
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="16dp"
         android:layout_width="wrap_content"
@@ -96,11 +92,11 @@
         android:layout_alignParentBottom="true" />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/TokenResetDoneButton"
-        local:elevation="4dp"
-        local:borderWidth="0dp"
+        app:elevation="4dp"
+        app:borderWidth="0dp"
         android:scaleType="fitCenter"
         android:src="@drawable/next_light"
-        android:backgroundTint="@color/defaultFabBackground"
+        android:backgroundTint="@color/startTimeEntryButtonBackground"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginRight="16dp"

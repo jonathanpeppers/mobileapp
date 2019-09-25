@@ -7,6 +7,7 @@ using Toggl.Core.UI.ViewModels;
 using Toggl.iOS.Extensions;
 using Toggl.iOS.Extensions.Reactive;
 using Toggl.iOS.ViewSources;
+using Toggl.Shared;
 using Toggl.Shared.Extensions;
 using UIKit;
 
@@ -25,6 +26,11 @@ namespace Toggl.iOS.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            TitleLabel.Text = Resources.Tags;
+            TextField.Placeholder = Resources.AddFilterTags;
+            EmptyStateLabel.Text = Resources.EmptyTagText;
+            SaveButton.SetTitle(Resources.Save, UIControlState.Normal);
 
             var tableViewSource = new SelectTagsTableViewSource(TagsTableView);
 

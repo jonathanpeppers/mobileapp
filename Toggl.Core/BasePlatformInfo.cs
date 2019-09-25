@@ -1,4 +1,5 @@
-﻿using Xamarin.Essentials;
+﻿using System.Globalization;
+using Xamarin.Essentials;
 
 namespace Toggl.Core
 {
@@ -14,6 +15,8 @@ namespace Toggl.Core
         public Platform Platform { get; }
         public string HelpUrl { get; }
         public string StoreUrl { get; }
+
+        public virtual string CurrentNativeLanguageCode { get; } = "en"; 
 
         public virtual string TimezoneIdentifier { get; }
 

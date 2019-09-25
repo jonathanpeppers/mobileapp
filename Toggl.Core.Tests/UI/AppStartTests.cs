@@ -1,7 +1,11 @@
 ﻿using FluentAssertions;
 using NSubstitute;
 using System;
+using System.Globalization;
 using System.Reactive.Linq;
+using System.Threading;
+using NSubstitute.ExceptionExtensions;
+using NUnit.Framework;
 using Toggl.Core.Interactors;
 using Toggl.Core.Login;
 using Toggl.Core.Models.Interfaces;
@@ -11,6 +15,7 @@ using Toggl.Core.UI;
 using Toggl.Networking;
 using Toggl.Storage.Settings;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Toggl.Core.Tests.UI
 {
@@ -21,8 +26,11 @@ namespace Toggl.Core.Tests.UI
             protected AppStart App { get; }
             protected IUserAccessManager UserAccessManager { get; } = Substitute.For<IUserAccessManager>();
             protected IOnboardingStorage OnboardingStorage { get; } = Substitute.For<IOnboardingStorage>();
+
             protected IAccessRestrictionStorage AccessRestrictionStorage { get; } =
                 Substitute.For<IAccessRestrictionStorage>();
+
+            protected IPlatformInfo PlatformInfo { get; } = Substitute.For<IPlatformInfo>();
 
             protected AppStartTest()
             {
@@ -38,7 +46,8 @@ namespace Toggl.Core.Tests.UI
                     MockAccessRestrictionStorage = AccessRestrictionStorage,
                     MockSyncManager = Substitute.For<ISyncManager>(),
                     MockInteractorFactory = Substitute.For<IInteractorFactory>(),
-                    MockBackgroundSyncService = Substitute.For<IBackgroundSyncService>()
+                    MockBackgroundSyncService = Substitute.For<IBackgroundSyncService>(),
+                    MockPlatformInfo = PlatformInfo
                 };
                 UserAccessManager.CheckIfLoggedIn().Returns(true);
 
@@ -64,7 +73,8 @@ namespace Toggl.Core.Tests.UI
                     MockAccessRestrictionStorage = AccessRestrictionStorage,
                     MockSyncManager = Substitute.For<ISyncManager>(),
                     MockInteractorFactory = Substitute.For<IInteractorFactory>(),
-                    MockBackgroundSyncService = Substitute.For<IBackgroundSyncService>()
+                    MockBackgroundSyncService = Substitute.For<IBackgroundSyncService>(),
+                    MockPlatformInfo = PlatformInfo
                 };
 
                 var app = new AppStart(dependencyContainer);
@@ -90,7 +100,8 @@ namespace Toggl.Core.Tests.UI
                     MockAccessRestrictionStorage = AccessRestrictionStorage,
                     MockSyncManager = Substitute.For<ISyncManager>(),
                     MockInteractorFactory = Substitute.For<IInteractorFactory>(),
-                    MockBackgroundSyncService = Substitute.For<IBackgroundSyncService>()
+                    MockBackgroundSyncService = Substitute.For<IBackgroundSyncService>(),
+                    MockPlatformInfo = Substitute.For<IPlatformInfo>(),
                 };
                 var appStart = new AppStart(dependencyContainer);
 
@@ -180,6 +191,98 @@ namespace Toggl.Core.Tests.UI
             {
                 var accessLevel = App.GetAccessLevel();
                 accessLevel.Should().Be(AccessLevel.LoggedIn);
+            }
+        }
+
+        public sealed class TheLoadLocalizationConfigurationMethod : AppStartTest
+        {
+            [Fact, LogIfTooSlow]
+            public void DoesNotCrashWhenThePlatformInfoReturnsANullCurrentNativeLanguageCode()
+            {
+                string nullLanguageCode = null;
+                PlatformInfo.CurrentNativeLanguageCode.Returns(nullLanguageCode);
+
+                Action call = () => App.LoadLocalizationConfiguration();
+
+                call.Should().NotThrow();
+            }
+            
+            
+            [Fact, LogIfTooSlow]
+            public void DoesNotCrashWhenThePlatformInfoReturnsAnInvalidCurrentNativeLanguageCodeWithAnInvalidCulture()
+            {
+                string invalidLanguageCode = "ja_US";
+                PlatformInfo.CurrentNativeLanguageCode.Returns(invalidLanguageCode);
+
+                Action call = () => App.LoadLocalizationConfiguration();
+
+                call.Should().NotThrow();
+            }
+            
+            [Fact, LogIfTooSlow]
+            public void DoesNotCrashWhenThePlatformInfoReturnsAnInvalidCurrentNativeLanguageCodeWithAnInvalidLanguageAndCultureCodes()
+            {
+                string invalidLanguageCode = "00-11";
+                PlatformInfo.CurrentNativeLanguageCode.Returns(invalidLanguageCode);
+
+                Action call = () => App.LoadLocalizationConfiguration();
+
+                call.Should().NotThrow();
+            }
+            
+            [Fact, LogIfTooSlow]
+            public void SetsTheCultureInfoToEnglishWhenWhenThePlatformInfoReturnsAnInvalidCurrentNativeLanguageCodeWithAnInvalidLanguageAndCultureCodes()
+            {
+                string invalidLanguageCode = "00_11";
+                PlatformInfo.CurrentNativeLanguageCode.Returns(invalidLanguageCode);
+
+                App.LoadLocalizationConfiguration();
+
+                Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.Should().Be("en");
+            }
+            
+            [Fact, LogIfTooSlow]
+            public void SetsTheCultureInfoToEnglishWhenThePlatformInfoReturnsANullCurrentNativeLanguageCode()
+            {
+                string nullLanguageCode = null;
+                PlatformInfo.CurrentNativeLanguageCode.Returns(nullLanguageCode);
+
+                App.LoadLocalizationConfiguration();
+                
+                Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.Should().Be("en");
+            }
+            
+            [Fact, LogIfTooSlow]
+            public void SetsTheCultureInfoToEnglishWhenThePlatformInfoReturnsAnEmptyCurrentNativeLanguageCode()
+            {
+                string nullLanguageCode = " ";
+                PlatformInfo.CurrentNativeLanguageCode.Returns(nullLanguageCode);
+
+                App.LoadLocalizationConfiguration();
+                
+                Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.Should().Be("en");
+            }
+            
+            [Fact, LogIfTooSlow]
+            public void SetsTheCultureInfoToTheClosestOneWhenThePlatformInfoReturnsAnInvalidCurrentNativeLanguageCode()
+            {
+                string invalidLanguageCode = "ja_US";
+                PlatformInfo.CurrentNativeLanguageCode.Returns(invalidLanguageCode);
+                
+                App.LoadLocalizationConfiguration();
+
+                Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.Should().Be("ja");
+            }
+            
+            [Fact, LogIfTooSlow]
+            public void SetsTheCultureInfoProperlyWhenThePlatformInfoReturnsAValidCurrentNativeLanguageCode()
+            {
+                string invalidLanguageCode = "ja_JP";
+                PlatformInfo.CurrentNativeLanguageCode.Returns(invalidLanguageCode);
+                
+                App.LoadLocalizationConfiguration();
+
+                Thread.CurrentThread.CurrentCulture.Name.Should().Be("ja-JP");
             }
         }
     }

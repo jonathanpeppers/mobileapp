@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -25,11 +26,11 @@ namespace Toggl.iOS.ViewControllers.Settings.Siri
     public partial class SiriWorkflowsViewController : ReactiveViewController<SiriWorkflowsViewModel>
     {
 #if USE_PRODUCTION_API
-            private const string baseURL = "https://toggl-mobile.firebaseapp.com/";
+        private readonly string baseURL = Resources.SiriWorkflowsProductionURL;
 #elif DEBUG
-        private const string baseURL = "https://toggl-mobile.firebaseapp.com/dev/";
+        private readonly string baseURL = Resources.SiriWorkflowsDebugURL;
 #else
-            private const string baseURL = "https://toggl-mobile.firebaseapp.com/adhoc/";
+        private readonly string baseURL = Resources.SiriWorkflowsAdHocURL;
 #endif
 
         public SiriWorkflowsViewController(SiriWorkflowsViewModel viewModel) : base(viewModel, nameof(SiriWorkflowsViewController))
@@ -40,9 +41,9 @@ namespace Toggl.iOS.ViewControllers.Settings.Siri
         {
             base.ViewDidLoad();
 
-            Title = Resources.Siri_Workflows;
+            Title = Resources.SiriWorkflows;
 
-            HeaderLabel.Text = Resources.Siri_Workflows_Description;
+            HeaderLabel.Text = Resources.SiriWorkflowsDescription;
             HeaderView.RemoveFromSuperview();
             HeaderView.BackgroundColor = Colors.Siri.HeaderBackground.ToNativeColor();
             TableView.TableHeaderView = HeaderView;
@@ -63,6 +64,7 @@ namespace Toggl.iOS.ViewControllers.Settings.Siri
 
             downloadJson()
                 .Select(JsonConvert.DeserializeObject<List<SiriWorkflow>>)
+                .Select(list => list.ToImmutableList())
                 .ObserveOn(IosDependencyContainer.Instance.SchedulerProvider.MainScheduler)
                 .Subscribe(TableView.Rx().ReloadItems(source))
                 .DisposedBy(DisposeBag);

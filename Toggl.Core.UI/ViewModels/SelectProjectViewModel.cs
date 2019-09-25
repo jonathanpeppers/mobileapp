@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -36,9 +37,9 @@ namespace Toggl.Core.UI.ViewModels
 
         public bool UseGrouping { get; private set; }
 
-        private BehaviorSubject<IList<SectionModel<string, AutocompleteSuggestion>>> suggestionsSubject
-            = new BehaviorSubject<IList<SectionModel<string, AutocompleteSuggestion>>>(new SectionModel<string, AutocompleteSuggestion>[0]);
-        public IObservable<IList<SectionModel<string, AutocompleteSuggestion>>> Suggestions => suggestionsSubject.AsObservable();
+        private BehaviorSubject<IImmutableList<SectionModel<string, AutocompleteSuggestion>>> suggestionsSubject
+            = new BehaviorSubject<IImmutableList<SectionModel<string, AutocompleteSuggestion>>>(ImmutableList<SectionModel<string, AutocompleteSuggestion>>.Empty);
+        public IObservable<IImmutableList<SectionModel<string, AutocompleteSuggestion>>> Suggestions => suggestionsSubject.AsObservable();
 
         public ISubject<string> FilterText { get; } = new BehaviorSubject<string>(string.Empty);
 
@@ -133,7 +134,7 @@ namespace Toggl.Core.UI.ViewModels
                     );
                 }
 
-                suggestionsSubject.OnNext(collectionSections);
+                suggestionsSubject.OnNext(collectionSections.ToImmutableList());
             });
         }
 
@@ -236,24 +237,28 @@ namespace Toggl.Core.UI.ViewModels
         private void insertTasksFor(ProjectSuggestion projectSuggestion)
         {
             var indexOfTargetSection = suggestionsSubject.Value.IndexOf(section => section.Header == projectSuggestion.WorkspaceName);
-            if (indexOfTargetSection < 0) return;
-            var targetSection = suggestionsSubject.Value.ElementAt(indexOfTargetSection);
+            if (indexOfTargetSection < 0)
+                return;
 
+            var targetSection = suggestionsSubject.Value.ElementAt(indexOfTargetSection);
             var indexOfSuggestion = targetSection.Items.IndexOf(project => project == projectSuggestion);
-            if (indexOfSuggestion < 0) return;
+            if (indexOfSuggestion < 0)
+                return;
+
             var newItemsInSection = targetSection.Items.InsertRange(indexOfSuggestion + 1, projectSuggestion.Tasks.OrderBy(task => task.Name));
 
             var newSection = new SectionModel<string, AutocompleteSuggestion>(targetSection.Header, newItemsInSection);
             var newSuggestions = suggestionsSubject.Value.ToList();
             newSuggestions[indexOfTargetSection] = newSection;
 
-            suggestionsSubject.OnNext(newSuggestions);
+            suggestionsSubject.OnNext(newSuggestions.ToImmutableList());
         }
 
         private void removeTasksFor(ProjectSuggestion projectSuggestion)
         {
             var indexOfTargetSection = suggestionsSubject.Value.IndexOf(section => section.Items.Contains(projectSuggestion));
-            if (indexOfTargetSection < 0) return;
+            if (indexOfTargetSection < 0)
+                return;
 
             var targetSection = suggestionsSubject.Value.ElementAt(indexOfTargetSection);
             var newItemsInSection = targetSection.Items.ToList();
@@ -264,7 +269,7 @@ namespace Toggl.Core.UI.ViewModels
             var newSuggestions = suggestionsSubject.Value.ToList();
             newSuggestions[indexOfTargetSection] = newSection;
 
-            suggestionsSubject.OnNext(newSuggestions);
+            suggestionsSubject.OnNext(newSuggestions.ToImmutableList());
         }
     }
 }

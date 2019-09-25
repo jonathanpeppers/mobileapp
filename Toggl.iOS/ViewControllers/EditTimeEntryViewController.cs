@@ -237,6 +237,21 @@ namespace Toggl.iOS.ViewControllers
                 .Subscribe(TagsTextView.Rx().AttributedTextObserver())
                 .DisposedBy(DisposeBag);
 
+            ViewModel.Tags
+                .Select(tags =>
+                {
+                    if (tags.Any())
+                    {
+                        return string.Format(Resources.TagsList, string.Join(", ", tags));
+                    }
+                    else
+                    {
+                        return Resources.NoTags;
+                    }
+                })
+                .Subscribe(TagsContainerView.Rx().AccessibilityLabel())
+                .DisposedBy(DisposeBag);
+
             View.ClipsToBounds |= UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad;
         }
 

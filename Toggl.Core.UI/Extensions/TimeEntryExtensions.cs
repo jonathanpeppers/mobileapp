@@ -40,6 +40,8 @@ namespace Toggl.Core.UI.Extensions
                 timeEntry.IsInaccessible,
                 indexInLog,
                 dayInLog,
-                daysInThePast);
+                daysInThePast,
+                timeEntry.Project?.IsPlaceholder() ?? false,
+                timeEntry.Task?.IsPlaceholder() ?? false);
     }
 }

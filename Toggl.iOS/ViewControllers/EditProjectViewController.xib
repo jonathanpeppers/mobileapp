@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EditProjectViewController">
             <connections>
+                <outlet property="BottomSeparator" destination="4pW-A2-noR" id="TB8-kG-u3z"/>
                 <outlet property="ClientLabel" destination="vLP-Wm-fD5" id="qFO-lQ-5Wt"/>
                 <outlet property="CloseButton" destination="HiK-yy-d1C" id="2db-eW-HDw"/>
                 <outlet property="ColorCircleView" destination="oGf-TO-JiY" id="JzO-Jt-Pal"/>
@@ -18,6 +19,7 @@
                 <outlet property="DoneButton" destination="8A6-l5-Nhc" id="XA1-Gk-OHy"/>
                 <outlet property="ErrorLabel" destination="AJK-6q-awO" id="AcF-Jg-zu2"/>
                 <outlet property="NameTextField" destination="bpV-JK-V6T" id="SjM-c5-Mes"/>
+                <outlet property="PrivateProjectLabel" destination="M40-dD-Egi" id="VAj-ro-VPZ"/>
                 <outlet property="PrivateProjectSwitch" destination="wwu-Nj-fWo" id="KQO-e9-Mlb"/>
                 <outlet property="PrivateProjectSwitchContainer" destination="nGK-A1-PiV" id="J8N-nM-H6L"/>
                 <outlet property="ProjectNameUsedErrorTextHeight" destination="bXs-Wl-byw" id="Odm-lR-Bat"/>

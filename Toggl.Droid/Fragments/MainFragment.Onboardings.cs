@@ -81,7 +81,7 @@ namespace Toggl.Droid.Fragments
                     Context,
                     Resource.Layout.TooltipWithRightArrow,
                     Resource.Id.TooltipText,
-                    Resource.String.OnboardingTapToStartTimer);
+                    Shared.Resources.TapToStartTimer);
             }
 
             new StartTimeEntryOnboardingStep(ViewModel.OnboardingStorage)
@@ -102,7 +102,7 @@ namespace Toggl.Droid.Fragments
                     Context,
                     Resource.Layout.TooltipWithRightBottomArrow,
                     Resource.Id.TooltipText,
-                    Resource.String.OnboardingTapToStopTimer);
+                    Shared.Resources.TapToStopTimer);
             }
 
             new StopTimeEntryOnboardingStep(ViewModel.OnboardingStorage, ViewModel.IsTimeEntryRunning)
@@ -121,7 +121,7 @@ namespace Toggl.Droid.Fragments
                 Context,
                 Resource.Layout.TooltipWithLeftTopArrow,
                 Resource.Id.TooltipText,
-                Resource.String.OnboardingTapToEdit);
+                Shared.Resources.TapToEditIt);
 
             editTimeEntryOnboardingStep = new EditTimeEntryOnboardingStep(
                 ViewModel.OnboardingStorage, Observable.Return(false));

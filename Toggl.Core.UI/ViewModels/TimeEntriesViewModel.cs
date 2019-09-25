@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -11,7 +12,6 @@ using Toggl.Core.Helper;
 using Toggl.Core.Interactors;
 using Toggl.Core.Models.Interfaces;
 using Toggl.Core.Services;
-using Toggl.Core.Sync;
 using Toggl.Core.UI.Collections;
 using Toggl.Core.UI.Extensions;
 using Toggl.Core.UI.Transformations;
@@ -37,7 +37,7 @@ namespace Toggl.Core.UI.ViewModels
         private IDisposable delayedDeletionDisposable;
         private long[] timeEntriesToDelete;
 
-        public IObservable<IEnumerable<AnimatableSectionModel<DaySummaryViewModel, LogItemViewModel, IMainLogKey>>> TimeEntries { get; }
+        public IObservable<IImmutableList<AnimatableSectionModel<DaySummaryViewModel, LogItemViewModel, IMainLogKey>>> TimeEntries { get; }
         public IObservable<bool> Empty { get; }
         public IObservable<int> Count { get; }
         public IObservable<int?> TimeEntriesPendingDeletion { get; }
@@ -81,8 +81,10 @@ namespace Toggl.Core.UI.ViewModels
                 .Select(group)
                 .ReemitWhen(collapsingOrExpanding);
 
-            TimeEntries = Observable.CombineLatest(visibleTimeEntries, dataSource.Preferences.Current, groupsFlatteningStrategy.Flatten)
-                .Select(groups => groups.ToArray())
+            TimeEntries = Observable.CombineLatest(
+                    visibleTimeEntries,
+                    dataSource.Preferences.Current,
+                    groupsFlatteningStrategy.Flatten)
                 .AsDriver(schedulerProvider);
 
             Empty = TimeEntries

@@ -26,7 +26,7 @@ namespace Toggl.Networking.ApiClients
             => SendRequest<Project, IProject>(endPoints.Get, AuthHeader);
 
         public Task<List<IProject>> GetAllSince(DateTimeOffset threshold)
-            => SendRequest<Project, IProject>(endPoints.GetSince(threshold), AuthHeader);
+            => SendRequest<Project, IProject>(endPoints.GetSince(threshold, includeArchived: true), AuthHeader);
 
         public Task<IProject> Create(IProject project)
         {

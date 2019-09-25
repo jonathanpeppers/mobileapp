@@ -11,7 +11,8 @@ namespace Toggl.Core
         string OperatingSystem { get; }
         string TimezoneIdentifier { get; }
         string StoreUrl { get; }
-
+        string CurrentNativeLanguageCode { get; }
+        
         ApplicationInstallLocation InstallLocation { get; }
     }
 

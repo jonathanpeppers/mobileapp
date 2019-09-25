@@ -247,7 +247,7 @@ time entries will appear here.</string>
                                     <rect key="frame" x="0.0" y="0.0" width="279" height="89"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PtF-34-2BI">
-                                            <rect key="frame" x="0.0" y="0.0" width="355.5" height="23"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="358.5" height="23"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New iOS app landing page design" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eE0-Ob-Ngt">
                                                     <rect key="frame" x="8" y="6" width="217.5" height="17"/>
@@ -256,7 +256,7 @@ time entries will appear here.</string>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Project: task client" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cnc-9d-fgu">
-                                                    <rect key="frame" x="227.5" y="6" width="120" height="17"/>
+                                                    <rect key="frame" x="230.5" y="6" width="120" height="17"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -265,10 +265,10 @@ time entries will appear here.</string>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstItem="eE0-Ob-Ngt" firstAttribute="top" secondItem="PtF-34-2BI" secondAttribute="top" constant="6" id="67Y-0D-FlA"/>
-                                                <constraint firstItem="cnc-9d-fgu" firstAttribute="leading" secondItem="eE0-Ob-Ngt" secondAttribute="trailing" constant="2" id="Yky-O6-plV"/>
+                                                <constraint firstItem="cnc-9d-fgu" firstAttribute="leading" secondItem="eE0-Ob-Ngt" secondAttribute="trailing" constant="5" id="Yky-O6-plV"/>
                                                 <constraint firstAttribute="trailing" secondItem="cnc-9d-fgu" secondAttribute="trailing" constant="8" id="ZDN-q9-ECp"/>
                                                 <constraint firstAttribute="bottom" secondItem="eE0-Ob-Ngt" secondAttribute="bottom" id="cyQ-fc-PeJ"/>
-                                                <constraint firstItem="cnc-9d-fgu" firstAttribute="top" secondItem="PtF-34-2BI" secondAttribute="top" constant="6" id="xcj-Gx-byw"/>
+                                                <constraint firstItem="cnc-9d-fgu" firstAttribute="centerY" secondItem="eE0-Ob-Ngt" secondAttribute="centerY" id="d46-Uj-a73"/>
                                                 <constraint firstItem="eE0-Ob-Ngt" firstAttribute="leading" secondItem="PtF-34-2BI" secondAttribute="leading" constant="8" id="y5C-UV-Wnv"/>
                                             </constraints>
                                         </view>

@@ -99,6 +99,7 @@ namespace Toggl.Core.UI.Navigation
                     dependencyContainer.NavigationService,
                     dependencyContainer.RemoteConfigService,
                     dependencyContainer.AccessibilityService,
+                    dependencyContainer.UpdateRemoteConfigCacheService,
                     dependencyContainer.AccessRestrictionStorage,
                     dependencyContainer.RxActionFactory,
                     dependencyContainer.UserAccessManager,
@@ -120,6 +121,7 @@ namespace Toggl.Core.UI.Navigation
                     dependencyContainer.NavigationService,
                     dependencyContainer.RemoteConfigService,
                     dependencyContainer.AccessibilityService,
+                    dependencyContainer.UpdateRemoteConfigCacheService,
                     dependencyContainer.AccessRestrictionStorage,
                     dependencyContainer.SchedulerProvider,
                     dependencyContainer.RxActionFactory,
@@ -169,13 +171,6 @@ namespace Toggl.Core.UI.Navigation
                     dependencyContainer.SchedulerProvider);
             }
 
-            if (viewModelType == typeof(SelectBeginningOfWeekViewModel))
-            {
-                return new SelectBeginningOfWeekViewModel(
-                    dependencyContainer.NavigationService,
-                    dependencyContainer.RxActionFactory);
-            }
-
             if (viewModelType == typeof(SelectClientViewModel))
             {
                 return new SelectClientViewModel(
@@ -189,19 +184,13 @@ namespace Toggl.Core.UI.Navigation
             {
                 return new SelectColorViewModel(
                     dependencyContainer.NavigationService,
-                    dependencyContainer.RxActionFactory);
+                    dependencyContainer.RxActionFactory,
+                    dependencyContainer.SchedulerProvider);
             }
 
             if (viewModelType == typeof(SelectCountryViewModel))
             {
                 return new SelectCountryViewModel(
-                    dependencyContainer.NavigationService,
-                    dependencyContainer.RxActionFactory);
-            }
-
-            if (viewModelType == typeof(SelectDateFormatViewModel))
-            {
-                return new SelectDateFormatViewModel(
                     dependencyContainer.NavigationService,
                     dependencyContainer.RxActionFactory);
             }
@@ -223,13 +212,6 @@ namespace Toggl.Core.UI.Navigation
                     dependencyContainer.RxActionFactory);
             }
 
-            if (viewModelType == typeof(SelectDurationFormatViewModel))
-            {
-                return new SelectDurationFormatViewModel(
-                    dependencyContainer.NavigationService,
-                    dependencyContainer.RxActionFactory);
-            }
-
             if (viewModelType == typeof(SelectProjectViewModel))
             {
                 return new SelectProjectViewModel(
@@ -246,14 +228,6 @@ namespace Toggl.Core.UI.Navigation
                     dependencyContainer.NavigationService,
                     dependencyContainer.InteractorFactory,
                     dependencyContainer.SchedulerProvider,
-                    dependencyContainer.RxActionFactory);
-            }
-
-            if (viewModelType == typeof(SelectWorkspaceViewModel))
-            {
-                return new SelectWorkspaceViewModel(
-                    dependencyContainer.InteractorFactory,
-                    dependencyContainer.NavigationService,
                     dependencyContainer.RxActionFactory);
             }
 

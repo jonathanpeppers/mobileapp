@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Toggl.Core.Extensions;
 using Toggl.Core.Models.Interfaces;
@@ -8,6 +9,7 @@ using Toggl.Core.UI.Extensions;
 using Toggl.Core.UI.ViewModels.TimeEntriesLog;
 using Toggl.Core.UI.ViewModels.TimeEntriesLog.Identity;
 using Toggl.Shared;
+using Toggl.Shared.Extensions;
 using Toggl.Storage;
 using static Toggl.Core.UI.ViewModels.TimeEntriesLog.LogItemVisualizationIntent;
 
@@ -18,6 +20,8 @@ namespace Toggl.Core.UI.Transformations
 
     internal sealed class TimeEntriesGroupsFlattening
     {
+        private delegate IImmutableList<IImmutableList<IThreadSafeTimeEntry>> GroupingStrategy(IEnumerable<IThreadSafeTimeEntry> timeEntries);
+
         private readonly ITimeService timeService;
         private readonly HashSet<GroupId> expandedGroups;
         private int indexInLog;
@@ -30,7 +34,7 @@ namespace Toggl.Core.UI.Transformations
             expandedGroups = new HashSet<GroupId>();
         }
 
-        public IEnumerable<MainLogSection> Flatten(IEnumerable<LogGrouping> days, IThreadSafePreferences preferences)
+        public IImmutableList<MainLogSection> Flatten(IEnumerable<LogGrouping> days, IThreadSafePreferences preferences)
         {
             durationFormat = preferences.DurationFormat;
             indexInLog = 0;
@@ -42,10 +46,10 @@ namespace Toggl.Core.UI.Transformations
                 var daysInThePast = (today - sample).Days;
 
                 var strategy = preferences.CollapseTimeEntries
-                    ? (Func<IEnumerable<IThreadSafeTimeEntry>, IEnumerable<IThreadSafeTimeEntry[]>>)bySimilarTimeEntries
-                    : (Func<IEnumerable<IThreadSafeTimeEntry>, IEnumerable<IThreadSafeTimeEntry[]>>)withJustSingleTimeEntries;
+                    ? (GroupingStrategy)bySimilarTimeEntries
+                    : (GroupingStrategy)withJustSingleTimeEntries;
                 return flatten(strategy, dayInLog, daysInThePast)(day);
-            });
+            }).ToImmutableList();
         }
 
         public void ToggleGroupExpansion(GroupId groupId)
@@ -60,8 +64,7 @@ namespace Toggl.Core.UI.Transformations
             }
         }
 
-        private Func<LogGrouping, MainLogSection> flatten(
-            Func<IEnumerable<IThreadSafeTimeEntry>, IEnumerable<IThreadSafeTimeEntry[]>> groupingStrategy, int dayInLog, int daysInThePast)
+        private Func<LogGrouping, MainLogSection> flatten(GroupingStrategy groupingStrategy, int dayInLog, int daysInThePast)
         {
             return day =>
             {
@@ -75,25 +78,25 @@ namespace Toggl.Core.UI.Transformations
             };
         }
 
-        private TimeSpan totalTrackedTime(IEnumerable<IThreadSafeTimeEntry[]> groups)
+        private TimeSpan totalTrackedTime(IImmutableList<IImmutableList<IThreadSafeTimeEntry>> groups)
         {
             var trackedSeconds = groups.Sum(group => group.Sum(timeEntry => timeEntry.Duration ?? 0));
             return TimeSpan.FromSeconds(trackedSeconds);
         }
 
-        private IEnumerable<LogItemViewModel> flattenGroups(IEnumerable<IThreadSafeTimeEntry[]> groups, int dayInLog, int daysInThePast)
+        private IEnumerable<LogItemViewModel> flattenGroups(IImmutableList<IImmutableList<IThreadSafeTimeEntry>> groups, int dayInLog, int daysInThePast)
         {
             return groups.SelectMany(group => flattenGroup(group, dayInLog, daysInThePast));
         }
 
-        private IEnumerable<LogItemViewModel> flattenGroup(IThreadSafeTimeEntry[] group, int dayInLog, int daysInThePast)
+        private IEnumerable<LogItemViewModel> flattenGroup(IImmutableList<IThreadSafeTimeEntry> group, int dayInLog, int daysInThePast)
         {
             var sample = group.First();
             var groupId = new GroupId(sample);
 
             if (expandedGroups.Contains(groupId))
             {
-                if (group.Length > 1)
+                if (group.Count > 1)
                 {
                     var headerIndex = indexInLog++;
                     return group
@@ -104,7 +107,7 @@ namespace Toggl.Core.UI.Transformations
                 expandedGroups.Remove(groupId);
             }
 
-            var item = group.Length == 1
+            var item = group.Count == 1
                 ? sample.ToViewModel(groupId, SingleItem, durationFormat, indexInLog++, dayInLog, daysInThePast)
                 : collapsedHeader(groupId, group, indexInLog++, dayInLog, daysInThePast);
 
@@ -113,7 +116,7 @@ namespace Toggl.Core.UI.Transformations
 
         private LogItemViewModel collapsedHeader(
             GroupId groupId,
-            IThreadSafeTimeEntry[] group,
+            IImmutableList<IThreadSafeTimeEntry> group,
             int indexInLog,
             int dayInLog,
             int daysInThePast)
@@ -121,7 +124,7 @@ namespace Toggl.Core.UI.Transformations
 
         private LogItemViewModel expandedHeader(
             GroupId groupId,
-            IThreadSafeTimeEntry[] group,
+            IImmutableList<IThreadSafeTimeEntry> group,
             int indexInLog,
             int dayInLog,
             int daysInThePast)
@@ -129,7 +132,7 @@ namespace Toggl.Core.UI.Transformations
 
         private LogItemViewModel header(
             GroupId groupId,
-            IThreadSafeTimeEntry[] group,
+            IImmutableList<IThreadSafeTimeEntry> group,
             LogItemVisualizationIntent visualizationIntent,
             int indexInLog,
             int dayInLog,
@@ -156,23 +159,24 @@ namespace Toggl.Core.UI.Transformations
                 isInaccessible: sample.IsInaccessible,
                 indexInLog: indexInLog,
                 dayInLog: dayInLog,
-                daysInThePast: daysInThePast);
+                daysInThePast: daysInThePast,
+                projectIsPlaceholder: sample.Project?.IsPlaceholder() ?? false,
+                taskIsPlaceholder: sample.Task?.IsPlaceholder() ?? false);
         }
 
-        private static IEnumerable<IThreadSafeTimeEntry[]> bySimilarTimeEntries(
+        private static IImmutableList<IImmutableList<IThreadSafeTimeEntry>> bySimilarTimeEntries(
             IEnumerable<IThreadSafeTimeEntry> timeEntries)
-        {
-            return timeEntries
+            => timeEntries
                 .GroupBy(timeEntry => timeEntry, new TimeEntriesComparer())
                 .OrderByDescending(group => group.Max(timeEntry => timeEntry.Start))
-                .Select(group => group.ToArray());
-        }
-
-        private static IEnumerable<IThreadSafeTimeEntry[]> withJustSingleTimeEntries(
+                .Select(group => group.ToIImmutableList())
+                .ToImmutableList();
+        
+        private static IImmutableList<IImmutableList<IThreadSafeTimeEntry>> withJustSingleTimeEntries(
             IEnumerable<IThreadSafeTimeEntry> timeEntries)
-        {
-            return timeEntries.Select(timeEntry => new[] { timeEntry });
-        }
+            => timeEntries
+                .Select(timeEntry => timeEntry.Yield().ToIImmutableList())
+                .ToImmutableList();
 
         private sealed class TimeEntriesComparer : IEqualityComparer<IThreadSafeTimeEntry>
         {

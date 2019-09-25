@@ -17,7 +17,7 @@ namespace Toggl.Core.UI.Transformations
             if (localDate.AddDays(1) == localNow)
                 return Resources.Yesterday;
 
-            return date.ToLocalTime().ToString("ddd, dd MMM", cultureInfo ?? CultureInfo.CreateSpecificCulture("en-US"));
+            return date.ToLocalTime().ToString("ddd, dd MMM", cultureInfo ?? CultureInfo.CurrentCulture);
         }
     }
 }

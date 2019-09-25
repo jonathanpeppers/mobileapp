@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <color name="defaultBackground">#FAFBFC</color>
-    <color name="errorText">#E20505</color>
-    <color name="grey">#9F9F9F</color>
-    <color name="lightToolbarBackground">#FFFFFF</color>
-    <color name="placeholderText">#CECECE</color>
-    <color name="defaultText">#959595</color>
-    <color name="defaultIcon">#959595</color>
-    <color name="defaultEditText">#5E5B5B</color>
-    <color name="defaultFabBackground">#1AD180</color>
-    <color name="lightGray">#FFFAFBFC</color>
-    <color name="transparentLightGray">#66FAFBFC</color>
-    <color name="separator">#FFE5E5E5</color>
-    <color name="clientName">#FF5E5B5B</color>
-    <color name="editViewDate">#FF5E5B5B</color>
-    <color name="toolbarBlack">#FF323232</color>
-    <color name="playButtonGreen">#FF1AD180</color>
-    <color name="playButtonRed">#E20505</color>
-    <color name="runningEntryDescription">#000000</color>
-    <color name="darkLabel">#000000</color>
-    <color name="buttonBlue">#328FFF</color>
-    <color name="buttonBlueDisabled">#7a328fff</color>
-    <color name="runningEntryTimer">#328FFF</color>
-    <color name="calendarSelected">#328FFF</color>
-    <color name="editTimeEntryText">#000000</color>
-    <color name="launcherBackgroundColor">#FFE01B22</color>
-    <color name="checkboxTint">#328FFF</color>
-    <color name="reportsLabelColor">#757575</color>
-    <color name="onboardingStatusBarColor">#53a0fd</color>
-    <color name="halfTransparentWhite">#B3FFFFFF</color>
-    <color name="popupBlueBackground">#328FFF</color>
-    <color name="lightGray48Opacity">#7AFAFBFC</color>
-    <color name="textEditBackgroundTint">#E2E2E2</color>
-    <color name="billableColor">#328fff</color>
-    <color name="nonBillableColor">#1e328fff</color>
-    <color name="halfTransparentPurple">#8FC56BFF</color>
-    <color name="halfTransparentBlue">#8F06AAF5</color>
-    <color name="grayBorder">#CECECE</color>
-    <color name="mainLogCellPaddingWhite">#FFFFFF</color>
-    <color name="mainLogCellPaddingLightGray">#FAFBFC</color>
+  
+  <!--Theme related-->
+  <color name="accent">#FF328FFF</color>
+  <color name="fallbackStatusBar">#FF121212</color>
+  <color name="outdatedStatusBar">#FFBDBDBD</color>
+  <color name="launcherBackground">#FFE01B22</color>
+  <color name="textEditBackgroundTint">#FFE2E2E2</color>
+
+  <!-- App wide-->
+  <color name="checkboxTint">#FF328FFF</color>
+  <color name="raisedButtonBackground">#FF328FFF</color>
+
+  <!-- Text -->
+  <color name="placeholderText">#FFCECECE</color>
+  <color name="defaultIcon">#FF959595</color>
+  <color name="flatButtonText">#FF328FFF</color>
+  <color name="flatButtonDisabledText">#7A328FFF</color>
+  <color name="raisedButtonText">#FFFFFFFF</color>
+  <color name="raisedButtonDisabledText">#7AFFFFFF</color>  
+
+  <!--Navigation bar-->
+  <color name="bottomBarIcon">#FF328FFF</color>
+  <color name="bottomBarText">#FF9F9F9F</color>
+
+  <!-- Reports page-->
+  <color name="reportsLabel">#FF757575</color>
+  <color name="calendarSelected">#FF328FFF</color>
+  <color name="nonBillableChartBar">#1E328FFF</color>
+  <color name="billableChartBar">#FF328FFF</color>
+  <color name="billablePercentageText">#FF00ABFC</color>
+  <color name="totalTimeText">#4CD964</color>
+  <color name="disabledReportFeature">#FFB5BCC0</color>
+
+  <!--Calendar page-->
+  <color name="calendarHeaderBackground">#FF959595</color>
+
+  <!-- Start Time entry page-->
+  <color name="billable">#FF328FFF</color>
+  <color name="nonBillable">#1E328FFF</color>
+  <color name="runningEntryTimer">#FF328FFF</color>
+
+  <!--Project page-->
+  <color name="clientName">#FF5E5B5B</color>  
+  
+  <!--Placeholder time entry -->
+  <color name="halfTransparentPurple">#8FC56BFF</color>
+  <color name="halfTransparentBlue">#8F06AAF5</color>
+
 </resources>

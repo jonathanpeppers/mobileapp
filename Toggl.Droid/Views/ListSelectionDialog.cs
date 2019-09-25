@@ -39,7 +39,7 @@ namespace Toggl.Droid.Views
 
             var texts = options.Select(option => option.ItemName).ToArray();
 
-            dialog = new AlertDialog.Builder(activity, Resource.Style.TogglDialog)
+            dialog = new AlertDialog.Builder(activity)
                 .SetTitle(title)
                 .SetSingleChoiceItems(texts, initialIndex, onItemChosen)
                 .Show();
@@ -49,7 +49,7 @@ namespace Toggl.Droid.Views
 
         private void onCancelled(object sender, EventArgs e)
         {
-            onChosen(default(T));
+            onChosen(options[initialIndex].Item);
             activity = null;
         }
 

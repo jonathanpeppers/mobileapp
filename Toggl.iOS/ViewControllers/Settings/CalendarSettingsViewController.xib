@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="ipad9_7" orientation="landscape">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -21,20 +21,16 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="enS-fr-iRP">
-                    <rect key="frame" x="95" y="0.0" width="834" height="698"/>
+                    <rect key="frame" x="0.0" y="0.0" width="1024" height="698"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="834" id="sRA-VG-QVu"/>
-                    </constraints>
                 </tableView>
             </subviews>
             <color key="backgroundColor" red="0.98039215686274506" green="0.98431372549019602" blue="0.9882352941176471" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="enS-fr-iRP" firstAttribute="top" secondItem="2" secondAttribute="top" id="DnT-8A-B8E"/>
                 <constraint firstAttribute="bottom" secondItem="enS-fr-iRP" secondAttribute="bottom" id="IN4-At-MdI"/>
-                <constraint firstItem="enS-fr-iRP" firstAttribute="leading" secondItem="2" secondAttribute="leading" priority="750" id="SRf-4z-JzQ"/>
-                <constraint firstAttribute="trailing" secondItem="enS-fr-iRP" secondAttribute="trailing" priority="750" id="Tql-gz-P7C"/>
-                <constraint firstItem="enS-fr-iRP" firstAttribute="centerX" secondItem="2" secondAttribute="centerX" id="xg2-Yg-yX3"/>
+                <constraint firstItem="enS-fr-iRP" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="SRf-4z-JzQ"/>
+                <constraint firstAttribute="trailing" secondItem="enS-fr-iRP" secondAttribute="trailing" id="Tql-gz-P7C"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
         </view>

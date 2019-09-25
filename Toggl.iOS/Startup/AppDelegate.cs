@@ -8,6 +8,7 @@ using Toggl.iOS.Presentation;
 using Toggl.iOS.Services;
 using UIKit;
 using UserNotifications;
+using Firebase.CloudMessaging;
 
 namespace Toggl.iOS
 {
@@ -20,11 +21,18 @@ namespace Toggl.iOS
         {
 #if !USE_PRODUCTION_API
             System.Net.ServicePointManager.ServerCertificateValidationCallback
-                  += (sender, certificate, chain, sslPolicyErrors) => true;
+                += (sender, certificate, chain, sslPolicyErrors) => true;
 #endif
 
-            initializeAnalytics();
+            #if !DEBUG
+                Firebase.Core.App.Configure();
+            #endif
 
+            UNUserNotificationCenter.Current.Delegate = this;
+            UIApplication.SharedApplication.RegisterForRemoteNotifications();
+            Messaging.SharedInstance.Delegate = this;
+
+            initializeAnalytics();
 
             Window = new UIWindow(UIScreen.MainScreen.Bounds);
             Window.MakeKeyAndVisible();
@@ -34,6 +42,7 @@ namespace Toggl.iOS
 
             IosDependencyContainer.EnsureInitialized(Window, this);
             var app = new AppStart(IosDependencyContainer.Instance);
+            app.LoadLocalizationConfiguration();
             app.UpdateOnboardingProgress();
             app.SetFirstOpened();
             app.SetupBackgroundSync();
@@ -41,12 +50,9 @@ namespace Toggl.iOS
             var accessLevel = app.GetAccessLevel();
             loginWithCredentialsIfNecessary(accessLevel);
             navigateAccordingToAccessLevel(accessLevel, app);
-
-
+            
             var accessibilityEnabled = UIAccessibility.IsVoiceOverRunning;
             IosDependencyContainer.Instance.AnalyticsService.AccessibilityEnabled.Track(accessibilityEnabled);
-
-            UNUserNotificationCenter.Current.Delegate = this;
 
             var watchservice = new WatchService();
             watchservice.TryLogWatchConnectivity();

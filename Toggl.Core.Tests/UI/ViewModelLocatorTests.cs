@@ -67,6 +67,8 @@ namespace Toggl.Core.Tests.UI
                 MockInteractorFactory = Substitute.For<IInteractorFactory>(),
                 MockTimeService = Substitute.For<ITimeService>(),
                 MockSyncManager = Substitute.For<ISyncManager>(),
+                MockPushNotificationsTokenService = Substitute.For<IPushNotificationsTokenService>(),
+                MockUpdateRemoteConfigCacheService = Substitute.For<IUpdateRemoteConfigCacheService>()
             };
 
             container.MockLicenseProvider.GetAppLicenses().Returns(new Dictionary<string, string>());

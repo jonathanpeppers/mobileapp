@@ -52,6 +52,17 @@ namespace Toggl.iOS.Views
             }
         }
 
+        public override string Placeholder
+        {
+            get => base.Placeholder;
+            set
+            {
+                base.Placeholder = value;
+                placeholderDrawn = false;
+                DrawPlaceholder(new CGRect());
+            }
+        }
+
         public override void AwakeFromNib()
         {
             base.AwakeFromNib();

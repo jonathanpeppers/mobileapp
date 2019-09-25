@@ -1,19 +1,16 @@
 ﻿using Android.App;
 using Android.Content.PM;
-using Android.OS;
+using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using Toggl.Core.UI.Extensions;
 using Toggl.Core.UI.ViewModels;
 using Toggl.Droid.Extensions;
 using Toggl.Droid.Extensions.Reactive;
+using Toggl.Droid.Presentation;
 using Toggl.Shared;
 using Toggl.Shared.Extensions;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Toggl.Droid.Activities
 {
@@ -23,27 +20,21 @@ namespace Toggl.Droid.Activities
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public sealed partial class ForgotPasswordActivity : ReactiveActivity<ForgotPasswordViewModel>
     {
-        protected override void OnCreate(Bundle bundle)
+        public ForgotPasswordActivity() : base(
+            Resource.Layout.ForgotPasswordActivity,
+            Resource.Style.AppTheme,
+            Transitions.SlideInFromRight)
+        { }
+
+        public ForgotPasswordActivity(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
         {
-            SetTheme(Resource.Style.AppTheme_Light);
-            base.OnCreate(bundle);
-            if (ViewModelWasNotCached())
-            {
-                BailOutToSplashScreen();
-                return;
-            }
-            SetContentView(Resource.Layout.ForgotPasswordActivity);
-            OverridePendingTransition(Resource.Animation.abc_slide_in_right, Resource.Animation.abc_fade_out);
+        }
 
-            setupToolbar();
-            InitializeViews();
-            setupInputField();
-
+        protected override void InitializeBindings()
+        {
             ViewModel.ErrorMessage
-                .Subscribe(errorMessage =>
-                {
-                    loginEmail.Error = errorMessage;
-                })
+                .Subscribe(onErrorMessage)
                 .DisposedBy(DisposeBag);
 
             loginEmailEditText.Rx().Text()
@@ -68,45 +59,17 @@ namespace Toggl.Droid.Activities
             resetPasswordButton.Rx()
                 .BindAction(ViewModel.Reset)
                 .DisposedBy(DisposeBag);
-        }
 
-        public override void Finish()
-        {
-            base.Finish();
-            OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_slide_out_right);
-        }
-
-        private void setupInputField()
-        {
-            loginEmailEditText.SetFocus();
-            loginEmailEditText.SetSelection(loginEmailEditText.Text?.Length ?? 0);
-        }
-
-        private void showResetPasswordSuccessToast()
-        {
-            loginEmailEditText.RemoveFocus();
-            Toast.MakeText(this, Resource.String.ResetPasswordEmailSentMessage, ToastLength.Long).Show();
-        }
-
-        private void setupToolbar()
-        {
-            var toolbar = FindViewById<Toolbar>(Resource.Id.ForgotPasswordToolbar);
-
-            SetSupportActionBar(toolbar);
-            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
-            SupportActionBar.SetDisplayShowHomeEnabled(true);
-            SupportActionBar.Title = GetString(Resource.String.ForgotPasswordTitle);
-        }
-
-        public override bool OnOptionsItemSelected(IMenuItem item)
-        {
-            if (item.ItemId == Android.Resource.Id.Home)
+            void onErrorMessage(string errorMessage)
             {
-                ViewModel.CloseWithDefaultResult();
-                return true;
+                loginEmail.Error = errorMessage;
             }
 
-            return base.OnOptionsItemSelected(item);
+            void showResetPasswordSuccessToast()
+            {
+                loginEmailEditText.RemoveFocus();
+                Toast.MakeText(this, Shared.Resources.PasswordResetSuccess, ToastLength.Long).Show();
+            }
         }
     }
 }

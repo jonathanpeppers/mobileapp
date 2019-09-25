@@ -186,13 +186,14 @@ namespace Toggl.Core.Tests.UI.ViewModels
                 TestScheduler.Start();
 
                 observer.Messages.Should().HaveCount(1);
+                prepareSuggestionsForSuggestionsPresentedEvent(false);
                 subject.OnNext(SyncProgress.Synced);
                 TestScheduler.AdvanceBy(TimeSpan.FromMilliseconds(501).Ticks);
                 observer.Messages.Should().HaveCount(2);
             }
 
             [Fact, LogIfTooSlow]
-            public async Task RecalculatesSuggestionsAfterAfterReturningFromBackground()
+            public async Task RecalculatesSuggestionsAfterReturningFromBackground()
             {
                 prepareSuggestionsForSuggestionsPresentedEvent();
                 var subject = new Subject<TimeSpan>();
@@ -205,13 +206,14 @@ namespace Toggl.Core.Tests.UI.ViewModels
                 TestScheduler.Start();
 
                 observer.Messages.Should().HaveCount(1);
+                prepareSuggestionsForSuggestionsPresentedEvent(false);
                 subject.OnNext(TimeSpan.Zero);
                 TestScheduler.Start();
                 observer.Messages.Should().HaveCount(2);
             }
 
             [Fact, LogIfTooSlow]
-            public async Task RecalculatesSuggestionsAfterAfterUserSelectedCalendarsChange()
+            public async Task RecalculatesSuggestionsAfterUserSelectedCalendarsChange()
             {
                 prepareSuggestionsForSuggestionsPresentedEvent();
                 var subject = new Subject<List<string>>();
@@ -224,6 +226,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
                 TestScheduler.Start();
 
                 observer.Messages.Should().HaveCount(1);
+                prepareSuggestionsForSuggestionsPresentedEvent(false);
                 subject.OnNext(new List<string> { "" });
                 TestScheduler.Start();
                 observer.Messages.Should().HaveCount(2);

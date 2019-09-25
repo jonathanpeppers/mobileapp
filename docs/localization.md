@@ -21,12 +21,14 @@ _Note: The string in the IB will be replaced, so it's better to make it somethin
 
 ## 🤖 Droid
 
-Droid is a little bit easier to deal with, since it can look up for `Resources.resx` strings directly in the `.xaml`
+### 💻 For programmatically built views
 
-```xml
-<TextView
-    android:id="@+id/OopsTextView"
-    android:textSize="13sp"
-    android:textAllCaps="true"
-/>
-```
+- Setup the UI's text using the `System.Resources` namespace, much like iOS.
+
+### 📐 or Xml-based views
+
+- Setup meaningful Ids for views that can display text.
+- Find the views normally on `InitializeViews`.
+- It's safe the setup the text right after the `InitializeViews` call.
+
+_Note: Leave android text attributes empty and use the `tools:text` or similar for previewing purposes._

@@ -105,53 +105,8 @@ namespace Toggl.Core.Tests.UI.ViewModels
             public abstract class RegisterImpressionMethodTest : RatingViewModelTest
             {
                 protected abstract bool ImpressionIsPositive { get; }
-                protected abstract string ExpectedCtaTitle { get; }
-                protected abstract string ExpectedCtaDescription { get; }
-                protected abstract string ExpectedCtaButtonTitle { get; }
                 protected abstract RatingViewOutcome ExpectedStorageOucome { get; }
                 protected abstract IAnalyticsEvent ExpectedEvent { get; }
-
-                [Fact, LogIfTooSlow]
-                public void SetsTheAppropriateCtaTitle()
-                {
-                    var observer = TestScheduler.CreateObserver<string>();
-                    ViewModel.CallToActionTitle.Subscribe(observer);
-                    ViewModel.RegisterImpression(ImpressionIsPositive);
-
-                    TestScheduler.Start();
-                    observer.Messages.AssertEqual(
-                        ReactiveTest.OnNext(1, ""),
-                        ReactiveTest.OnNext(2, ExpectedCtaTitle)
-                    );
-                }
-
-                [Fact, LogIfTooSlow]
-                public void SetsTheAppropriateCtaDescription()
-                {
-                    var observer = TestScheduler.CreateObserver<string>();
-                    ViewModel.CallToActionDescription.Subscribe(observer);
-                    ViewModel.RegisterImpression(ImpressionIsPositive);
-
-                    TestScheduler.Start();
-                    observer.Messages.AssertEqual(
-                        ReactiveTest.OnNext(1, ""),
-                        ReactiveTest.OnNext(2, ExpectedCtaDescription)
-                    );
-                }
-
-                [Fact, LogIfTooSlow]
-                public void SetsTheAppropriateCtaButtonTitle()
-                {
-                    var observer = TestScheduler.CreateObserver<string>();
-                    ViewModel.CallToActionButtonTitle.Subscribe(observer);
-                    ViewModel.RegisterImpression(ImpressionIsPositive);
-
-                    TestScheduler.Start();
-                    observer.Messages.AssertEqual(
-                        ReactiveTest.OnNext(1, ""),
-                        ReactiveTest.OnNext(2, ExpectedCtaButtonTitle)
-                    );
-                }
 
                 [Fact, LogIfTooSlow]
                 public void StoresTheAppropriateRatingViewOutcomeAndTime()
@@ -173,9 +128,6 @@ namespace Toggl.Core.Tests.UI.ViewModels
             public sealed class WhenImpressionIsPositive : RegisterImpressionMethodTest
             {
                 protected override bool ImpressionIsPositive => true;
-                protected override string ExpectedCtaTitle => Resources.RatingViewPositiveCallToActionTitle;
-                protected override string ExpectedCtaDescription => Resources.RatingViewPositiveCallToActionDescription;
-                protected override string ExpectedCtaButtonTitle => Resources.RatingViewPositiveCallToActionButtonTitle;
                 protected override RatingViewOutcome ExpectedStorageOucome => RatingViewOutcome.PositiveImpression;
                 protected override IAnalyticsEvent ExpectedEvent => AnalyticsService.RatingViewFirstStepLike;
             }
@@ -183,9 +135,6 @@ namespace Toggl.Core.Tests.UI.ViewModels
             public sealed class WhenImpressionIsNegative : RegisterImpressionMethodTest
             {
                 protected override bool ImpressionIsPositive => false;
-                protected override string ExpectedCtaTitle => Resources.RatingViewNegativeCallToActionTitle;
-                protected override string ExpectedCtaDescription => Resources.RatingViewNegativeCallToActionDescription;
-                protected override string ExpectedCtaButtonTitle => Resources.RatingViewNegativeCallToActionButtonTitle;
                 protected override RatingViewOutcome ExpectedStorageOucome => RatingViewOutcome.NegativeImpression;
                 protected override IAnalyticsEvent ExpectedEvent => AnalyticsService.RatingViewFirstStepDislike;
             }

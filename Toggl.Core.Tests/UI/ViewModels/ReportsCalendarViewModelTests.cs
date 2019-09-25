@@ -4,6 +4,7 @@ using Microsoft.Reactive.Testing;
 using NSubstitute;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using Toggl.Core.Analytics;
@@ -77,14 +78,13 @@ namespace Toggl.Core.Tests.UI.ViewModels
             [Fact, LogIfTooSlow]
             public async Task InitializesTheMonthsPropertyToTheMonthsToShow()
             {
-                var observer = TestScheduler.CreateObserver<List<ReportsCalendarPageViewModel>>();
+                var observer = TestScheduler.CreateObserver<IImmutableList<ReportsCalendarPageViewModel>>();
                 var now = new DateTimeOffset(2020, 4, 2, 1, 1, 1, TimeSpan.Zero);
                 TimeService.CurrentDateTime.Returns(now);
                 TimeService.MidnightObservable.Returns(Observable.Never<DateTimeOffset>());
 
                 await ViewModel.Initialize();
-                ViewModel.MonthsObservable
-                    .Subscribe(observer);
+                ViewModel.MonthsObservable.Subscribe(observer);
 
                 TestScheduler.Start();
                 var months = observer.Values().First();
@@ -132,7 +132,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
                 DataSource.User.Current.Returns(Observable.Return(user));
 
                 var dateRangeObserver = TestScheduler.CreateObserver<ReportsDateRangeParameter>();
-                var monthsObserver = TestScheduler.CreateObserver<List<ReportsCalendarPageViewModel>>();
+                var monthsObserver = TestScheduler.CreateObserver<IImmutableList<ReportsCalendarPageViewModel>>();
                 ViewModel.SelectedDateRangeObservable.Subscribe(dateRangeObserver);
                 await ViewModel.Initialize();
                 ViewModel.MonthsObservable.Subscribe(monthsObserver);
@@ -250,7 +250,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
                 int endPageIndex,
                 int endCellIndex)
             {
-                var monthsObserver = TestScheduler.CreateObserver<List<ReportsCalendarPageViewModel>>();
+                var monthsObserver = TestScheduler.CreateObserver<IImmutableList<ReportsCalendarPageViewModel>>();
                 var now = new DateTimeOffset(2017, 12, 19, 1, 2, 3, TimeSpan.Zero);
                 var dateRangeObserver = TestScheduler.CreateObserver<ReportsDateRangeParameter>();
                 TimeService.CurrentDateTime.Returns(now);
@@ -298,7 +298,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
 
         public abstract class TheCalendarDayTappedCommand : ReportsCalendarViewModelTest
         {
-            private List<ReportsCalendarPageViewModel> months;
+            private IImmutableList<ReportsCalendarPageViewModel> months;
 
             public TheCalendarDayTappedCommand()
             {
@@ -309,7 +309,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
                 user.BeginningOfWeek.Returns(BeginningOfWeek.Sunday);
                 DataSource.User.Current.Returns(Observable.Return(user));
 
-                var monthsObservable = TestScheduler.CreateObserver<List<ReportsCalendarPageViewModel>>();
+                var monthsObservable = TestScheduler.CreateObserver<IImmutableList<ReportsCalendarPageViewModel>>();
                 ViewModel.Initialize().Wait();
                 ViewModel.MonthsObservable.Subscribe(monthsObservable);
                 TestScheduler.Start();
@@ -484,7 +484,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
             [Property]
             public void UsingAnyOfTheShortcutsDoesNotThrowAnyTimeOfTheYear(DateTimeOffset now)
             {
-                var shortcutsObserver = TestScheduler.CreateObserver<List<ReportsCalendarBaseQuickSelectShortcut>>();
+                var shortcutsObserver = TestScheduler.CreateObserver<IImmutableList<ReportsCalendarBaseQuickSelectShortcut>>();
                 TimeService.CurrentDateTime.Returns(now);
                 // in this property test it is not possible to use the default ViewModel,
                 // because we have to reset it in each iteration of the test

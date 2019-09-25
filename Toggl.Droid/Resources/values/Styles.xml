@@ -1,64 +1,50 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <style name="Theme.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.Splash" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@drawable/Splash</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
     </style>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+    <style name="BaseAppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:actionBarSize">56dp</item>
-        <item name="android:colorAccent">#328FFF</item>
-        <item name="colorControlActivated">#328FFF</item>
-        <item name="android:statusBarColor">#2C2C2C</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="colorControlActivated">@color/accent</item>
+        <item name="android:statusBarColor">@color/fallbackStatusBar</item>
+        <item name="android:windowBackground">@color/background</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowTranslucentStatus">false</item>
     </style>
 
-    <style name="AppTheme.Light">
-      <item name="android:windowBackground">@color/lightGray</item>
+    <style name="AppTheme" parent="@style/BaseAppTheme">
     </style>
 
-    <style name="AppTheme.Light.WhiteBackground">
-      <item name="android:windowBackground">@android:color/white</item>
-      <item name="colorControlActivated">@color/defaultEditText</item>
+    <style name="AppTheme.OutdatedAppStatusBarColor">
+        <item name="android:statusBarColor">@color/outdatedStatusBar</item>
+        <item name="android:windowBackground">@color/outdatedStatusBar</item>
+        <item name="android:navigationBarColor">@color/outdatedStatusBar</item>
     </style>
 
-    <style name="AppTheme.Light.OutdatedAppStatusBarColor">
-        <item name="android:statusBarColor">#BDBDBD</item>
+    <style name="ToolbarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?android:actionBarSize</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:elevation">@dimen/toolbarElevation</item>
+        <item name="popupTheme">@style/AppBarPopupTheme</item>
+        <item name="android:theme">@style/AppBarTheme</item>
+        <item name="android:background">@color/background</item>
+        <item name="contentInsetStartWithNavigation">2dp</item>
     </style>
-    
-    <style name="AppTheme.TransparentActionBar">
-        <item name="windowActionBarOverlay">true</item>
-        <item name="android:windowActionBarOverlay">true</item>
-    </style>
-    <style name="TogglDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:colorAccent">#328FFF</item>
-		<item name="colorControlActivated">#328FFF</item>
-    </style>
+
+
     <style name="TextInputLayoutErrorAppearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/errorText</item>
         <item name="android:textSize">12sp</item>
     </style>
+  
     <style name="TextInputLayoutRegularTextAppearance" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/defaultText</item>
+        <item name="android:textColor">@color/secondaryText</item>
         <item name="android:textSize">12sp</item>
-    </style>
-    <style name="WheelDialogStyle" parent="android:Theme.Material.Light.Dialog">
-        <item name="android:colorAccent">#328fff</item>
-        <item name="android:headerTimeTextAppearance">@style/TextAppearance.AppCompat</item>
-        <item name="android:headerDayOfMonthTextAppearance">@style/TextAppearance.AppCompat</item>
-        <item name="android:headerAmPmTextAppearance">@style/TextAppearance.AppCompat</item>
-        <item name="android:headerMonthTextAppearance">@style/TextAppearance.AppCompat</item>
-        <item name="android:headerYearTextAppearance">@style/TextAppearance.AppCompat</item>
-        <item name="android:timePickerStyle">@style/WheelTimePicker</item>
-        <item name="android:datePickerStyle">@style/WheelDatePicker</item>
-    </style>
-
-    <style name="WheelDatePicker" parent="@android:style/Widget.Material.Light.DatePicker">
-        <item name="android:headerBackground">@drawable/picker_header_background</item>
-    </style>
-
-    <style name="WheelTimePicker" parent="@android:style/Widget.Material.Light.TimePicker">
-        <item name="android:headerBackground">@drawable/picker_header_background</item>
-        <item name="android:numbersSelectorColor">#328fff</item>
     </style>
 </resources>

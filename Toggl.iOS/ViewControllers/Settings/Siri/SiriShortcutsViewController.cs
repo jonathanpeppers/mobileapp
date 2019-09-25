@@ -3,6 +3,7 @@ using Intents;
 using IntentsUI;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -35,9 +36,9 @@ namespace Toggl.iOS.ViewControllers.Settings
         {
             base.ViewDidLoad();
 
-            Title = Resources.Siri_Shortcuts;
+            Title = Resources.SiriShortcuts;
 
-            DescriptionLabel.Text = Resources.Siri_Shortcuts_Description;
+            DescriptionLabel.Text = Resources.SiriShortcutsDescription;
             HeaderView.RemoveFromSuperview();
             HeaderView.BackgroundColor = Colors.Siri.HeaderBackground.ToNativeColor();
             TableView.TableHeaderView = HeaderView;
@@ -157,7 +158,7 @@ namespace Toggl.iOS.ViewControllers.Settings
                 .ToObservable().Merge().ToList();
         }
 
-        private IEnumerable<ShortcutSection> toSections(IEnumerable<SiriShortcutViewModel> shortcuts)
+        private IImmutableList<ShortcutSection> toSections(IEnumerable<SiriShortcutViewModel> shortcuts)
         {
             var allShortcuts = shortcuts
                 .Aggregate(new List<SiriShortcutViewModel>(), (acc, shortcut) =>
@@ -175,19 +176,18 @@ namespace Toggl.iOS.ViewControllers.Settings
                     acc.Add(shortcut);
                     return acc;
                 })
-                .OrderBy(shortcut => !shortcut.IsActive);
+                .OrderBy(shortcut => !shortcut.IsActive)
+                .ToList();
 
-            return new[]
-            {
+            return ImmutableList.Create(
                 new ShortcutSection(
-                    "Timer shortcuts",
+                    Resources.SiriShortcutsTimerShortcuts,
                     allShortcuts.Where(s => s.IsTimerShortcut())
                 ),
                 new ShortcutSection(
-                    "Reports shortcuts",
+                    Resources.SiriShortcutsReportsShortcuts,
                     allShortcuts.Where(s => s.IsReportsShortcut())
-                )
-            };
+            ));
         }
 
         private long? stringToLong(string str)

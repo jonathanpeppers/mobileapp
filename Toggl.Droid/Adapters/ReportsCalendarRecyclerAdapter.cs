@@ -24,7 +24,7 @@ namespace Toggl.Droid.Adapters
             var size = new Point();
             display.GetSize(size);
 
-            itemWidth = size.X / 7;
+            itemWidth = (size.X - 46.DpToPixels(context)) / 7;
         }
 
         public ReportsCalendarRecyclerAdapter(ReportsDateRangeParameter dateRangeParameter)

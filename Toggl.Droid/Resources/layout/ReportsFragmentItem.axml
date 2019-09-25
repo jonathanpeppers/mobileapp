@@ -8,7 +8,7 @@
     <android.support.v7.widget.CardView
         android:elevation="2dp"
         app:cardCornerRadius="2dp"
-        app:cardBackgroundColor="@android:color/white"
+        app:cardBackgroundColor="@color/cardBackground"
         android:layout_height="48dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
@@ -44,14 +44,14 @@
                 android:layout_toRightOf="@+id/ReportsFragmentItemProjectName" />
             <View
                 android:id="@+id/ReportsFragmentItemFade"
-                android:background="@drawable/TransparentToWhiteGradient"
+                android:background="@drawable/TransparentToCardColorGradient"
                 android:layout_width="30dp"
                 android:layout_marginTop="1dp"
                 android:layout_marginBottom="1dp"
                 android:layout_height="match_parent"
                 android:layout_toLeftOf="@+id/ReportsFragmentItemPercentage" />
             <View
-                android:background="@android:color/white"
+                android:background="@color/cardBackground"
                 android:layout_marginTop="1dp"
                 android:layout_marginBottom="1dp"
                 android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                 tools:text="916:12:00"
                 android:gravity="end"
                 android:textSize="15sp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/primaryText"
                 android:layout_width="72dp"
                 android:layout_marginRight="12dp"
                 android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                 tools:text="45%"
                 android:gravity="end"
                 android:textSize="15sp"
-                android:textColor="@color/defaultText"
+                android:textColor="@color/secondaryText"
                 android:layout_marginRight="22dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -1053,10 +1053,9 @@ namespace Toggl.Core.Tests.UI.ViewModels
 
                 ViewModel.OnCalendarEventLongPressed.Inputs.OnNext(calendarEvent);
 
-                await View.Received().Select(
+                await View.Received().SelectAction(
                     Arg.Any<string>(),
-                    Arg.Is<IEnumerable<SelectOption<CalendarItem?>>>(options => options.Count() == 2),
-                    Arg.Any<int>());
+                    Arg.Is<IEnumerable<SelectOption<CalendarItem?>>>(options => options.Count() == 2));
             }
 
             [Fact, LogIfTooSlow]
@@ -1066,10 +1065,9 @@ namespace Toggl.Core.Tests.UI.ViewModels
 
                 ViewModel.OnCalendarEventLongPressed.Inputs.OnNext(calendarEvent);
 
-                await View.Received().Select(
+                await View.Received().SelectAction(
                     Arg.Any<string>(),
-                    Arg.Is<IEnumerable<SelectOption<CalendarItem?>>>(options => options.Count() == 3),
-                    Arg.Any<int>());
+                    Arg.Is<IEnumerable<SelectOption<CalendarItem?>>>(options => options.Count() == 3));
             }
 
             [Fact, LogIfTooSlow]
@@ -1127,7 +1125,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
 
             private void selectOptionByOptionText(string text)
             {
-                View.Select<CalendarItem?>(null, null, 0)
+                View.SelectAction<CalendarItem?>(null, null)
                     .ReturnsForAnyArgs(callInfo =>
                     {
                         var copyOption = callInfo.Arg<IEnumerable<SelectOption<CalendarItem?>>>()

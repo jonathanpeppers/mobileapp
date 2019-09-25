@@ -7,6 +7,7 @@ using Android.Util;
 using Android.Widget;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -26,38 +27,42 @@ namespace Toggl.Droid.Views
     public sealed class ReportsCalendarView : LinearLayout
     {
         private TextView monthYear;
-        private LinearLayout daysHeader;
         private ViewPager monthsPager;
+        private LinearLayout daysHeader;
         private RecyclerView shortcutsRecyclerView;
 
         private int rowHeight;
         private int currentRowCount;
-        private int? pendingPageUpdate;
 
         private ReportsCalendarViewModel viewModel;
 
-        private CompositeDisposable disposeBag = new CompositeDisposable();
+        private readonly CompositeDisposable disposeBag = new CompositeDisposable();
 
-        public ReportsCalendarView(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+        public ReportsCalendarView(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
         {
         }
 
-        public ReportsCalendarView(Context context) : base(context)
-        {
-            Init(Context);
-        }
-
-        public ReportsCalendarView(Context context, IAttributeSet attrs) : base(context, attrs)
+        public ReportsCalendarView(Context context)
+            : base(context)
         {
             Init(Context);
         }
 
-        public ReportsCalendarView(Context context, IAttributeSet attrs, int defStyleAttr) : base(context, attrs, defStyleAttr)
+        public ReportsCalendarView(Context context, IAttributeSet attrs)
+            : base(context, attrs)
         {
             Init(Context);
         }
 
-        public ReportsCalendarView(Context context, IAttributeSet attrs, int defStyleAttr, int defStyleRes) : base(context, attrs, defStyleAttr, defStyleRes)
+        public ReportsCalendarView(Context context, IAttributeSet attrs, int defStyleAttr)
+            : base(context, attrs, defStyleAttr)
+        {
+            Init(Context);
+        }
+
+        public ReportsCalendarView(Context context, IAttributeSet attrs, int defStyleAttr, int defStyleRes)
+            : base(context, attrs, defStyleAttr, defStyleRes)
         {
             Init(Context);
         }
@@ -65,7 +70,7 @@ namespace Toggl.Droid.Views
         private void Init(Context context)
         {
             Inflate(Context, Resource.Layout.ReportsCalendarView, this);
-            SetBackgroundColor(new Android.Graphics.Color(ContextCompat.GetColor(Context, Resource.Color.defaultBackground)));
+            SetBackgroundColor(Context.SafeGetColor(Resource.Color.background));
 
             rowHeight = context.Resources.DisplayMetrics.WidthPixels / 7;
 
@@ -119,8 +124,8 @@ namespace Toggl.Droid.Views
                 .DisposedBy(disposeBag);
 
             viewModel.CurrentMonthObservable
-                .Select(calendarMonth
-                    => $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(calendarMonth.Month)} {calendarMonth.Year}")
+                .Select(calendarMonth => calendarMonth.ToDateTime())
+                .Select(dateTime => dateTime.ToString(CultureInfo.CurrentCulture.DateTimeFormat.YearMonthPattern)) 
                 .Subscribe(monthYear.Rx().TextObserver())
                 .DisposedBy(disposeBag);
 
@@ -133,7 +138,7 @@ namespace Toggl.Droid.Views
             shortcutsRecyclerView.SetAdapter(shortcutsAdapter);
 
             viewModel.QuickSelectShortcutsObservable
-                .Subscribe(newShortcuts => shortcutsAdapter.Items = newShortcuts)
+                .Subscribe(shortcutsAdapter.Rx().Items())
                 .DisposedBy(disposeBag);
 
             viewModel.SelectedDateRangeObservable
@@ -145,15 +150,6 @@ namespace Toggl.Droid.Views
                 .DisposedBy(disposeBag);
         }
 
-        public void ExecutePendingPageUpdate()
-        {
-            if (pendingPageUpdate.HasValue)
-            {
-                monthsPager.SetCurrentItem(pendingPageUpdate.Value, true);
-                pendingPageUpdate = null;
-            }
-        }
-
         private void setupWeekdaysLabels(IReadOnlyList<string> dayHeaders)
         {
             daysHeader
@@ -163,39 +159,23 @@ namespace Toggl.Droid.Views
                     => textView.Text = dayHeaders[index]);
         }
 
-        private void onDateRangeChanged(ReportsDateRangeParameter dateRange, List<ReportsCalendarBaseQuickSelectShortcut> shortcuts, List<ReportsCalendarPageViewModel> months)
+        private void onDateRangeChanged(ReportsDateRangeParameter dateRange, IImmutableList<ReportsCalendarBaseQuickSelectShortcut> shortcuts, IImmutableList<ReportsCalendarPageViewModel> months)
         {
-            var anyShortcutIsSelected = shortcuts.Any(shortcut => shortcut.IsSelected(dateRange));
-            if (!anyShortcutIsSelected) return;
-
             var dateRangeStartDate = dateRange.StartDate;
             var monthToScroll = months.IndexOf(month =>
                 month.CalendarMonth.Month == dateRangeStartDate.Month
                 && month.CalendarMonth.Year == dateRangeStartDate.Year);
             if (monthToScroll == monthsPager.CurrentItem) return;
 
-            var dateRangeStartDateIsContainedInCurrentMonthView = months[monthsPager.CurrentItem].Days
-                .Any(day => day.DateTimeOffset == dateRangeStartDate);
+            var dateRangeStartDateIsContainedInCurrentMonthView =
+                months[monthsPager.CurrentItem]
+                .Days.Any(day => day.DateTimeOffset == dateRangeStartDate);
 
+            if (dateRangeStartDateIsContainedInCurrentMonthView
+            && dateRangeStartDate.Month != dateRange.EndDate.Month)
+                return;
 
-            if (!dateRangeStartDateIsContainedInCurrentMonthView || dateRangeStartDate.Month == dateRange.EndDate.Month)
-            {
-                if (hasScrolledDown())
-                {
-                    pendingPageUpdate = null;
-                    monthsPager.SetCurrentItem(monthToScroll, true);
-                }
-                else
-                {
-                    pendingPageUpdate = monthToScroll;
-                }
-            }
-        }
-
-        private bool hasScrolledDown()
-        {
-            var calendarViewMargins = (MarginLayoutParams)LayoutParameters;
-            return calendarViewMargins.TopMargin >= 0;
+            monthsPager.Post(() => monthsPager.SetCurrentItem(monthToScroll, true));
         }
 
         private void onRowCountChanged(int rowsInCurrentMonth)
@@ -212,9 +192,6 @@ namespace Toggl.Droid.Views
             var layoutParams = monthsPager.LayoutParameters;
             layoutParams.Height = rowHeight * currentRowCount;
             monthsPager.LayoutParameters = layoutParams;
-
-            var parent = Parent as ReportsLinearLayout;
-            parent?.RecalculateCalendarHeight();
         }
 
         protected override void Dispose(bool disposing)

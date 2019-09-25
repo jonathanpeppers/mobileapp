@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -15,9 +16,7 @@ namespace Toggl.Core.UI.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class SelectCountryViewModel : ViewModel<long?, long?>
     {
-        private readonly IRxActionFactory rxActionFactory;
-
-        public IObservable<IEnumerable<SelectableCountryViewModel>> Countries { get; private set; }
+        public IObservable<IImmutableList<SelectableCountryViewModel>> Countries { get; private set; }
         public ISubject<string> FilterText { get; } = new BehaviorSubject<string>(string.Empty);
         public InputAction<SelectableCountryViewModel> SelectCountry { get; }
 
@@ -25,8 +24,6 @@ namespace Toggl.Core.UI.ViewModels
             : base(navigationService)
         {
             Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
-
-            this.rxActionFactory = rxActionFactory;
 
             SelectCountry = rxActionFactory.FromAction<SelectableCountryViewModel>(selectCountry);
         }
@@ -48,11 +45,10 @@ namespace Toggl.Core.UI.ViewModels
                 .Select(text => text?.Trim() ?? string.Empty)
                 .DistinctUntilChanged()
                 .Select(trimmedText =>
-                {
-                    return allCountries
+                    allCountries
                         .Where(c => c.Name.ContainsIgnoringCase(trimmedText))
-                        .Select(c => new SelectableCountryViewModel(c, c.Id == selectedCountryId));
-                });
+                        .Select(c => new SelectableCountryViewModel(c, c.Id == selectedCountryId))
+                        .ToImmutableList());
         }
 
         private void selectCountry(SelectableCountryViewModel selectedCountry)

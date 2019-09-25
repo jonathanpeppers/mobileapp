@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:elevation="1dp"
-    android:background="@color/lightGray"
+    android:background="@color/background"
     android:foreground="?android:attr/selectableItemBackground"
     android:layout_height="48dp"
     android:layout_width="match_parent">
@@ -13,7 +12,7 @@
         android:maxLines="1"
         android:textSize="15sp"
         android:fontFamily="sans-serif-medium"
-        android:textColor="@color/defaultEditText"
+        android:textColor="@color/primaryText"
         tools:text="Superday landing page Superday landind sda fsad sd fsa df asdf g page Superday landing page Superday landing page"
         android:layout_marginLeft="16dp"
         android:layout_width="wrap_content"
@@ -27,7 +26,7 @@
         android:layout_width="match_parent" />
     <View
         android:visibility="visible"
-        android:background="@drawable/TransparentToWhiteGradient"
+        android:background="@drawable/TransparentToBackgroundGradient"
         android:layout_width="48dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true" />

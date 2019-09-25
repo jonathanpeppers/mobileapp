@@ -48,12 +48,13 @@ namespace Toggl.Droid.ViewHolders
             suggestionsRecyclerView.SetLayoutManager(new LinearLayoutManager(ItemView.Context));
             suggestionsRecyclerView.SetAdapter(adapter);
 
+            hintTextView.Text = Shared.Resources.WorkingOnThese;
+
             adapter.ItemTapObservable
                 .Subscribe(suggestionsViewModel.StartTimeEntry.Inputs)
                 .DisposedBy(DisposeBag);
 
             suggestionsViewModel.Suggestions
-                .Select(Enumerable.ToList)
                 .Subscribe(adapter.Rx().Items())
                 .DisposedBy(DisposeBag);
 

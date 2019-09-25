@@ -1,6 +1,7 @@
 ﻿using System;
 using Toggl.Core.Models.Interfaces;
 using Toggl.Shared;
+using Toggl.Storage;
 
 namespace Toggl.Core.Extensions
 {
@@ -41,5 +42,11 @@ namespace Toggl.Core.Extensions
             => timeEntry.Duration.HasValue
                 ? timeEntry.Start + new TimeSpan(timeEntry.Duration.Value)
                 : null as DateTimeOffset?;
+
+        public static bool IsPlaceholder(this IThreadSafeProject project)
+            => project?.SyncStatus == SyncStatus.RefetchingNeeded;
+
+        public static bool IsPlaceholder(this IThreadSafeTask task)
+            => task?.SyncStatus == SyncStatus.RefetchingNeeded;
     }
 }

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView 
+<android.support.v7.widget.CardView
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:local="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    local:cardUseCompatPadding="true"
+    app:cardUseCompatPadding="true"
+    app:cardBackgroundColor="@color/cardBackground"
     android:layout_marginTop="16dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
@@ -15,24 +16,24 @@
         android:layout_marginRight="16dp"
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
-        
+
         <android.support.constraint.Group
             android:id="@+id/QuestionView"
             android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            local:constraint_referenced_ids="UserFeedbackTitle,UserFeedbackThumbsUp,UserFeedbackThumbsDown,UserFeedbackThumbsUpText,UserFeedbackThumbsDownText" />
+            app:constraint_referenced_ids="UserFeedbackTitle,UserFeedbackThumbsUp,UserFeedbackThumbsDown,UserFeedbackThumbsUpText,UserFeedbackThumbsDownText" />
         <android.support.constraint.Group
             android:id="@+id/ImpressionView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            local:constraint_referenced_ids="UserFeedbackImpressionTitle,UserFeedbackImpressionThumbsImage,UserFeedbackDescription,UserFeedbackRateButton,UserFeedbackLaterButton" />
+            app:constraint_referenced_ids="UserFeedbackImpressionTitle,UserFeedbackImpressionThumbsImage,UserFeedbackDescription,UserFeedbackRateButton,UserFeedbackLaterButton" />
 
         <TextView
             android:id="@+id/UserFeedbackTitle"
-            local:layout_constraintTop_toTopOf="parent"
-            local:layout_constraintLeft_toLeftOf="parent"
-            local:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
             android:textAlignment="center"
@@ -42,11 +43,11 @@
             android:textStyle="normal"
             android:textColor="#3e3e3e"
             android:letterSpacing="0.01"
-            android:text="@string/DoYouLikeThisApp" />
+            tools:text="Do you like this app?" />
         <ImageView
             android:id="@+id/UserFeedbackThumbsUp"
-            local:layout_constraintLeft_toLeftOf="parent"
-            local:layout_constraintTop_toBottomOf="@id/UserFeedbackTitle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/UserFeedbackTitle"
             android:layout_marginTop="34dp"
             android:layout_marginLeft="56dp"
             android:src="@drawable/ic_thumbs_up"
@@ -54,8 +55,8 @@
             android:layout_height="64dp" />
         <ImageView
             android:id="@+id/UserFeedbackThumbsDown"
-            local:layout_constraintRight_toRightOf="parent"
-            local:layout_constraintTop_toBottomOf="@id/UserFeedbackTitle"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/UserFeedbackTitle"
             android:layout_marginTop="34dp"
             android:layout_marginRight="56dp"
             android:src="@drawable/ic_thumbs_down"
@@ -63,10 +64,10 @@
             android:layout_height="64dp" />
         <TextView
             android:id="@+id/UserFeedbackThumbsUpText"
-            local:layout_constraintTop_toBottomOf="@id/UserFeedbackThumbsUp"
-            local:layout_constraintLeft_toLeftOf="@id/UserFeedbackThumbsUp"
-            local:layout_constraintRight_toRightOf="@id/UserFeedbackThumbsUp"
-            local:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/UserFeedbackThumbsUp"
+            app:layout_constraintLeft_toLeftOf="@id/UserFeedbackThumbsUp"
+            app:layout_constraintRight_toRightOf="@id/UserFeedbackThumbsUp"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="16dp"
             android:layout_width="wrap_content"
@@ -78,13 +79,13 @@
             android:letterSpacing="0.04"
             android:lineSpacingExtra="6sp"
             android:gravity="center_horizontal"
-            android:text="@string/YesWithExclamation" />
+            tools:text="Yes!" />
         <TextView
             android:id="@+id/UserFeedbackThumbsDownText"
-            local:layout_constraintTop_toBottomOf="@id/UserFeedbackThumbsDown"
-            local:layout_constraintLeft_toLeftOf="@id/UserFeedbackThumbsDown"
-            local:layout_constraintRight_toRightOf="@id/UserFeedbackThumbsDown"
-            local:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/UserFeedbackThumbsDown"
+            app:layout_constraintLeft_toLeftOf="@id/UserFeedbackThumbsDown"
+            app:layout_constraintRight_toRightOf="@id/UserFeedbackThumbsDown"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="16dp"
             android:layout_width="wrap_content"
@@ -96,12 +97,12 @@
             android:letterSpacing="0.04"
             android:lineSpacingExtra="6sp"
             android:gravity="center_horizontal"
-            android:text="@string/NotReally" />
-            
+            tools:text="Not really" />
+
         <TextView
             android:id="@+id/UserFeedbackImpressionTitle"
-            local:layout_constraintTop_toTopOf="parent"
-            local:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
             android:layout_width="wrap_content"
@@ -115,16 +116,16 @@
             tools:text="Awesome!" />
          <View
             android:id="@+id/UserFeedbackImpressionThumbsPlaceholder"
-            local:layout_constraintLeft_toLeftOf="parent"
-            local:layout_constraintTop_toBottomOf="@id/UserFeedbackImpressionTitle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/UserFeedbackImpressionTitle"
             android:layout_marginTop="24dp"
             android:layout_marginLeft="16dp"
             android:layout_width="68dp"
             android:layout_height="64dp" />
         <ImageView
             android:id="@+id/UserFeedbackImpressionThumbsImage"
-            local:layout_constraintLeft_toLeftOf="parent"
-            local:layout_constraintTop_toBottomOf="@id/UserFeedbackImpressionTitle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/UserFeedbackImpressionTitle"
             android:layout_marginTop="24dp"
             android:layout_marginLeft="16dp"
             android:src="@drawable/ic_thumbs_up"
@@ -132,15 +133,15 @@
             android:layout_height="64dp" />
         <TextView
             android:id="@+id/UserFeedbackDescription"
-            local:layout_constraintLeft_toRightOf="@id/UserFeedbackImpressionThumbsPlaceholder"
-            local:layout_constraintRight_toRightOf="parent"
-            local:layout_constraintBottom_toBottomOf="@id/UserFeedbackImpressionThumbsPlaceholder"
-            local:layout_constraintTop_toBottomOf="@+id/UserFeedbackImpressionTitle"
+            app:layout_constraintLeft_toRightOf="@id/UserFeedbackImpressionThumbsPlaceholder"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/UserFeedbackImpressionThumbsPlaceholder"
+            app:layout_constraintTop_toBottomOf="@+id/UserFeedbackImpressionTitle"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="32dp"
             android:layout_width="0dp"
-            local:layout_constraintHorizontal_weight="1"
+            app:layout_constraintHorizontal_weight="1"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:singleLine="false"
@@ -148,30 +149,30 @@
             android:textStyle="normal"
             android:textColor="#3e3e3e"
             android:lineSpacingExtra="8sp"
-            android:text="@string/PleaseRateUs" />
+            tools:text="Would you mind rating Toggl in the Play Store? Your review really makes a difference." />
         <Button
             android:id="@+id/UserFeedbackRateButton"
-            local:layout_constraintRight_toRightOf="parent"
-            local:layout_constraintBottom_toBottomOf="parent"
-            local:layout_constraintTop_toBottomOf="@id/UserFeedbackDescription"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/UserFeedbackDescription"
             android:textAllCaps="false"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="34dp"
-            android:text="@string/RateTheApp"
+            tools:text="RateTheApp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/UserFeedbackLaterButton"
-            local:layout_constraintTop_toTopOf="@id/UserFeedbackRateButton"
-            local:layout_constraintBottom_toBottomOf="@id/UserFeedbackRateButton"
-            local:layout_constraintRight_toLeftOf="@id/UserFeedbackRateButton"
+            app:layout_constraintTop_toTopOf="@id/UserFeedbackRateButton"
+            app:layout_constraintBottom_toBottomOf="@id/UserFeedbackRateButton"
+            app:layout_constraintRight_toLeftOf="@id/UserFeedbackRateButton"
             android:gravity="center"
             android:layout_marginRight="8dp"
             android:paddingRight="16dp"
             android:paddingLeft="16dp"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:text="@string/Later" />
+            tools:text="Later" />
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

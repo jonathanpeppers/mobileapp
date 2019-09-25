@@ -2,11 +2,11 @@
 using System;
 using System.Reactive;
 using System.Reactive.Disposables;
+using Toggl.iOS.Extensions;
+using Toggl.iOS.Extensions.Reactive;
 using Toggl.Core.UI.Helper;
 using Toggl.Core.UI.ViewModels.TimeEntriesLog;
 using Toggl.iOS.Cells;
-using Toggl.iOS.Extensions;
-using Toggl.iOS.Extensions.Reactive;
 using Toggl.iOS.Transformations;
 using Toggl.Shared;
 using UIKit;
@@ -79,9 +79,8 @@ namespace Toggl.iOS.Views
             updateAccessibilityProperties();
 
             // Text
-            var projectColor = new Color(Item.ProjectColor).ToNativeColor();
             DescriptionLabel.Text = Item.HasDescription ? Item.Description : Resources.AddDescription;
-            ProjectTaskClientLabel.AttributedText = projectTaskClientToAttributedString.Convert(Item.ProjectName, Item.TaskName, Item.ClientName, projectColor);
+            ProjectTaskClientLabel.AttributedText = projectTaskClientToAttributedString.Convert(Item);
             TimeLabel.Text = Item.Duration;
 
             // Colors

@@ -153,15 +153,19 @@ namespace Toggl.Core.UI.ViewModels.Settings
             var project = await interactorFactory.GetProjectById(chosenProjectProjectId).Execute();
             clearTagsIfNeeded(workspaceId, project.WorkspaceId);
 
-            var taskName = chosenProjectParams.TaskId.HasValue
-                ? (await interactorFactory.GetTaskById((long)chosenProjectParams.TaskId).Execute())?.Name
-                : string.Empty;
+            var task = chosenProjectParams.TaskId.HasValue
+                ? await interactorFactory.GetTaskById(chosenProjectParams.TaskId.Value).Execute()
+                : null;
+
+            var taskName = task?.Name ?? string.Empty;
 
             projectClientTaskInfo.OnNext(new EditTimeEntryViewModel.ProjectClientTaskInfo(
                 project.DisplayName(),
                 project.DisplayColor(),
                 project.Client?.Name,
-                taskName));
+                taskName,
+                project.IsPlaceholder(),
+                task?.IsPlaceholder() ?? false));
 
             Workspace.Accept(chosenWorkspace);
             Project.Accept(project);

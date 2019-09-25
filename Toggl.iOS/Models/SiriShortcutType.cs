@@ -1,5 +1,6 @@
 using Intents;
 using Toggl.iOS.Intents;
+using Toggl.Shared;
 using System;
 
 namespace Toggl.iOS.Models
@@ -22,19 +23,19 @@ namespace Toggl.iOS.Models
             switch (shortcutType)
             {
                 case SiriShortcutType.Start:
-                    return "Start timer";
+                    return Resources.SiriShortcutsStartTimer;
                 case SiriShortcutType.StartFromClipboard:
-                    return "Start from clipboard";
+                    return Resources.SiriShortcutsStartFromClipboard;
                 case SiriShortcutType.Continue:
-                    return "Continue tracking";
+                    return Resources.SiriShortcutsContinueTracking;
                 case SiriShortcutType.Stop:
-                    return "Stop running entry";
+                    return Resources.SiriShortcutsStopRunningEntry;
                 case SiriShortcutType.CustomStart:
-                    return "Start timer with custom details";
+                    return Resources.SiriShortcutsStartTimerWithCustomDetails;
                 case SiriShortcutType.ShowReport:
-                    return "Show report";
+                    return Resources.SiriShortcutsShowReport;
                 case SiriShortcutType.CustomReport:
-                    return "Show custom report";
+                    return Resources.SiriShortcutsShowCustomReport;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(shortcutType), shortcutType, null);
             }

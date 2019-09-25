@@ -1,6 +1,7 @@
 ﻿using Foundation;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Toggl.Core.UI.Parameters;
@@ -20,7 +21,7 @@ namespace Toggl.iOS.ViewSources
         private readonly ISubject<ReportsCalendarDayViewModel> dayTaps = new Subject<ReportsCalendarDayViewModel>();
 
         private ReportsDateRangeParameter currentSelectedDateRange;
-        private List<ReportsCalendarPageViewModel> months = new List<ReportsCalendarPageViewModel>();
+        private IImmutableList<ReportsCalendarPageViewModel> months = ImmutableList<ReportsCalendarPageViewModel>.Empty;
 
         public IObservable<ReportsCalendarDayViewModel> DayTaps { get; }
         public IObservable<int> CurrentPageNotScrollingObservable { get; }
@@ -47,7 +48,7 @@ namespace Toggl.iOS.ViewSources
             return cell;
         }
 
-        public void UpdateMonths(List<ReportsCalendarPageViewModel> newMonths)
+        public void UpdateMonths(IImmutableList<ReportsCalendarPageViewModel> newMonths)
         {
             months = newMonths;
             if (currentSelectedDateRange != null)

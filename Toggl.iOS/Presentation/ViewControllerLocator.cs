@@ -56,30 +56,22 @@ namespace Toggl.iOS.Presentation
                     return new ReportsViewController(vm);
                 case ReportsCalendarViewModel vm:
                     return new ReportsCalendarViewController(vm);
-                case SelectBeginningOfWeekViewModel vm:
-                    return new SelectBeginningOfWeekViewController(vm);
                 case SelectClientViewModel vm:
                     return new SelectClientViewController(vm);
                 case SelectColorViewModel vm:
                     return new SelectColorViewController(vm);
                 case SelectCountryViewModel vm:
                     return new SelectCountryViewController(vm);
-                case SelectDateFormatViewModel vm:
-                    return new SelectDateFormatViewController(vm);
                 case SelectDateTimeViewModel vm:
                     return new SelectDateTimeViewController(vm);
                 case SelectDefaultWorkspaceViewModel vm:
                     return new SelectDefaultWorkspaceViewController(vm);
-                case SelectDurationFormatViewModel vm:
-                    return new SelectDurationFormatViewController(vm);
                 case SelectProjectViewModel vm:
                     return new SelectProjectViewController(vm);
                 case SelectTagsViewModel vm:
                     return new SelectTagsViewController(vm);
                 case SelectUserCalendarsViewModel vm:
                     return new SelectUserCalendarsViewController(vm);
-                case SelectWorkspaceViewModel vm:
-                    return new SelectWorkspaceViewController(vm);
                 case SendFeedbackViewModel vm:
                     return new SendFeedbackViewController(vm);
                 case SettingsViewModel vm:

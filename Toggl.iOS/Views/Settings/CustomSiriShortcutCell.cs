@@ -45,7 +45,7 @@ namespace Toggl.iOS.Views.Settings
             DetailsLabel.TextColor = Colors.Siri.InvocationPhrase.ToNativeColor();
 
             if (Item.ProjectName == null)
-                DetailsLabel.Text = $"in {Item.WorkspaceName}";
+                DetailsLabel.Text = string.Format(Resources.CustomSiriShortcutCellIn, Item.WorkspaceName);
             else
                 DetailsLabel.AttributedText = projectTaskClientToAttributedString.Convert(Item.ProjectName, null, Item.ClientName, projectColor);
 

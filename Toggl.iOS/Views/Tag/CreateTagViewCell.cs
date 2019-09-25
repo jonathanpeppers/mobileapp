@@ -2,6 +2,7 @@
 using System;
 using Toggl.Core.UI.ViewModels;
 using Toggl.iOS.Cells;
+using Toggl.Shared;
 using UIKit;
 
 namespace Toggl.iOS.Views.Tag
@@ -28,7 +29,7 @@ namespace Toggl.iOS.Views.Tag
 
         protected override void UpdateView()
         {
-            NameLabel.Text = $"Create tag \"{Item.Name.Trim()}\"";
+            NameLabel.Text = $"{Resources.CreateTag} \"{Item.Name.Trim()}\"";
         }
     }
 }

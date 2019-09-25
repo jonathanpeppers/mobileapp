@@ -1,13 +1,11 @@
 using Android.App;
 using Android.Content.PM;
-using Android.Content.Res;
 using Android.OS;
-using Android.Support.V7.Widget;
+using Android.Runtime;
 using Android.Text;
 using System;
-using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
+using Android.Views;
 using Toggl.Core.Analytics;
 using Toggl.Core.Extensions;
 using Toggl.Core.UI.Extensions;
@@ -15,12 +13,10 @@ using Toggl.Core.UI.Transformations;
 using Toggl.Core.UI.ViewModels;
 using Toggl.Droid.Extensions;
 using Toggl.Droid.Extensions.Reactive;
-using Toggl.Droid.ViewHolders;
-using Toggl.Shared;
 using Toggl.Shared.Extensions;
-using static Toggl.Droid.Resource.String;
 using TagsAdapter = Toggl.Droid.Adapters.SimpleAdapter<string>;
 using TextResources = Toggl.Shared.Resources;
+using Toggl.Droid.Presentation;
 using TimeEntryExtensions = Toggl.Droid.Extensions.TimeEntryExtensions;
 
 namespace Toggl.Droid.Activities
@@ -30,28 +26,19 @@ namespace Toggl.Droid.Activities
               ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public sealed partial class EditTimeEntryActivity : ReactiveActivity<EditTimeEntryViewModel>
     {
-        private TagsAdapter tagsAdapter = new TagsAdapter(Resource.Layout.EditTimeEntryTagCell, StringViewHolder.Create);
+        private IMenuItem saveMenuItem;
+        public EditTimeEntryActivity() : base(
+            Resource.Layout.EditTimeEntryActivity,
+            Resource.Style.AppTheme,
+            Transitions.SlideInFromBottom)
+        { }
 
-        protected override void OnCreate(Bundle bundle)
+        public EditTimeEntryActivity(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
         {
-            SetTheme(Resource.Style.AppTheme_Light_WhiteBackground);
-            base.OnCreate(bundle);
-            if (ViewModelWasNotCached())
-            {
-                BailOutToSplashScreen();
-                return;
-            }
-            SetContentView(Resource.Layout.EditTimeEntryActivity);
-            restoreTimeEntryIds(bundle);
-
-            OverridePendingTransition(Resource.Animation.abc_slide_in_bottom, Resource.Animation.abc_fade_out);
-
-            InitializeViews();
-            setupViews();
-            setupBindings();
         }
 
-        private void restoreTimeEntryIds(Bundle bundle)
+        protected override void RestoreViewModelStateFromBundle(Bundle bundle)
         {
             if (bundle == null) return;
             if (!bundle.ContainsKey(nameof(ViewModel.TimeEntryIds))) return;
@@ -60,12 +47,6 @@ namespace Toggl.Droid.Activities
             if (viewModelTimeEntryIds == null) return;
 
             ViewModel.TimeEntryIds = viewModelTimeEntryIds;
-        }
-
-        protected override void OnSaveInstanceState(Bundle outState)
-        {
-            outState?.PutLongArray(nameof(ViewModel.TimeEntryIds), ViewModel.TimeEntryIds);
-            base.OnSaveInstanceState(outState);
         }
 
         protected override void OnResume()
@@ -80,51 +61,24 @@ namespace Toggl.Droid.Activities
             clearOnboardingOnStop();
         }
 
+        protected override void OnSaveInstanceState(Bundle outState)
+        {
+            outState?.PutLongArray(nameof(ViewModel.TimeEntryIds), ViewModel.TimeEntryIds);
+            base.OnSaveInstanceState(outState);
+        }
+
         public override void Finish()
         {
             base.Finish();
             OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_slide_out_bottom);
         }
 
-        private void setupViews()
+        protected override void InitializeBindings()
         {
-            singleTimeEntryModeViews.Visibility = (!ViewModel.IsEditingGroup).ToVisibility();
-            timeEntriesGroupModeViews.Visibility = ViewModel.IsEditingGroup.ToVisibility();
-
-            descriptionEditText.Text = ViewModel.Description.Value;
-
-            groupCountTextView.Text = string.Format(
-                TextResources.EditingTimeEntryGroup,
-                ViewModel.GroupCount);
-
-            var layoutManager = new LinearLayoutManager(this, LinearLayoutManager.Horizontal, false);
-            layoutManager.ItemPrefetchEnabled = true;
-            layoutManager.InitialPrefetchItemCount = 5;
-            tagsRecycler.SetLayoutManager(layoutManager);
-            tagsRecycler.SetAdapter(tagsAdapter);
-
-            deleteLabel.Text = ViewModel.IsEditingGroup
-                ? string.Format(TextResources.DeleteNTimeEntries, ViewModel.GroupCount)
-                : TextResources.DeleteThisEntry;
-
-            scrollView.AttachMaterialScrollBehaviour(appBarLayout);
-        }
-
-        private void setupBindings()
-        {
-            closeButton.Rx().Tap()
-                .Subscribe(ViewModel.CloseWithDefaultResult)
-                .DisposedBy(DisposeBag);
-
-            confirmButton.Rx().Tap()
-                .Select(_ => descriptionEditText.HasFocus)
-                .Subscribe(handleConfirmClick)
-                .DisposedBy(DisposeBag);
 
             descriptionEditText.Rx().FocusChanged()
-                .Select(isFocused => isFocused ? Done : Save)
-                .Select(Resources.GetString)
-                .Subscribe(confirmButton.Rx().TextObserver());
+                .Select(isFocused => isFocused ? TextResources.Done : TextResources.Save)
+                .Subscribe(textResource => saveMenuItem?.SetTitle(textResource));
 
             descriptionEditText.Rx().Text()
                 .Subscribe(ViewModel.Description.Accept)
@@ -157,12 +111,16 @@ namespace Toggl.Droid.Activities
                 .Subscribe(projectTaskClientTextView.Rx().TextFormattedObserver())
                 .DisposedBy(DisposeBag);
 
+            ViewModel.ProjectClientTask
+                .Select(pct => !pct.HasProject)
+                .Subscribe(projectPlaceholderLabel.Rx().IsVisible())
+                .DisposedBy(DisposeBag);
+
             projectButton.Rx().Tap()
                 .Subscribe(ViewModel.SelectProject.Inputs)
                 .DisposedBy(DisposeBag);
 
             ViewModel.Tags
-                .Select(tags => tags.ToArray())
                 .Subscribe(tagsAdapter.Rx().Items())
                 .DisposedBy(DisposeBag);
 
@@ -184,6 +142,10 @@ namespace Toggl.Droid.Activities
 
             ViewModel.IsBillable
                 .Subscribe(billableSwitch.Rx().CheckedObserver())
+                .DisposedBy(DisposeBag);
+
+            billableSwitch.Rx()
+                .BindAction(ViewModel.ToggleBillable)
                 .DisposedBy(DisposeBag);
 
             billableButton.Rx().Tap()
@@ -261,6 +223,24 @@ namespace Toggl.Droid.Activities
                 .Subscribe(ViewModel.Delete.Inputs)
                 .DisposedBy(DisposeBag);
         }
+        
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            MenuInflater.Inflate(Resource.Menu.OneButtonMenu, menu);
+            saveMenuItem = menu.FindItem(Resource.Id.ButtonMenuItem);
+            saveMenuItem.SetTitle(Shared.Resources.Save);
+            return true;
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            if (item.ItemId == Resource.Id.ButtonMenuItem)
+            {
+                handleConfirmClick(descriptionEditText.HasFocus);
+                return true;
+            }
+            return base.OnOptionsItemSelected(item);
+        }
 
         private void adjustUIForInaccessibleTimeEntry(bool isInaccessible)
         {
@@ -291,10 +271,13 @@ namespace Toggl.Droid.Activities
 
         private ISpannable generateProjectTaskClientFormattedString(EditTimeEntryViewModel.ProjectClientTaskInfo projectClientTask)
             => TimeEntryExtensions.ToProjectTaskClient(
-                    projectClientTask.HasProject,
-                    projectClientTask.Project,
-                    projectClientTask.ProjectColor,
-                    projectClientTask.Task,
-                    projectClientTask.Client);
+                this,
+                projectClientTask.HasProject,
+                projectClientTask.Project,
+                projectClientTask.ProjectColor,
+                projectClientTask.Task,
+                projectClientTask.Client,
+                projectClientTask.ProjectIsPlaceholder,
+                projectClientTask.TaskIsPlaceholder);
     }
 }

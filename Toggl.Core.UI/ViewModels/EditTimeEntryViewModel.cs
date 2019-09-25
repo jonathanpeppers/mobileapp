@@ -78,7 +78,7 @@ namespace Toggl.Core.UI.ViewModels
         public TimeSpan GroupDuration { get; private set; }
 
         private BehaviorSubject<IEnumerable<IThreadSafeTag>> tagsSubject;
-        public IObservable<IEnumerable<string>> Tags { get; set; }
+        public IObservable<IImmutableList<string>> Tags { get; set; }
         private IEnumerable<long> tagIds
             => tagsSubject.Value.Select(tag => tag.Id);
 
@@ -245,7 +245,9 @@ namespace Toggl.Core.UI.ViewModels
                 timeEntry.Project?.DisplayName(),
                 timeEntry.Project?.DisplayColor(),
                 timeEntry.Project?.Client?.Name,
-                timeEntry.Task?.Name));
+                timeEntry.Task?.Name,
+                timeEntry.Project?.IsPlaceholder() ?? false,
+                timeEntry.Task?.IsPlaceholder() ?? false));
 
             isBillableSubject.OnNext(timeEntry.Billable);
 
@@ -338,15 +340,19 @@ namespace Toggl.Core.UI.ViewModels
             var project = await interactorFactory.GetProjectById(projectId.Value).Execute();
             clearTagsIfNeeded(workspaceId, project.WorkspaceId);
 
-            var taskName = chosenProject.TaskId.HasValue
-                ? (await interactorFactory.GetTaskById(taskId.Value).Execute())?.Name
-                : string.Empty;
+            var task = chosenProject.TaskId.HasValue
+                ? await interactorFactory.GetTaskById(taskId.Value).Execute()
+                : null;
+
+            var taskName = task?.Name ?? string.Empty;
 
             projectClientTaskSubject.OnNext(new ProjectClientTaskInfo(
                 project.DisplayName(),
                 project.DisplayColor(),
                 project.Client?.Name,
-                taskName));
+                taskName,
+                project.IsPlaceholder(),
+                task?.IsPlaceholder() ?? false));
 
             workspaceIdSubject.OnNext(chosenProject.WorkspaceId);
 
@@ -434,9 +440,13 @@ namespace Toggl.Core.UI.ViewModels
         {
             if (await isDirty())
             {
-                var userConfirmedDiscardingChanges = await View.ConfirmDestructiveAction(ActionType.DiscardEditingChanges);
-                if (!userConfirmedDiscardingChanges)
-                    return;
+                var view = View;
+                if (view != null)
+                {
+                    var userConfirmedDiscardingChanges = await view.ConfirmDestructiveAction(ActionType.DiscardEditingChanges);
+                    if (!userConfirmedDiscardingChanges)
+                        return;
+                }
             }
 
             analyticsService.EditViewClosed.Track(closeReason(EditViewCloseReason.Close));
@@ -465,7 +475,8 @@ namespace Toggl.Core.UI.ViewModels
 
             OnboardingStorage.EditedTimeEntry();
 
-            var timeEntries = await interactorFactory.GetMultipleTimeEntriesById(TimeEntryIds).Execute();
+            var timeEntries = await interactorFactory
+                .GetMultipleTimeEntriesById(TimeEntryIds).Execute();
 
             var duration = await durationSubject.FirstAsync();
             var commonTimeEntryData = new EditTimeEntryDto
@@ -485,12 +496,13 @@ namespace Toggl.Core.UI.ViewModels
                 .Select(timeEntry => applyDataFromTimeEntry(commonTimeEntryData, timeEntry))
                 .ToArray();
 
-            interactorFactory
+            close(reason);
+
+            await interactorFactory
                 .UpdateMultipleTimeEntries(timeEntriesDtos)
                 .Execute()
-                .ObserveOn(schedulerProvider.MainScheduler)
-                .SubscribeToErrorsAndCompletion((Exception ex) => close(reason), () => close(reason))
-                .DisposedBy(disposeBag);
+                .Catch(Observable.Empty<IEnumerable<IThreadSafeTimeEntry>>())
+                .SubscribeOn(schedulerProvider.BackgroundScheduler);
         }
 
         private EditTimeEntryDto applyDataFromTimeEntry(EditTimeEntryDto commonTimeEntryData, IThreadSafeTimeEntry timeEntry)
@@ -545,23 +557,27 @@ namespace Toggl.Core.UI.ViewModels
 
         public struct ProjectClientTaskInfo
         {
-            public ProjectClientTaskInfo(string project, string projectColor, string client, string task)
+            public ProjectClientTaskInfo(string project, string projectColor, string client, string task, bool projectIsPlaceholder, bool taskIsPlaceholder)
             {
                 Project = string.IsNullOrEmpty(project) ? null : project;
                 ProjectColor = string.IsNullOrEmpty(projectColor) ? null : projectColor;
                 Client = string.IsNullOrEmpty(client) ? null : client;
                 Task = string.IsNullOrEmpty(task) ? null : task;
+                ProjectIsPlaceholder = projectIsPlaceholder;
+                TaskIsPlaceholder = taskIsPlaceholder;
             }
 
             public string Project { get; private set; }
             public string ProjectColor { get; private set; }
             public string Client { get; private set; }
             public string Task { get; private set; }
+            public bool ProjectIsPlaceholder { get; private set; }
+            public bool TaskIsPlaceholder { get; private set; }
 
             public bool HasProject => !string.IsNullOrEmpty(Project);
 
             public static ProjectClientTaskInfo Empty
-                => new ProjectClientTaskInfo(null, null, null, null);
+                => new ProjectClientTaskInfo(null, null, null, null, false, false);
         }
 
         private void close(EditViewCloseReason reason)

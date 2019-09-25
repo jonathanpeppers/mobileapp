@@ -48,6 +48,7 @@ namespace Toggl.Core.UI.ViewModels
             INavigationService navigationService,
             IRemoteConfigService remoteConfigService,
             IAccessibilityService accessibilityService,
+            IUpdateRemoteConfigCacheService updateRemoteConfigCacheService,
             IAccessRestrictionStorage accessRestrictionStorage,
             IRxActionFactory rxActionFactory,
             IUserAccessManager userAccessManager,
@@ -68,6 +69,7 @@ namespace Toggl.Core.UI.ViewModels
             Ensure.Argument.IsNotNull(permissionsChecker, nameof(permissionsChecker));
             Ensure.Argument.IsNotNull(remoteConfigService, nameof(remoteConfigService));
             Ensure.Argument.IsNotNull(accessibilityService, nameof(accessibilityService));
+            Ensure.Argument.IsNotNull(updateRemoteConfigCacheService, nameof(updateRemoteConfigCacheService));
             Ensure.Argument.IsNotNull(accessRestrictionStorage, nameof(accessRestrictionStorage));
             Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
             Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
@@ -90,6 +92,7 @@ namespace Toggl.Core.UI.ViewModels
                 navigationService,
                 remoteConfigService,
                 accessibilityService,
+                updateRemoteConfigCacheService,
                 accessRestrictionStorage,
                 schedulerProvider,
                 rxActionFactory,

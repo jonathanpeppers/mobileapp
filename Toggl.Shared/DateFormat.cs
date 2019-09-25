@@ -66,5 +66,15 @@ namespace Toggl.Shared
 
         public static bool operator !=(DateFormat d1, DateFormat d2)
             => !d1.Equals(d2);
+
+        public static DateFormat[] ValidDateFormats => new[]
+        {
+            FromLocalizedDateFormat("MM/DD/YYYY"),
+            FromLocalizedDateFormat("DD-MM-YYYY"),
+            FromLocalizedDateFormat("MM-DD-YYYY"),
+            FromLocalizedDateFormat("YYYY-MM-DD"),
+            FromLocalizedDateFormat("DD/MM/YYYY"),
+            FromLocalizedDateFormat("DD.MM.YYYY")
+        };
     }
 }

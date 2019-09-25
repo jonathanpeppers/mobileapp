@@ -110,5 +110,8 @@ namespace Toggl.Shared.Extensions
 
         public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> observable)
             => observable.SelectMany(CommonFunctions.Identity);
+
+        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> collection, bool condition, Func<T> getElement)
+            => condition ? collection.Prepend(getElement()) : collection;
     }
 }

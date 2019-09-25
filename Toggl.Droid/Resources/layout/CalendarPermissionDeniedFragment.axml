@@ -2,6 +2,8 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/cardBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <ImageView
@@ -28,8 +30,8 @@
         android:textSize="20sp"
         android:fontFamily="sans-serif-medium"
         android:textStyle="normal"
-        android:textColor="@android:color/black"
-        android:text="@string/NoWorries"/>
+        android:textColor="@color/primaryText"
+        tools:text="No worries"/>
     <TextView
         android:id="@+id/Message"
         android:layout_width="0dp"
@@ -46,10 +48,10 @@
         android:textSize="16sp"
         android:fontFamily="sans-serif"
         android:textStyle="normal"
-        android:textColor="@android:color/black"
+        android:textColor="@color/primaryText"
         android:letterSpacing="0.01"
         android:lineSpacingExtra="8sp"
-        android:text="@string/CalendarPermissionDeniedMessage"/>
+        tools:text="Toggl needs access to your calendar to display events. You can enable this later."/>
     <Button
         android:id="@+id/Continue"
         android:layout_width="wrap_content"
@@ -66,11 +68,11 @@
         android:textSize="14sp"
         android:fontFamily="sans-serif-medium"
         android:textStyle="normal"
-        android:textColor="@color/buttonBlue"
+        android:textColor="@color/flatButtonText"
         android:letterSpacing="0.04"
         android:lineSpacingExtra="2sp"
         android:textAllCaps="false"
-        android:text="@string/Continue"/>
+        tools:text="Continue"/>
     <Button
         android:id="@+id/AllowAccess"
         android:layout_width="wrap_content"
@@ -83,9 +85,9 @@
         android:textSize="14sp"
         android:fontFamily="sans-serif-medium"
         android:textStyle="normal"
-        android:textColor="@color/buttonBlue"
+        android:textColor="@color/flatButtonText"
         android:letterSpacing="0.04"
         android:lineSpacingExtra="2sp"
         android:textAllCaps="false"
-        android:text="@string/AllowAccess"/>
+        tools:text="Allow access"/>
 </android.support.constraint.ConstraintLayout>

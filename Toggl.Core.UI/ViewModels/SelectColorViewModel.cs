@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -17,11 +19,11 @@ namespace Toggl.Core.UI.ViewModels
     [Preserve(AllMembers = true)]
     public class SelectColorViewModel : ViewModel<ColorParameters, Color>
     {
-        private readonly IRxActionFactory rxActionFactory;
-
         private Color defaultColor;
+        private readonly ReplaySubject<Unit> startCustomColorEmitting = new ReplaySubject<Unit>();
         private IObservable<Color> customColor;
-        private BehaviorSubject<Color> selectedColor = new BehaviorSubject<Color>(Colors.Transparent);
+
+        private readonly BehaviorSubject<Color> selectedColor = new BehaviorSubject<Color>(Colors.Transparent);
 
         private BehaviorSubject<float> hue { get; } = new BehaviorSubject<float>(0.0f);
         private BehaviorSubject<float> saturation { get; } = new BehaviorSubject<float>(0.0f);
@@ -29,7 +31,7 @@ namespace Toggl.Core.UI.ViewModels
 
         public bool AllowCustomColors { get; private set; }
 
-        public IObservable<IEnumerable<SelectableColorViewModel>> SelectableColors { get; }
+        public IObservable<IImmutableList<SelectableColorViewModel>> SelectableColors { get; }
         public IObservable<float> Hue { get; }
         public IObservable<float> Saturation { get; }
         public IObservable<float> Value { get; }
@@ -40,17 +42,16 @@ namespace Toggl.Core.UI.ViewModels
         public InputAction<float> SetValue { get; }
         public InputAction<Color> SelectColor { get; }
 
-        public SelectColorViewModel(INavigationService navigationService, IRxActionFactory rxActionFactory)
+        public SelectColorViewModel(INavigationService navigationService, IRxActionFactory rxActionFactory, ISchedulerProvider schedulerProvider)
             : base(navigationService)
         {
             Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
-
-            this.rxActionFactory = rxActionFactory;
+            Ensure.Argument.IsNotNull(schedulerProvider, nameof(schedulerProvider));
 
             // Public properties
-            Hue = hue.AsObservable();
-            Saturation = saturation.AsObservable();
-            Value = value.AsObservable();
+            Hue = hue.AsDriver(schedulerProvider);
+            Saturation = saturation.AsDriver(schedulerProvider);
+            Value = value.AsDriver(schedulerProvider);
 
             Save = rxActionFactory.FromAction(save);
             SetHue = rxActionFactory.FromAction<float>(hue.OnNext);
@@ -58,15 +59,20 @@ namespace Toggl.Core.UI.ViewModels
             SetValue = rxActionFactory.FromAction<float>(value.OnNext);
             SelectColor = rxActionFactory.FromAction<Color>(selectColor);
 
-            customColor = Observable
-                .CombineLatest(hue, saturation, value, Colors.FromHSV)
+            customColor = Observable.CombineLatest(hue, saturation, value, Colors.FromHSV)
+                .SkipUntil(startCustomColorEmitting)
+                .Throttle(TimeSpan.FromMilliseconds(100), schedulerProvider.DefaultScheduler)
                 .Do(selectedColor.OnNext);
 
+            var firstCustomColor = Colors.FromHSV(hue.Value, saturation.Value, value.Value);
+
             var availableColors = Observable.Return(Colors.DefaultProjectColors)
-                .CombineLatest(customColor, combineAllColors);
+                .CombineLatest(customColor.StartWith(firstCustomColor), combineAllColors);
 
             SelectableColors = availableColors
-                .CombineLatest(selectedColor, updateSelectableColors);
+                .CombineLatest(selectedColor, updateSelectableColors)
+                .Do(_ => startCustomColorEmitting.OnNext(Unit.Default));
+
         }
 
         public override Task Initialize(ColorParameters parameter)
@@ -80,6 +86,7 @@ namespace Toggl.Core.UI.ViewModels
             {
                 if (AllowCustomColors)
                 {
+                    startCustomColorEmitting.OnNext(Unit.Default);
                     var colorComponents = defaultColor.GetHSV();
                     hue.OnNext(colorComponents.hue);
                     saturation.OnNext(colorComponents.saturation);
@@ -97,6 +104,7 @@ namespace Toggl.Core.UI.ViewModels
 
             return base.Initialize(parameter);
         }
+
         public override void CloseWithDefaultResult()
         {
             Close(defaultColor);
@@ -120,9 +128,9 @@ namespace Toggl.Core.UI.ViewModels
                 save();
         }
 
-        private IEnumerable<SelectableColorViewModel> updateSelectableColors(IEnumerable<Color> availableColors, Color selectedColor)
-            => availableColors.Select(color => new SelectableColorViewModel(color, color == selectedColor));
-        
+        private IImmutableList<SelectableColorViewModel> updateSelectableColors(IEnumerable<Color> availableColors, Color selectedColor)
+            => availableColors.Select(color => new SelectableColorViewModel(color, color == selectedColor)).ToImmutableList();
+
         private void save()
         {
             Close(selectedColor.Value);

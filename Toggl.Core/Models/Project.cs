@@ -27,7 +27,8 @@ namespace Toggl.Core.Models
                     ServerDeletedAt = project.ServerDeletedAt,
                     IsDeleted = project.IsDeleted,
                     ClientId = project.ClientId,
-                    Active = project.Active
+                    Active = project.Active,
+                    IsPrivate = project.IsPrivate
                 };
 
             public long Id { get; }
@@ -52,6 +53,8 @@ namespace Toggl.Core.Models
 
             public bool Active { get; private set; } = true;
 
+            public bool IsPrivate { get; private set; } = true;
+
             private Builder(long id)
             {
                 Id = id;
@@ -66,6 +69,12 @@ namespace Toggl.Core.Models
             public Builder SetSyncStatus(SyncStatus syncStatus)
             {
                 SyncStatus = syncStatus;
+                return this;
+            }
+
+            public Builder SetIsPrivate(bool isPrivate)
+            {
+                IsPrivate = isPrivate;
                 return this;
             }
 
@@ -160,13 +169,14 @@ namespace Toggl.Core.Models
             Name = builder.Name;
             At = builder.At.Value;
             Color = builder.Color;
+            Active = builder.Active;
             Billable = builder.Billable;
             ClientId = builder.ClientId;
             IsDeleted = builder.IsDeleted;
+            IsPrivate = builder.IsPrivate;
             SyncStatus = builder.SyncStatus;
             WorkspaceId = builder.WorkspaceId.Value;
             ServerDeletedAt = builder.ServerDeletedAt;
-            Active = builder.Active;
         }
     }
 }

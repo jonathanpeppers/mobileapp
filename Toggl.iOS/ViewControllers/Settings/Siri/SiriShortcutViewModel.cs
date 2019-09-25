@@ -1,6 +1,7 @@
 using Intents;
 using Toggl.Core.Models.Interfaces;
 using Toggl.iOS.Models;
+using Toggl.Shared;
 
 namespace Toggl.iOS.ViewControllers.Settings
 {
@@ -41,7 +42,9 @@ namespace Toggl.iOS.ViewControllers.Settings
 
                 if (Type == SiriShortcutType.CustomStart)
                 {
-                    Title = Description == null ? Type.Title() : $"Start timer: { Description }";
+                    Title = Description == null
+                        ? Type.Title()
+                        : string.Format(Resources.SiriShortcutsStartTimerWithName, Description);
                     IsCustomStart = true;
                 }
             }

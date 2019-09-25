@@ -1,16 +1,17 @@
 using Android.OS;
-using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using System;
-using System.Reactive.Linq;
 using Toggl.Core.UI.Extensions;
 using Toggl.Core.UI.ViewModels;
 using Toggl.Droid.Extensions;
 using Toggl.Droid.Extensions.Reactive;
+using Toggl.Droid.Helper;
 using Toggl.Droid.Presentation;
 using Toggl.Shared.Extensions;
-using FoundationResources = Toggl.Shared.Resources;
+using Toggl.Storage.Settings;
+using static Android.Support.V7.App.AppCompatDelegate;
+using static Toggl.Shared.Resources;
 
 namespace Toggl.Droid.Fragments
 {
@@ -21,8 +22,8 @@ namespace Toggl.Droid.Fragments
             var view = inflater.Inflate(Resource.Layout.SettingsFragment, container, false);
 
             InitializeViews(view);
-            setupToolbar();
-
+            SetupToolbar(view, title: Settings);
+            scrollView.AttachMaterialScrollBehaviour(appBarLayout);
             return view;
         }
 
@@ -42,6 +43,10 @@ namespace Toggl.Droid.Fragments
 
             ViewModel.WorkspaceName
                 .Subscribe(defaultWorkspaceNameTextView.Rx().TextObserver())
+                .DisposedBy(DisposeBag);
+
+            ViewModel.SwipeActionsEnabled
+                .Subscribe(swipeActionsSwitch.Rx().CheckedObserver())
                 .DisposedBy(DisposeBag);
 
             ViewModel.IsManualModeEnabled
@@ -116,6 +121,10 @@ namespace Toggl.Droid.Fragments
                 .BindAction(ViewModel.SubmitFeedback)
                 .DisposedBy(DisposeBag);
 
+            swipeActionsView.Rx()
+                .BindAction(ViewModel.ToggleSwipeActions)
+                .DisposedBy(DisposeBag);
+
             manualModeView.Rx()
                 .BindAction(ViewModel.ToggleManualMode)
                 .DisposedBy(DisposeBag);
@@ -166,17 +175,9 @@ namespace Toggl.Droid.Fragments
         {
             if (!succeeeded) return;
 
-            var toast = Toast.MakeText(Context, Resource.String.SendFeedbackSuccessMessage, ToastLength.Long);
+            var toast = Toast.MakeText(Context, Shared.Resources.SendFeedbackSuccessMessage, ToastLength.Long);
             toast.SetGravity(GravityFlags.CenterHorizontal | GravityFlags.Bottom, 0, 0);
             toast.Show();
-        }
-
-        private void setupToolbar()
-        {
-            var activity = Activity as AppCompatActivity;
-            toolbar.Title = FoundationResources.Settings;
-            scrollView.AttachMaterialScrollBehaviour(appBarLayout);
-            activity.SetSupportActionBar(toolbar);
         }
     }
 }

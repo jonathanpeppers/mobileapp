@@ -4,7 +4,7 @@ using Toggl.iOS.Extensions.Reactive;
 using Toggl.iOS.ViewSources;
 using Toggl.Shared.Extensions;
 using Colors = Toggl.Core.UI.Helper.Colors;
-using FoundationResources = Toggl.Shared.Resources;
+using Toggl.Shared;
 
 namespace Toggl.iOS.ViewControllers.Settings
 {
@@ -21,7 +21,7 @@ namespace Toggl.iOS.ViewControllers.Settings
         {
             base.ViewDidLoad();
 
-            NavigationItem.Title = FoundationResources.CalendarSettingsTitle;
+            NavigationItem.Title = Resources.CalendarSettingsTitle;
 
             var header = CalendarSettingsTableViewHeader.Create();
             UserCalendarsTableView.TableHeaderView = header;

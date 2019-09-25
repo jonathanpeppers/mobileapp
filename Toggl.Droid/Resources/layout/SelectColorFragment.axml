@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:background="@color/cardBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
+        android:id="@+id/SelectColorTitle"
         android:textSize="20sp"
         android:lineSpacingExtra="8sp"
         android:fontFamily="sans-serif-medium"
-        android:text="@string/SelectColorTitle"
-        android:textColor="@android:color/black"
+        tools:text="Project color"
+        android:textColor="@color/primaryText"
         android:layout_margin="24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -35,8 +35,12 @@
         android:id="@+id/SelectColorValueSlider"
         android:max="75"
         android:thumb="@drawable/ValueSliderThumb"
-        android:layout_height="18dp"
-        android:layout_width="match_parent" />
+        android:layout_height="20dp"
+        android:maxHeight="20dp"
+        android:layout_width="match_parent"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="6dp"
+        />
     <LinearLayout
         android:gravity="right"
         android:orientation="horizontal"
@@ -49,7 +53,7 @@
             android:textAllCaps="true"
             android:textColor="#328fff"
             android:letterSpacing="0.04"
-            android:text="@string/Cancel"
+            tools:text="Cancel"
             android:fontFamily="sans-serif-medium"
             android:background="?attr/selectableItemBackground"
             android:layout_width="wrap_content"
@@ -59,7 +63,7 @@
             android:textSize="14sp"
             android:gravity="center"
             android:textAllCaps="true"
-            android:text="@string/Done"
+            tools:text="Done"
             android:textColor="#328fff"
             android:letterSpacing="0.04"
             android:fontFamily="sans-serif-medium"

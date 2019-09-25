@@ -30,11 +30,7 @@ namespace Toggl.Droid.Fragments
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             base.OnViewCreated(view, savedInstanceState);
-            bindViews();
-        }
 
-        private void bindViews()
-        {
             privacyPolicyTextView.Rx()
                 .BindAction(ViewModel.ViewPrivacyPolicy)
                 .DisposedBy(DisposeBag);

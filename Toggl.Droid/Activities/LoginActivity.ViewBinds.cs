@@ -1,4 +1,5 @@
-﻿using Android.Views;
+﻿using Android.Support.Design.Widget;
+using Android.Views;
 using Android.Widget;
 
 namespace Toggl.Droid.Activities
@@ -7,14 +8,21 @@ namespace Toggl.Droid.Activities
     {
         private Button loginButton;
 
+        private TextInputLayout loginEmail;
+        private TextInputLayout loginPassword;
+
         private View signupCard;
         private View googleLoginButton;
-        private View forgotPasswordView;
 
         private EditText emailEditText;
         private EditText passwordEditText;
 
         private TextView errorTextView;
+        private TextView forgotPasswordView;
+        private TextView googleLoginLabel;
+        private TextView haveAnAccountLabel;
+        private TextView orLabel;
+        private TextView signUpLabel;
 
         private ProgressBar progressBar;
 
@@ -23,11 +31,25 @@ namespace Toggl.Droid.Activities
             signupCard = FindViewById(Resource.Id.LoginSignupCardView);
             errorTextView = FindViewById<TextView>(Resource.Id.LoginError);
             loginButton = FindViewById<Button>(Resource.Id.LoginLoginButton);
-            forgotPasswordView = FindViewById(Resource.Id.LoginForgotPassword);
+            forgotPasswordView = FindViewById<TextView>(Resource.Id.LoginForgotPassword);
+            orLabel = FindViewById<TextView>(Resource.Id.LoginOrLabel);
             googleLoginButton = FindViewById<View>(Resource.Id.LoginGoogleLogin);
+            googleLoginLabel = FindViewById<TextView>(Resource.Id.LoginGoogleLoginLabel);
+            haveAnAccountLabel = FindViewById<TextView>(Resource.Id.HaveAnAccountLabel);
+            signUpLabel = FindViewById<TextView>(Resource.Id.SignUpLabel);
             progressBar = FindViewById<ProgressBar>(Resource.Id.LoginProgressBar);
+            loginEmail = FindViewById<TextInputLayout>(Resource.Id.LoginEmail);
             emailEditText = FindViewById<EditText>(Resource.Id.LoginEmailEditText);
+            loginPassword = FindViewById<TextInputLayout>(Resource.Id.LoginPassword);
             passwordEditText = FindViewById<EditText>(Resource.Id.LoginPasswordEditText);
+            
+            loginEmail.Hint = Shared.Resources.Email;
+            loginPassword.Hint = Shared.Resources.Password;
+            forgotPasswordView.Text = Shared.Resources.LoginForgotPassword;
+            googleLoginLabel.Text = Shared.Resources.GoogleLogin;
+            haveAnAccountLabel.Text = Shared.Resources.AlreadyHaveAnAccountQuestionMark;
+            orLabel.Text = Shared.Resources.Or;
+            signUpLabel.Text = Shared.Resources.SignUpTitle;
         }
     }
 }

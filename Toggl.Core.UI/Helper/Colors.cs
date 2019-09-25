@@ -317,6 +317,7 @@ namespace Toggl.Core.UI.Helper
             }
 
             public static readonly Color SelectedDayBackgoundColor = new Color(181, 188, 192);
+            public static readonly Color YearColor = new Color(181, 188, 192);
             public static readonly Color Today = new Color(181, 188, 192, 30);
             public static readonly Color CellTextColorInCurrentMonth = new Color(0, 0, 0);
             public static readonly Color CellTextColorOutOfCurrentMonth = new Color(163, 163, 163);
@@ -363,6 +364,11 @@ namespace Toggl.Core.UI.Helper
         public static class Licenses
         {
             public static readonly Color Border = new Color(232, 232, 232);
+        }
+
+        public static class Calendar
+        {
+            public static readonly Color EnableCalendarAction = lightishGreen;
         }
 
         public static readonly Color[] DefaultProjectColors =

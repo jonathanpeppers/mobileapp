@@ -22,7 +22,7 @@ namespace Toggl.iOS.Cells.Settings
 
         protected override void UpdateView()
         {
-            HeaderLabel.Text = Item.Subject;
+            HeaderLabel.Text = Item.LibraryName;
         }
 
 

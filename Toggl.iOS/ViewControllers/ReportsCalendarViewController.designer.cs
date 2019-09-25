@@ -19,9 +19,6 @@ namespace Toggl.iOS.ViewControllers
 		UIKit.UILabel CurrentMonthLabel { get; set; }
 
 		[Outlet]
-		UIKit.UILabel CurrentYearLabel { get; set; }
-
-		[Outlet]
 		UIKit.UILabel DayHeader0 { get; set; }
 
 		[Outlet]
@@ -47,7 +44,7 @@ namespace Toggl.iOS.ViewControllers
 
 		[Outlet]
 		UIKit.UICollectionViewFlowLayout QuickSelectCollectionViewLayout { get; set; }
-
+		
 		void ReleaseDesignerOutlets ()
 		{
 			if (CalendarCollectionView != null) {
@@ -58,21 +55,6 @@ namespace Toggl.iOS.ViewControllers
 			if (CurrentMonthLabel != null) {
 				CurrentMonthLabel.Dispose ();
 				CurrentMonthLabel = null;
-			}
-
-			if (CurrentYearLabel != null) {
-				CurrentYearLabel.Dispose ();
-				CurrentYearLabel = null;
-			}
-
-			if (QuickSelectCollectionView != null) {
-				QuickSelectCollectionView.Dispose ();
-				QuickSelectCollectionView = null;
-			}
-
-			if (QuickSelectCollectionViewLayout != null) {
-				QuickSelectCollectionViewLayout.Dispose ();
-				QuickSelectCollectionViewLayout = null;
 			}
 
 			if (DayHeader0 != null) {
@@ -108,6 +90,16 @@ namespace Toggl.iOS.ViewControllers
 			if (DayHeader6 != null) {
 				DayHeader6.Dispose ();
 				DayHeader6 = null;
+			}
+
+			if (QuickSelectCollectionView != null) {
+				QuickSelectCollectionView.Dispose ();
+				QuickSelectCollectionView = null;
+			}
+
+			if (QuickSelectCollectionViewLayout != null) {
+				QuickSelectCollectionViewLayout.Dispose ();
+				QuickSelectCollectionViewLayout = null;
 			}
 		}
 	}

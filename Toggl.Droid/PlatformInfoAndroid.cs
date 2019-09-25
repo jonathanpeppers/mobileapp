@@ -2,6 +2,7 @@
 using Android.Content.PM;
 using Java.Util;
 using Toggl.Core;
+using static Toggl.Core.Helper.Constants;
 
 namespace Toggl.Droid
 {
@@ -34,5 +35,8 @@ namespace Toggl.Droid
                 }
             }
         }
+
+        public override string CurrentNativeLanguageCode
+            => Locale.Default?.ToString() ?? DefaultLanguageCode;
     }
 }

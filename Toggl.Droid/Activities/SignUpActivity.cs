@@ -1,12 +1,12 @@
 ﻿using Android.App;
 using Android.Content.PM;
-using Android.OS;
+using Android.Runtime;
 using Android.Views;
 using System;
 using System.Reactive.Linq;
 using Toggl.Core.UI.ViewModels;
-using Toggl.Droid.Extensions;
 using Toggl.Droid.Extensions.Reactive;
+using Toggl.Droid.Presentation;
 using Toggl.Shared;
 using Toggl.Shared.Extensions;
 
@@ -18,20 +18,18 @@ namespace Toggl.Droid.Activities
               ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public sealed partial class SignUpActivity : ReactiveActivity<SignupViewModel>
     {
-        protected override void OnCreate(Bundle bundle)
+        public SignUpActivity() : base(
+            Resource.Layout.SignUpActivity,
+            Resource.Style.AppTheme,
+            Transitions.SlideInFromBottom)
+        { }
+
+        public SignUpActivity(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
+        { }
+        
+        protected override void InitializeBindings()
         {
-            SetTheme(Resource.Style.AppTheme_Light);
-            base.OnCreate(bundle);
-            if (ViewModelWasNotCached())
-            {
-                BailOutToSplashScreen();
-                return;
-            }
-            SetContentView(Resource.Layout.SignUpActivity);
-            OverridePendingTransition(Resource.Animation.abc_slide_in_bottom, Resource.Animation.abc_fade_out);
-
-            InitializeViews();
-
             ViewModel.Email.FirstAsync()
                 .SubscribeOn(AndroidDependencyContainer.Instance.SchedulerProvider.MainScheduler)
                 .Subscribe(emailEditText.Rx().TextObserver())
@@ -105,7 +103,7 @@ namespace Toggl.Droid.Activities
                 .DisposedBy(DisposeBag);
 
             string signupButtonTitle(bool isLoading)
-                => isLoading ? "" : Resources.GetString(Resource.String.SignUpForFree);
+                => isLoading ? "" : Shared.Resources.SignUpTitle;
         }
     }
 }

@@ -179,6 +179,14 @@ namespace Toggl.Core.Analytics
         public IAnalyticsEvent<SuggestionProviderType> SuggestionStarted { get; }
 
         public IAnalyticsEvent<ApplicationInstallLocation> ApplicationInstallLocation { get; }
+        
+        public IAnalyticsEvent<string> PushInitiatedSyncFetch { get; protected set; }
+        
+        public IAnalyticsEvent<string> PushNotificationSyncStarted { get; protected set; }
+        
+        public IAnalyticsEvent<string> PushNotificationSyncFinished { get; protected set; }
+        
+        public IAnalyticsEvent<string, string, string, string> PushNotificationSyncFailed { get; protected set; }
 
         public IAnalyticsEvent<string, string, string, string> DebugSchedulerError { get; }
 
@@ -278,6 +286,10 @@ namespace Toggl.Core.Analytics
             DebugNavigationError = new AnalyticsEvent<string, string>(this, nameof(DebugNavigationError), "Action", "Type");
             AccessibilityEnabled = new AnalyticsEvent<bool>(this, nameof(AccessibilityEnabled), "Enabled");
             WatchPaired = new AnalyticsEvent<bool>(this, nameof(WatchPaired), "Installed");
+            PushInitiatedSyncFetch = new AnalyticsEvent<string>(this, nameof(PushInitiatedSyncFetch), "NumberOfEntitiesFetched");
+            PushNotificationSyncStarted = new AnalyticsEvent<string>(this, nameof(PushNotificationSyncStarted), "Source");
+            PushNotificationSyncFinished = new AnalyticsEvent<string>(this, nameof(PushNotificationSyncFinished), "Source");
+            PushNotificationSyncFailed = new AnalyticsEvent<string, string, string, string>(this, nameof(PushNotificationSyncFailed), "Source", "Type", "Message", "StackTrace");
         }
 
         public void TrackAnonymized(Exception exception)

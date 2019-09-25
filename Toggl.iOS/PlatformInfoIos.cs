@@ -1,5 +1,7 @@
-﻿using Foundation;
+﻿using System.Linq;
+using Foundation;
 using Toggl.Core;
+using Toggl.Core.Helper;
 
 namespace Toggl.iOS
 {
@@ -163,5 +165,9 @@ namespace Toggl.iOS
             }
         }
 
+        public override string CurrentNativeLanguageCode => getPreferredLanguageCode();
+
+        private string getPreferredLanguageCode() 
+            => NSLocale.PreferredLanguages.FirstOrDefault() ?? Constants.DefaultLanguageCode;
     }
 }

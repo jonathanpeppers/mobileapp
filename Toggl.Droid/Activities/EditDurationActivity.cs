@@ -1,6 +1,6 @@
 using Android.App;
 using Android.Content.PM;
-using Android.OS;
+using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System;
@@ -12,8 +12,8 @@ using Toggl.Core.UI.Helper;
 using Toggl.Core.UI.ViewModels;
 using Toggl.Droid.Extensions;
 using Toggl.Droid.Extensions.Reactive;
+using Toggl.Droid.Presentation;
 using Toggl.Droid.ViewHelpers;
-using Toggl.Shared;
 using Toggl.Shared.Extensions;
 using static Toggl.Core.UI.Helper.TemporalInconsistency;
 
@@ -25,17 +25,16 @@ namespace Toggl.Droid.Activities
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public sealed partial class EditDurationActivity : ReactiveActivity<EditDurationViewModel>
     {
-        private readonly Dictionary<TemporalInconsistency, int> inconsistencyMessages = new Dictionary<TemporalInconsistency, int>
+        private readonly Dictionary<TemporalInconsistency, string> inconsistencyMessages = new Dictionary<TemporalInconsistency, string>
         {
-            [StartTimeAfterCurrentTime] = Resource.String.StartTimeAfterCurrentTimeWarning,
-            [StartTimeAfterStopTime] = Resource.String.StartTimeAfterStopTimeWarning,
-            [StopTimeBeforeStartTime] = Resource.String.StopTimeBeforeStartTimeWarning,
-            [DurationTooLong] = Resource.String.DurationTooLong,
+            [StartTimeAfterCurrentTime] = Shared.Resources.StartTimeAfterCurrentTimeWarning,
+            [StartTimeAfterStopTime] = Shared.Resources.StartTimeAfterStopTimeWarning,
+            [StopTimeBeforeStartTime] = Shared.Resources.StopTimeBeforeStartTimeWarning,
+            [DurationTooLong] = Shared.Resources.DurationTooLong,
         };
 
-        private readonly Subject<DateTimeOffset> activeEditionChangedSubject = new Subject<DateTimeOffset>();
         private readonly Subject<Unit> viewClosedSubject = new Subject<Unit>();
-        //private readonly Subject<Unit> saveSubject = new Subject<Unit>();
+        private readonly Subject<DateTimeOffset> activeEditionChangedSubject = new Subject<DateTimeOffset>();
 
         private DateTimeOffset minDateTime;
         private DateTimeOffset maxDateTime;
@@ -46,19 +45,19 @@ namespace Toggl.Droid.Activities
         private Dialog editDialog;
         private Toast toast;
 
-        protected override void OnCreate(Bundle bundle)
-        {
-            SetTheme(Resource.Style.AppTheme_Light);
-            base.OnCreate(bundle);
-            if (ViewModelWasNotCached())
-            {
-                BailOutToSplashScreen();
-                return;
-            }
-            SetContentView(Resource.Layout.EditDurationActivity);
-            InitializeViews();
-            setupToolbar();
+        public EditDurationActivity() : base(
+            Resource.Layout.EditDurationActivity,
+            Resource.Style.AppTheme,
+            Transitions.SlideInFromBottom)
+        { }
 
+        public EditDurationActivity(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
+        {
+        }
+
+        protected override void InitializeBindings()
+        {
             ViewModel.TimeFormat
                 .Subscribe(v => is24HoursFormat = v.IsTwentyFourHoursFormat)
                 .DisposedBy(DisposeBag);
@@ -207,34 +206,21 @@ namespace Toggl.Droid.Activities
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
-            MenuInflater.Inflate(Resource.Menu.GenericSaveMenu, menu);
+            MenuInflater.Inflate(Resource.Menu.OneButtonMenu, menu);
+            var saveMenuItem = menu.FindItem(Resource.Id.ButtonMenuItem);
+            saveMenuItem.SetTitle(Shared.Resources.Save);
             return true;
         }
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            switch (item.ItemId)
+            if (item.ItemId == Resource.Id.ButtonMenuItem)
             {
-                case Resource.Id.SaveMenuItem:
-                    wheelNumericInput.ApplyDurationIfBeingEdited();
-                    ViewModel.Save.Execute();
-                    return true;
-
-                case Android.Resource.Id.Home:
-                    ViewModel.CloseWithDefaultResult();
-                    return true;
+                wheelNumericInput.ApplyDurationIfBeingEdited();
+                ViewModel.Save.Execute();
+                return true;
             }
             return base.OnOptionsItemSelected(item);
-        }
-
-        private void setupToolbar()
-        {
-            toolbar.Title = Shared.Resources.StartAndStopTime;
-
-            SetSupportActionBar(toolbar);
-
-            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
-            SupportActionBar.SetDisplayShowHomeEnabled(true);
         }
 
         private void updateStopTimeUIVisibility(bool isRunning)
@@ -258,9 +244,8 @@ namespace Toggl.Droid.Activities
             canDismiss = false;
             toast?.Cancel();
             toast = null;
-
-            var messageResourceId = inconsistencyMessages[temporalInconsistency];
-            var message = Resources.GetString(messageResourceId);
+            
+            var message = inconsistencyMessages[temporalInconsistency];
 
             toast = Toast.MakeText(this, message, ToastLength.Short);
             toast.Show();

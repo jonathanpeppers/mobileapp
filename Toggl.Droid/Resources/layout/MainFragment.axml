@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
-    xmlns:local="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/MainCoordinatorLayout"
     android:layout_width="match_parent"
@@ -23,7 +23,7 @@
         android:id="@+id/MainSwipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        local:layout_behavior="@string/appbar_scrolling_view_behavior" >
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
         <android.support.v7.widget.RecyclerView
             android:id="@+id/MainRecyclerView"
             android:clipToPadding="false"
@@ -39,16 +39,16 @@
       android:focusable="true"
       android:elevation="8dp"
       android:layout_gravity="bottom|center_horizontal"
-      android:background="@android:color/white"
+      android:background="@color/cardBackground"
       android:foreground="?android:attr/selectableItemBackground"
-      local:layout_behavior="toggl.droid.presentation.RunningTimeEntrySheetBehavior">
+      app:layout_behavior="toggl.droid.presentation.RunningTimeEntrySheetBehavior">
         <include layout="@layout/MainRunningTimeEntry" />
     </android.support.design.circularreveal.CircularRevealFrameLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/MainPlayButton"
-        local:elevation="4dp"
+        app:elevation="4dp"
         android:src="@drawable/play_white"
-        local:backgroundTint="@color/playButtonGreen"
+        app:backgroundTint="@color/startTimeEntryButtonBackground"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginRight="16dp"
@@ -61,10 +61,9 @@
         android:layout_height="wrap_content">
         <android.support.v7.widget.Toolbar
             android:id="@+id/Toolbar"
-            android:background="@color/defaultBackground"
-            local:layout_scrollFlags="scroll|enterAlways"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
+            style="@style/ToolbarStyle"
+            app:layout_scrollFlags="scroll|enterAlways"
+            >
             <ImageView 
               android:src="@drawable/ic_toggl_logo"
               android:layout_gravity="start"

@@ -13,7 +13,6 @@
             <connections>
                 <outlet property="CalendarCollectionView" destination="Btd-Jn-XOm" id="SsE-No-P8p"/>
                 <outlet property="CurrentMonthLabel" destination="yuU-AX-i2k" id="OZC-Z9-uKf"/>
-                <outlet property="CurrentYearLabel" destination="CIL-xs-8Kb" id="0Vf-WN-4mC"/>
                 <outlet property="DayHeader0" destination="btF-zj-slk" id="ZYL-1X-xFq"/>
                 <outlet property="DayHeader1" destination="GwA-Km-GjT" id="8fw-xy-22I"/>
                 <outlet property="DayHeader2" destination="03c-o6-QKN" id="5MQ-da-ydN"/>
@@ -31,23 +30,23 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="355"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <stackView opaque="NO" contentMode="scaleToFill" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="MDd-vl-ExG" userLabel="Date View">
-                    <rect key="frame" x="129.5" y="16" width="61" height="14.5"/>
-                    <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="June" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yuU-AX-i2k">
-                            <rect key="frame" x="0.0" y="0.0" width="27.5" height="14.5"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                            <nil key="textColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2017" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CIL-xs-8Kb">
-                            <rect key="frame" x="33.5" y="0.0" width="27.5" height="14.5"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                            <color key="textColor" red="0.70980392156862748" green="0.73725490196078436" blue="0.75294117647058822" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                    </subviews>
-                </stackView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yuU-AX-i2k">
+                    <rect key="frame" x="130.5" y="16" width="59" height="14.5"/>
+                    <attributedString key="attributedText">
+                        <fragment content="June ">
+                            <attributes>
+                                <font key="NSFont" metaFont="cellTitle"/>
+                            </attributes>
+                        </fragment>
+                        <fragment content="2019">
+                            <attributes>
+                                <color key="NSColor" red="0.70980392156862748" green="0.73725490196078436" blue="0.75294117647058822" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <font key="NSFont" metaFont="cellTitle"/>
+                            </attributes>
+                        </fragment>
+                    </attributedString>
+                    <nil key="highlightedColor"/>
+                </label>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" translatesAutoresizingMaskIntoConstraints="NO" id="i6E-PC-G3r" userLabel="Days View">
                     <rect key="frame" x="30" y="41.5" width="260" height="14.5"/>
                     <subviews>
@@ -124,13 +123,13 @@
             <constraints>
                 <constraint firstItem="Btd-Jn-XOm" firstAttribute="top" secondItem="i6E-PC-G3r" secondAttribute="bottom" constant="16" id="39G-DK-Sci"/>
                 <constraint firstAttribute="bottom" secondItem="T1C-Ey-wjY" secondAttribute="bottom" constant="16" id="D5f-fW-Aob"/>
-                <constraint firstItem="i6E-PC-G3r" firstAttribute="top" secondItem="MDd-vl-ExG" secondAttribute="bottom" constant="11" id="Jkz-qC-ggl"/>
-                <constraint firstItem="MDd-vl-ExG" firstAttribute="top" secondItem="2" secondAttribute="top" constant="16" id="LDM-ZK-Uut"/>
+                <constraint firstItem="yuU-AX-i2k" firstAttribute="centerX" secondItem="2" secondAttribute="centerX" id="ENy-us-Vju"/>
                 <constraint firstItem="T1C-Ey-wjY" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="M6l-O4-Pxt"/>
                 <constraint firstItem="T1C-Ey-wjY" firstAttribute="top" secondItem="Btd-Jn-XOm" secondAttribute="bottom" constant="24" id="OsD-NN-E6v"/>
                 <constraint firstAttribute="trailing" secondItem="T1C-Ey-wjY" secondAttribute="trailing" id="W7V-sj-aE4"/>
                 <constraint firstItem="Btd-Jn-XOm" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="13" id="jQN-ds-u9g"/>
-                <constraint firstItem="MDd-vl-ExG" firstAttribute="centerX" secondItem="2" secondAttribute="centerX" id="xpU-5B-2bM"/>
+                <constraint firstItem="yuU-AX-i2k" firstAttribute="bottom" secondItem="i6E-PC-G3r" secondAttribute="top" constant="-11" id="p8r-Gq-1YG"/>
+                <constraint firstItem="yuU-AX-i2k" firstAttribute="top" secondItem="2" secondAttribute="top" constant="16" id="tJz-aP-2pA"/>
                 <constraint firstAttribute="trailing" secondItem="Btd-Jn-XOm" secondAttribute="trailing" constant="13" id="y1H-Nl-vSH"/>
                 <constraint firstAttribute="trailing" secondItem="i6E-PC-G3r" secondAttribute="trailing" constant="30" id="yxj-EV-qwR"/>
                 <constraint firstItem="i6E-PC-G3r" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="30" id="zTG-lQ-vpw"/>

@@ -24,7 +24,8 @@ namespace Toggl.Droid.Fragments
         {
             var view = inflater.Inflate(Resource.Layout.ReportsFragment, container, false);
             InitializeViews(view);
-            setupToolbar();
+            SetupToolbar(view);
+            reportsRecyclerView.AttachMaterialScrollBehaviour(appBarLayout);
 
             return view;
         }
@@ -34,11 +35,9 @@ namespace Toggl.Droid.Fragments
             base.OnViewCreated(view, savedInstanceState);
             ViewModel?.CalendarViewModel.AttachView(this);
 
-            selectWorkspaceFAB.Rx().Tap()
+            selectWorkspaceFab.Rx().Tap()
                 .Subscribe(ViewModel.SelectWorkspace.Inputs)
                 .DisposedBy(DisposeBag);
-
-            calendarView.SetupWith(ViewModel.CalendarViewModel);
 
             setupReportsRecyclerView();
             ViewModel.StartDate.CombineLatest(
@@ -66,12 +65,8 @@ namespace Toggl.Droid.Fragments
                 .Subscribe(reportsRecyclerAdapter.UpdateReportsSummary)
                 .DisposedBy(DisposeBag);
 
-            reportsRecyclerAdapter.SummaryCardClicks
-                .Subscribe(hideCalendar)
-                .DisposedBy(DisposeBag);
-
             toolbarCurrentDateRangeText.Rx().Tap()
-                .Subscribe(toggleCalendar)
+                .Subscribe(showCalendar)
                 .DisposedBy(DisposeBag);
 
             ViewModel.CurrentDateRange
@@ -127,24 +122,15 @@ namespace Toggl.Droid.Fragments
             reportsRecyclerView.SetAdapter(reportsRecyclerAdapter);
         }
 
-        private void setupToolbar()
+        private void showCalendar()
         {
-            var activity = Activity as AppCompatActivity;
-            toolbar.Title = "";
-            reportsRecyclerView.AttachMaterialScrollBehaviour(appBarLayout);
-            activity.SetSupportActionBar(toolbar);
-        }
+            AndroidDependencyContainer
+                .Instance
+                .ViewModelCache
+                .Cache(ViewModel.CalendarViewModel);
 
-        private void toggleCalendar()
-        {
-            reportsMainContainer.ToggleCalendar(false);
-            ViewModel.CalendarViewModel.SelectStartOfSelectionIfNeeded();
-        }
-
-        private void hideCalendar()
-        {
-            reportsMainContainer.ToggleCalendar(true);
-            ViewModel.CalendarViewModel.SelectStartOfSelectionIfNeeded();
+            new ReportsCalendarFragment()
+                .Show(ChildFragmentManager, nameof(ReportsCalendarFragment));
         }
     }
 }

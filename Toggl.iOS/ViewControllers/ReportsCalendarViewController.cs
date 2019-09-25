@@ -1,10 +1,12 @@
 ﻿using CoreGraphics;
+using Foundation;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
 using Toggl.Core.UI.Extensions;
+using Toggl.Core.UI.Helper;
 using Toggl.Core.UI.ViewModels;
 using Toggl.Core.UI.ViewModels.ReportsCalendar;
 using Toggl.iOS.Extensions;
@@ -59,14 +61,28 @@ namespace Toggl.iOS.ViewControllers
                 .DisposedBy(DisposeBag);
 
             ViewModel.CurrentMonthObservable
-                .Select(month => month.Year.ToString())
-                .Subscribe(CurrentYearLabel.Rx().Text())
-                .DisposedBy(DisposeBag);
+                .Select(month =>
+                {
+                    var dateTime = month.ToDateTime();
+                    var pattern = CultureInfo.CurrentCulture.DateTimeFormat.YearMonthPattern;
 
-            ViewModel.CurrentMonthObservable
-                .Select(month => month.Month)
-                .Select(CultureInfo.GetCultureInfo("en-US").DateTimeFormat.GetMonthName)
-                .Subscribe(CurrentMonthLabel.Rx().Text())
+                    var yearMonthString = dateTime.ToString(pattern);
+
+                    var year = month.Year.ToString();
+                    var rangeStart = yearMonthString.IndexOf(year);
+                    var rangeEnd = year.Length;
+                    var range = new NSRange(rangeStart, rangeEnd);
+
+                    var attributedString = new NSMutableAttributedString(
+                        yearMonthString,
+                        new UIStringAttributes { ForegroundColor = Colors.Black.ToNativeColor() });
+                    attributedString.AddAttributes(
+                        new UIStringAttributes { ForegroundColor = Colors.ReportsCalendar.YearColor.ToNativeColor() },
+                        range);
+
+                    return attributedString;
+                })
+                .Subscribe(CurrentMonthLabel.Rx().AttributedText())
                 .DisposedBy(DisposeBag);
 
             ViewModel.SelectedDateRangeObservable
@@ -126,6 +142,7 @@ namespace Toggl.iOS.ViewControllers
                 .DisposedBy(DisposeBag);
 
             ViewModel.CurrentPageObservable
+                .ObserveOn(IosDependencyContainer.Instance.SchedulerProvider.MainScheduler)
                 .Subscribe(CalendarCollectionView.Rx().CurrentPageObserver())
                 .DisposedBy(DisposeBag);
 

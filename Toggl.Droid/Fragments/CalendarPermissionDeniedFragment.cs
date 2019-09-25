@@ -19,6 +19,7 @@ namespace Toggl.Droid.Fragments
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             base.OnViewCreated(view, savedInstanceState);
+
             continueButton.Rx().Tap()
                 .Subscribe(ViewModel.CloseWithDefaultResult)
                 .DisposedBy(DisposeBag);

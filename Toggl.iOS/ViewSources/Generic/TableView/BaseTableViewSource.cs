@@ -1,7 +1,6 @@
 using CoreGraphics;
 using Foundation;
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Toggl.Core.UI.Collections;
@@ -12,41 +11,42 @@ namespace Toggl.iOS.ViewSources
     public abstract class BaseTableViewSource<TSection, THeader, TModel> : UITableViewSource
     where TSection : ISectionModel<THeader, TModel>, new()
     {
-        public List<TSection> Sections { get; private set; }
+        public IImmutableList<TSection> Sections { get; private set; }
 
         public EventHandler<TModel> OnItemTapped { get; set; }
         public EventHandler<CGPoint> OnScrolled { get; set; }
 
-        public BaseTableViewSource() : this((IEnumerable<TModel>)null)
+        public BaseTableViewSource()
+            : this(ImmutableList<TModel>.Empty)
         {
         }
 
-        public BaseTableViewSource(IEnumerable<TModel> items)
+        public BaseTableViewSource(IImmutableList<TModel> items)
         {
             SetItems(items);
         }
 
-        public BaseTableViewSource(IEnumerable<TSection> sections)
+        public BaseTableViewSource(IImmutableList<TSection> sections)
         {
             SetSections(sections);
         }
 
-        public void SetItems(IEnumerable<TModel> items)
+        public void SetItems(IImmutableList<TModel> items)
         {
-            IEnumerable<TSection> sections = new List<TSection>();
-            if (items != null)
+            var sections = ImmutableList<TSection>.Empty;
+            if (items != null && items.Any())
             {
                 var newSection = new TSection();
-                newSection.Initialize(default(THeader), items);
+                newSection.Initialize(default, items);
                 sections = ImmutableList.Create(newSection);
             }
 
             SetSections(sections);
         }
 
-        public void SetSections(IEnumerable<TSection> sections)
+        public virtual void SetSections(IImmutableList<TSection> sections)
         {
-            Sections = sections?.ToList() ?? new List<TSection>();
+            Sections = sections ?? ImmutableList<TSection>.Empty;
         }
 
         public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
@@ -76,7 +76,7 @@ namespace Toggl.iOS.ViewSources
         {
             var section = Sections.ElementAtOrDefault(path.Section);
             if (section == null)
-                return default(TModel);
+                return default;
 
             return section.Items.ElementAtOrDefault(path.Row);
         }

@@ -18,6 +18,7 @@ namespace Toggl.Droid.ViewHolders
     {
         private RatingViewModel ratingViewModel;
 
+        private TextView userFeedbackTitle;
         private ImageView thumbsUpButton;
         private ImageView thumbsDownButton;
         private TextView yesText;
@@ -46,16 +47,19 @@ namespace Toggl.Droid.ViewHolders
 
         private void bindViews(View itemView)
         {
-            ratingViewModel.CallToActionTitle
+            ratingViewModel.Impression
+                .Select(callToActionTitle)
                 .Subscribe(impressionTitle.Rx().TextObserver())
                 .DisposedBy(disposeBag);
 
-            ratingViewModel.CallToActionButtonTitle
-                .Subscribe(rateButton.Rx().TextObserver())
+            ratingViewModel.Impression
+                .Select(callToActionDescription)
+                .Subscribe(impressionDescription.Rx().TextObserver())
                 .DisposedBy(disposeBag);
 
-            ratingViewModel.CallToActionDescription
-                .Subscribe(impressionDescription.Rx().TextObserver())
+            ratingViewModel.Impression
+                .Select(callToActionButtonTitle)
+                .Subscribe(rateButton.Rx().TextObserver())
                 .DisposedBy(disposeBag);
 
             ratingViewModel.Impression
@@ -102,6 +106,7 @@ namespace Toggl.Droid.ViewHolders
 
         private void initializeViews(View view)
         {
+            userFeedbackTitle = view.FindViewById<TextView>(Resource.Id.UserFeedbackTitle);
             thumbsUpButton = view.FindViewById<ImageView>(Resource.Id.UserFeedbackThumbsUp);
             thumbsDownButton = view.FindViewById<ImageView>(Resource.Id.UserFeedbackThumbsDown);
             yesText = view.FindViewById<TextView>(Resource.Id.UserFeedbackThumbsUpText);
@@ -114,10 +119,45 @@ namespace Toggl.Droid.ViewHolders
 
             questionGroup = view.FindViewById<Group>(Resource.Id.QuestionView);
             impressionGroup = view.FindViewById<Group>(Resource.Id.ImpressionView);
+
+            userFeedbackTitle.Text = Shared.Resources.RatingTitle;
+            yesText.Text = Shared.Resources.RatingYes;
+            noText.Text = Shared.Resources.RatingNotReally;
+            laterButton.Text = Shared.Resources.Later;
         }
 
         private int drawableFromImpression(bool impression)
             => impression ? Resource.Drawable.ic_thumbs_up : Resource.Drawable.ic_thumbs_down;
+
+        private string callToActionTitle(bool? impressionIsPositive)
+        {
+            if (impressionIsPositive == null)
+                return string.Empty;
+
+            return impressionIsPositive.Value
+                   ? Shared.Resources.RatingViewPositiveCallToActionTitle
+                   : Shared.Resources.RatingViewNegativeCallToActionTitle;
+        }
+
+        private string callToActionDescription(bool? impressionIsPositive)
+        {
+            if (impressionIsPositive == null)
+                return string.Empty;
+
+            return impressionIsPositive.Value
+                   ? Shared.Resources.RatingViewPositiveCallToActionDescriptionDroid
+                   : Shared.Resources.RatingViewNegativeCallToActionDescription;
+        }
+
+        private string callToActionButtonTitle(bool? impressionIsPositive)
+        {
+            if (impressionIsPositive == null)
+                return string.Empty;
+
+            return impressionIsPositive.Value
+                   ? Shared.Resources.RatingViewPositiveCallToActionButtonTitle
+                   : Shared.Resources.RatingViewNegativeCallToActionButtonTitle;
+        }
 
         protected override void Dispose(bool disposing)
         {

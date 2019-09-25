@@ -4,6 +4,7 @@ using Toggl.Core.Analytics;
 using Toggl.Core.DataSources;
 using Toggl.Core.Services;
 using Toggl.Core.Sync;
+using Toggl.Core.UI;
 using Toggl.Core.UI.Navigation;
 using Toggl.Core.UI.Services;
 using Toggl.Networking;
@@ -15,6 +16,8 @@ namespace Toggl.Core.Tests.Sync.Helpers
     public sealed class AppServices
     {
         private readonly ISyncErrorHandlingService syncErrorHandlingService;
+
+        public ITogglApi TogglApi { get; }
 
         public IScheduler Scheduler { get; }
 
@@ -34,8 +37,20 @@ namespace Toggl.Core.Tests.Sync.Helpers
 
         public IAutomaticSyncingService AutomaticSyncingService { get; } = Substitute.For<IAutomaticSyncingService>();
 
+        public IKeyValueStorage KeyValueStorage { get; } = Substitute.For<IKeyValueStorage>();
+
+        public IPushNotificationsTokenService PushNotificationsTokenService { get; } =
+            Substitute.For<IPushNotificationsTokenService>();
+
+        public IPushNotificationsTokenStorage PushNotificationsTokenStorage { get; } =
+            Substitute.For<IPushNotificationsTokenStorage>();
+
+        public IRemoteConfigService RemoteConfigService { get; } =
+            Substitute.For<IRemoteConfigService>();
+
         public AppServices(ITogglApi api, ITogglDatabase database)
         {
+            TogglApi = api;
             Scheduler = System.Reactive.Concurrency.Scheduler.Default;
             TimeService = new TimeService(Scheduler);
 
@@ -47,6 +62,13 @@ namespace Toggl.Core.Tests.Sync.Helpers
                 TimeService,
                 AnalyticsServiceSubstitute);
 
+            var dependencyContainer = new TestDependencyContainer();
+            dependencyContainer.MockKeyValueStorage = KeyValueStorage;
+            dependencyContainer.MockPushNotificationsTokenService = PushNotificationsTokenService;
+            dependencyContainer.MockTimeService = TimeService;
+            dependencyContainer.MockPushNotificationsTokenStorage = PushNotificationsTokenStorage;
+            dependencyContainer.MockRemoteConfigService = RemoteConfigService;
+
             SyncManager = TogglSyncManager.CreateSyncManager(
                 database,
                 api,
@@ -55,7 +77,8 @@ namespace Toggl.Core.Tests.Sync.Helpers
                 AnalyticsServiceSubstitute,
                 LastTimeUsageStorageSubstitute,
                 Scheduler,
-                AutomaticSyncingService);
+                AutomaticSyncingService,
+                dependencyContainer);
 
             syncErrorHandlingService.HandleErrorsOf(SyncManager);
         }

@@ -96,7 +96,9 @@ namespace Toggl.iOS.Views.StartTimeEntry
             if (count == 0)
                 return "";
 
-            return $"{count} Task{(count == 1 ? "" : "s")}";
+            return count == 1
+                ? string.Format(Resources.NumberOfTasksSingular, count)
+                : string.Format(Resources.NumberOfTasksPlural, count);
         }
     }
 }

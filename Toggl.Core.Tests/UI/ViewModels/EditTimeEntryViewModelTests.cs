@@ -693,7 +693,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
             [Fact, LogIfTooSlow]
             public async Task ReturnsExpectedValueAfterInitialization()
             {
-                var expectedValue = new ProjectClientTaskInfo(ProjectName, ProjectColor, ClientName, TaskName);
+                var expectedValue = new ProjectClientTaskInfo(ProjectName, ProjectColor, ClientName, TaskName, false, false);
 
                 var observer = TestScheduler.CreateObserverFor(ViewModel.ProjectClientTask);
 

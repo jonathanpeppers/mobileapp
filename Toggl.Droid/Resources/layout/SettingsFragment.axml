@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:local="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,20 +9,20 @@
         android:id="@+id/ScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        local:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <LinearLayout
             android:orientation="vertical"
-            android:animateLayoutChanges="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
+                android:id="@+id/YourProfileLabel"
                 android:textSize="12sp"
                 android:paddingLeft="16dp"
                 android:textAllCaps="true"
                 android:letterSpacing="0.04"
                 android:gravity="center_vertical"
-                android:text="@string/YourProfile"
-                android:textColor="@color/defaultText"
+                tools:text="Your Profile"
+                android:textColor="@color/secondaryText"
                 android:fontFamily="sans-serif-medium"
                 android:layout_height="48dp"
                 android:layout_width="match_parent" />
@@ -35,7 +35,7 @@
                   tools:text="heidi@toggl.com"
                   android:textSize="15sp"
                   android:lineSpacingExtra="5sp"
-                  android:textColor="@android:color/black"
+                  android:textColor="@color/primaryText"
                   android:layout_marginTop="8dp"
                   android:layout_marginLeft="16dp"
                   android:layout_width="wrap_content"
@@ -45,10 +45,11 @@
                   android:layout_height="0.5dp"
                   android:layout_width="match_parent" />
               <TextView
+                  android:id="@+id/UsernameLabel"
                   android:textSize="12sp"
                   android:lineSpacingExtra="4sp"
-                  android:textColor="@color/defaultText"
-                  android:text="@string/Username"
+                  android:textColor="@color/secondaryText"
+                  tools:text="Username"
                   android:layout_gravity="bottom"
                   android:layout_marginLeft="16dp"
                   android:layout_marginBottom="8dp"
@@ -68,16 +69,17 @@
                   tools:text="Heidi"
                   android:textSize="15sp"
                   android:lineSpacingExtra="5sp"
-                  android:textColor="@android:color/black"
+                  android:textColor="@color/primaryText"
                   android:layout_marginTop="8dp"
                   android:layout_marginLeft="16dp"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content" />
               <TextView
+                  android:id="@+id/EmailLabel"
                   android:textSize="12sp"
                   android:lineSpacingExtra="4sp"
-                  android:text="@string/Email"
-                  android:textColor="@color/defaultText"
+                  tools:text="Email"
+                  android:textColor="@color/secondaryText"
                   android:layout_gravity="bottom"
                   android:layout_marginLeft="16dp"
                   android:layout_marginBottom="8dp"
@@ -99,16 +101,17 @@
                   tools:text="MM/DD/YYYY"
                   android:textSize="15sp"
                   android:lineSpacingExtra="5sp"
-                  android:textColor="@android:color/black"
+                  android:textColor="@color/primaryText"
                   android:layout_marginTop="8dp"
                   android:layout_marginLeft="16dp"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content" />
               <TextView
+                  android:id="@+id/DefaultWorkspaceLabel"
                   android:textSize="12sp"
                   android:lineSpacingExtra="4sp"
-                  android:text="@string/DefaultWorkspace"
-                  android:textColor="@color/defaultText"
+                  tools:text="Default Workspace"
+                  android:textColor="@color/secondaryText"
                   android:layout_gravity="bottom"
                   android:layout_marginLeft="16dp"
                   android:layout_marginBottom="8dp"
@@ -126,13 +129,14 @@
                 android:layout_height="0.5dp"
                 android:layout_width="match_parent" />
             <TextView
+                android:id="@+id/DisplayLabel"
                 android:textSize="12sp"
                 android:paddingLeft="16dp"
                 android:textAllCaps="true"
                 android:letterSpacing="0.04"
                 android:gravity="center_vertical"
-                android:text="@string/Display"
-                android:textColor="@color/defaultText"
+                tools:text="Display"
+                android:textColor="@color/secondaryText"
                 android:fontFamily="sans-serif-medium"
                 android:layout_height="48dp"
                 android:layout_marginTop="24dp"
@@ -152,16 +156,17 @@
                     tools:text="MM/DD/YYYY"
                     android:textSize="15sp"
                     android:lineSpacingExtra="5sp"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/primaryText"
                     android:layout_marginTop="8dp"
                     android:layout_marginLeft="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <TextView
+                    android:id="@+id/DateFormatLabel"
                     android:textSize="12sp"
                     android:lineSpacingExtra="4sp"
-                    android:text="@string/DateFormat"
-                    android:textColor="@color/defaultText"
+                    tools:text="Date format"
+                    android:textColor="@color/secondaryText"
                     android:layout_gravity="bottom"
                     android:layout_marginLeft="16dp"
                     android:layout_marginBottom="8dp"
@@ -189,16 +194,17 @@
                     tools:text="Monday"
                     android:textSize="15sp"
                     android:lineSpacingExtra="5sp"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/primaryText"
                     android:layout_marginTop="8dp"
                     android:layout_marginLeft="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <TextView
+                    android:id="@+id/BeginningOfWeekLabel"
                     android:textSize="12sp"
                     android:lineSpacingExtra="4sp"
-                    android:text="@string/BeginningOfWeek"
-                    android:textColor="@color/defaultText"
+                    tools:text="First day of the week"
+                    android:textColor="@color/secondaryText"
                     android:layout_gravity="bottom"
                     android:layout_marginLeft="16dp"
                     android:layout_marginBottom="8dp"
@@ -226,16 +232,17 @@
                     tools:text="Monday"
                     android:textSize="15sp"
                     android:lineSpacingExtra="5sp"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/primaryText"
                     android:layout_marginTop="8dp"
                     android:layout_marginLeft="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <TextView
+                    android:id="@+id/DurationFormatLabel"
                     android:textSize="12sp"
                     android:lineSpacingExtra="4sp"
-                    android:text="@string/DurationFormat"
-                    android:textColor="@color/defaultText"
+                    tools:text="Duration display format"
+                    android:textColor="@color/secondaryText"
                     android:layout_gravity="bottom"
                     android:layout_marginLeft="16dp"
                     android:layout_marginBottom="8dp"
@@ -259,12 +266,13 @@
                 android:layout_height="48dp"
                 android:layout_width="match_parent">
                 <TextView
+                    android:id="@+id/Use24HourClockLabel"
                     android:textSize="15sp"
                     android:textAllCaps="false"
                     android:paddingLeft="16dp"
                     android:gravity="center_vertical"
-                    android:text="@string/Use24HourClock"
-                    android:textColor="@android:color/black"
+                    tools:text="Use 24-hour clock"
+                    android:textColor="@color/primaryText"
                     android:layout_gravity="start"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content" />
@@ -287,12 +295,13 @@
                 android:layout_height="48dp"
                 android:layout_width="match_parent">
                 <TextView
+                    android:id="@+id/GroupedTimeEntriesLabel"
                     android:textSize="15sp"
                     android:textAllCaps="false"
                     android:paddingLeft="16dp"
                     android:gravity="center_vertical"
-                    android:text="@string/GroupTimeEntries"
-                    android:textColor="@android:color/black"
+                    tools:text="Group similar time entries"
+                    android:textColor="@color/primaryText"
                     android:layout_gravity="start"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content" />
@@ -308,10 +317,40 @@
                 android:background="@color/separator"
                 android:layout_height="0.5dp"
                 android:layout_width="match_parent" />
-            <View
+
+          <View
                 android:background="@color/separator"
                 android:layout_height="0.5dp"
                 android:layout_marginTop="24dp"
+                android:layout_width="match_parent" />
+            <FrameLayout
+                android:id="@+id/SettingsToggleSwipeActionsView"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground"
+                android:layout_height="48dp"
+                android:layout_width="match_parent">
+                <TextView
+                    android:id="@+id/SettingsToggleSwipeActionsLabel"
+                    android:textSize="15sp"
+                    android:textAllCaps="false"
+                    android:paddingLeft="16dp"
+                    android:gravity="center_vertical"
+                    tools:text="Cell Swipe Actions"
+                    android:textColor="@color/primaryText"
+                    android:layout_gravity="start"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content" />
+                <Switch
+                    android:id="@+id/SettingsAreSwipeActionsEnabledSwitch"
+                    android:clickable="false"
+                    android:paddingRight="18dp"
+                    android:layout_gravity="right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </FrameLayout>
+            <View
+                android:background="@color/separator"
+                android:layout_height="0.5dp"
                 android:layout_width="match_parent" />
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/SettingsToggleManualModeView"
@@ -322,9 +361,9 @@
                 android:focusable="true">
                 <TextView
                     android:id="@+id/SettingsToggleManualModeLabel"
-                    android:text="@string/ManualMode"
+                    tools:text="Manual Mode"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/primaryText"
                     android:textSize="15sp"
                     android:lineSpacingExtra="5sp"
                     android:lines="1"
@@ -332,30 +371,30 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="8dp"
-                    local:layout_constraintEnd_toStartOf="@+id/SettingsIsManualModeEnabledSwitch"
-                    local:layout_constraintStart_toStartOf="parent"
-                    local:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintEnd_toStartOf="@+id/SettingsIsManualModeEnabledSwitch"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
                 <Switch
                     android:id="@+id/SettingsIsManualModeEnabledSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="18dp"
                     android:clickable="false"
-                    local:layout_constraintBottom_toBottomOf="@+id/SettingsToggleManualModeLabel"
-                    local:layout_constraintEnd_toEndOf="parent"
-                    local:layout_constraintTop_toTopOf="@+id/SettingsToggleManualModeLabel" />
+                    app:layout_constraintBottom_toBottomOf="@+id/SettingsToggleManualModeLabel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/SettingsToggleManualModeLabel" />
                 <TextView
                     android:id="@+id/SettingsToggleManualModeExplanation"
-                    android:text="@string/ManualModeExplanation"
-                    android:textColor="@color/defaultText"
+                    tools:text="This option sets the default behavior for the start button. Regardless of the current option, long pressing the button will always activate the alternative mode."
+                    android:textColor="@color/secondaryText"
                     android:textSize="12sp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    local:layout_constraintBottom_toBottomOf="parent"
-                    local:layout_constraintEnd_toEndOf="parent"
-                    local:layout_constraintStart_toStartOf="@+id/SettingsToggleManualModeLabel"
-                    local:layout_constraintTop_toBottomOf="@+id/SettingsIsManualModeEnabledSwitch" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/SettingsToggleManualModeLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/SettingsIsManualModeEnabledSwitch" />
             </android.support.constraint.ConstraintLayout>
             <View
                 android:background="@color/separator"
@@ -375,8 +414,8 @@
                 android:clickable="true"
                 android:background="?attr/selectableItemBackground"
                 android:textSize="15dp"
-                android:textColor="@android:color/black"
-                android:text="@string/CalendarSettings"/>
+                android:textColor="@color/primaryText"
+                tools:text="Calendar Settings"/>
             <View
                 android:background="@color/separator"
                 android:layout_height="0.5dp"
@@ -394,9 +433,10 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginLeft="16dp"
                     android:lineSpacingExtra="5sp"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/primaryText"
                     tools:text="5 minutes before the event"/>
                 <TextView
+                    android:id="@+id/SmartRemindersLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
@@ -404,8 +444,8 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginBottom="8dp"
                     android:textSize="12sp"
-                    android:textColor="@color/defaultText"
-                    android:text="@string/SmartReminders"/>
+                    android:textColor="@color/secondaryText"
+                    tools:text="Smart reminders"/>
                 <ImageView
                     android:src="@drawable/dropdown"
                     android:layout_marginRight="16dp"
@@ -419,14 +459,15 @@
                 android:layout_height="0.5dp"
                 android:layout_width="match_parent" />
             <TextView
+                android:id="@+id/NotificationsLabel"
                 android:textSize="12sp"
                 android:paddingLeft="16dp"
                 android:textAllCaps="true"
                 android:letterSpacing="0.04"
                 android:gravity="center_vertical"
-                android:text="@string/Notifications"
+                tools:text="Notifications"
                 android:fontFamily="sans-serif-medium"
-                android:textColor="@color/defaultText"
+                android:textColor="@color/secondaryText"
                 android:layout_height="48dp"
                 android:layout_marginTop="24dp"
                 android:layout_width="match_parent" />
@@ -441,12 +482,13 @@
                 android:layout_height="48dp"
                 android:layout_width="match_parent">
                 <TextView
+                    android:id="@+id/NotificationsRunningTimerLabel"
                     android:textSize="15sp"
                     android:paddingLeft="16dp"
                     android:textAllCaps="false"
                     android:gravity="center_vertical"
-                    android:textColor="@android:color/black"
-                    android:text="@string/NotificationsRunningTimer"
+                    android:textColor="@color/primaryText"
+                    tools:text="Running timer"
                     android:layout_gravity="start"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
@@ -469,12 +511,13 @@
                 android:layout_height="48dp"
                 android:layout_width="match_parent">
                 <TextView
+                    android:id="@+id/NotificationsStoppedTimerLabel"
                     android:textSize="15sp"
                     android:textAllCaps="false"
                     android:lineSpacingExtra="5sp"
                     android:gravity="center_vertical"
-                    android:textColor="@android:color/black"
-                    android:text="@string/NotificationsStoppedTimer"
+                    android:textColor="@color/primaryText"
+                    tools:text="Stopped timer"
                     android:layout_marginLeft="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
@@ -491,14 +534,15 @@
                 android:layout_height="0.5dp"
                 android:layout_width="match_parent" />
             <TextView
+                android:id="@+id/GeneralLabel"
                 android:textSize="12sp"
                 android:paddingLeft="16dp"
                 android:textAllCaps="true"
                 android:letterSpacing="0.04"
-                android:text="@string/General"
+                tools:text="General"
                 android:gravity="center_vertical"
                 android:fontFamily="sans-serif-medium"
-                android:textColor="@color/defaultText"
+                android:textColor="@color/secondaryText"
                 android:layout_height="48dp"
                 android:layout_marginTop="24dp"
                 android:layout_width="match_parent" />
@@ -513,8 +557,8 @@
                 android:focusable="true"
                 android:paddingLeft="16dp"
                 android:gravity="center_vertical"
-                android:text="@string/SubmitFeedback"
-                android:textColor="@android:color/black"
+                tools:text="Submit feedback"
+                android:textColor="@color/primaryText"
                 android:background="?attr/selectableItemBackground"
                 android:layout_height="48dp"
                 android:layout_width="match_parent" />
@@ -528,9 +572,9 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingLeft="16dp"
-                android:text="@string/Help"
+                tools:text="Help"
                 android:gravity="center_vertical"
-                android:textColor="@android:color/black"
+                android:textColor="@color/primaryText"
                 android:background="?attr/selectableItemBackground"
                 android:layout_height="48dp"
                 android:layout_width="match_parent" />
@@ -546,11 +590,12 @@
                 android:layout_height="48dp"
                 android:layout_width="match_parent">
                 <TextView
+                    android:id="@+id/AboutLabel"
                     android:textSize="15sp"
                     android:paddingLeft="16dp"
-                    android:text="@string/About"
+                    tools:text="About"
                     android:gravity="center_vertical"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/primaryText"
                     android:layout_gravity="start"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
@@ -559,7 +604,7 @@
                     android:textSize="15sp"
                     android:paddingRight="16dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/defaultText"
+                    android:textColor="@color/secondaryText"
                     android:layout_gravity="end"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
@@ -574,7 +619,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingLeft="16dp"
-                android:text="@string/Logout"
+                tools:text="Sign out of Toggl"
                 android:gravity="center_vertical"
                 android:textColor="@color/errorText"
                 android:background="?attr/selectableItemBackground"
@@ -594,13 +639,8 @@
       android:layout_height="wrap_content">
       <android.support.v7.widget.Toolbar
           android:id="@+id/Toolbar"
-          android:minHeight="?attr/actionBarSize"
-          android:background="@color/defaultBackground"
-          local:titleTextColor="@android:color/black"
-          local:layout_scrollFlags="scroll|enterAlways"
-          local:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
-          android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content" />
+          style="@style/ToolbarStyle"
+          app:layout_scrollFlags="scroll|enterAlways"
+           />
   </android.support.design.widget.AppBarLayout>
 </android.support.design.widget.CoordinatorLayout>

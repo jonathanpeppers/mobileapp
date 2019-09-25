@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using Toggl.Shared;
 using Toggl.Shared.Extensions;
 
@@ -10,8 +10,8 @@ namespace Toggl.Core.UI.ViewModels.ReportsCalendar
         private readonly BeginningOfWeek beginningOfWeek;
         private readonly DateTimeOffset today;
 
-        public List<ReportsCalendarDayViewModel> Days { get; }
-            = new List<ReportsCalendarDayViewModel>();
+        public IImmutableList<ReportsCalendarDayViewModel> Days { get; private set; }
+            = ImmutableList<ReportsCalendarDayViewModel>.Empty;
 
         public CalendarMonth CalendarMonth { get; }
 
@@ -68,7 +68,7 @@ namespace Toggl.Core.UI.ViewModels.ReportsCalendar
 
         private void addDay(int day, CalendarMonth month, bool isCurrentMonth)
         {
-            Days.Add(new ReportsCalendarDayViewModel(day, month, isCurrentMonth, today));
+            Days = Days.Add(new ReportsCalendarDayViewModel(day, month, isCurrentMonth, today));
         }
     }
 }

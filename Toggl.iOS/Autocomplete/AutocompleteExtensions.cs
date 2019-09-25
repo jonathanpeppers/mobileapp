@@ -105,26 +105,17 @@ namespace Toggl.iOS.Autocomplete
             }
         }
 
-        public static (NSAttributedString, int) AsAttributedTextAndCursorPosition(this TextFieldInfo self)
+        public static NSAttributedString AsAttributedTextAndCursorPosition(this TextFieldInfo self)
         {
             var attributedText = new NSMutableAttributedString("", createBasicAttributes());
-            var finalCursorPosition = 0;
-            var currentCursorPosition = 0;
 
             foreach (var span in self.Spans)
             {
                 var spanString = span.AsAttributedString();
                 attributedText.Append(spanString);
-
-                if (span is QueryTextSpan querySpan)
-                {
-                    finalCursorPosition = currentCursorPosition + querySpan.CursorPosition;
-                }
-
-                currentCursorPosition += (int)spanString.Length;
             }
 
-            return (attributedText, finalCursorPosition);
+            return attributedText;
         }
 
         private static NSMutableAttributedString AsAttributedString(this ISpan span)

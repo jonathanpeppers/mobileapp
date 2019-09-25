@@ -38,22 +38,6 @@ private Action Test(string[] projectPaths)
     };
 }
 
-private Action UITest(string[] dllPaths)
-{
-    return () =>
-    {
-        foreach(var dllPath in dllPaths)
-        {
-            var args = $"tools/nunit.runners.2.6.3/NUnit.Runners/tools/nunit-console.exe {dllPath}";
-
-            var result = StartProcess("mono", new ProcessSettings { Arguments = args });
-            if (result == 0) continue;
-
-            throw new Exception($"Failed while running UI tests at {dllPath}");
-        }
-    };
-}
-
 private Action BuildSolution(string configuration, string platform = "")
 {
     const string togglSolution = "./Toggl.sln";
@@ -196,6 +180,7 @@ private TemporaryFileTransformation GetAndroidGoogleServicesTransformation()
     var projectId = EnvironmentVariable("TOGGL_PROJECT_ID");
     var storageBucket = EnvironmentVariable("TOGGL_STORAGE_BUCKET");
     var mobileSdkAppId = EnvironmentVariable("TOGGL_DROID_GOOGLE_SERVICES_MOBILE_SDK_APP_ID");
+    var mobileSdkAdhocAppId = EnvironmentVariable("TOGGL_DROID_ADHOC_GOOGLE_SERVICES_MOBILE_SDK_APP_ID");
     var clientId = EnvironmentVariable("TOGGL_DROID_GOOGLE_SERVICES_CLIENT_ID");
     var apiKey = EnvironmentVariable("TOGGL_DROID_GOOGLE_SERVICES_API_KEY");
 
@@ -211,6 +196,7 @@ private TemporaryFileTransformation GetAndroidGoogleServicesTransformation()
                         .Replace("{TOGGL_PROJECT_ID}", projectId)
                         .Replace("{TOGGL_STORAGE_BUCKET}", storageBucket)
                         .Replace("{TOGGL_DROID_GOOGLE_SERVICES_MOBILE_SDK_APP_ID}", mobileSdkAppId)
+                        .Replace("{TOGGL_DROID_ADHOC_GOOGLE_SERVICES_MOBILE_SDK_APP_ID}", mobileSdkAdhocAppId)
                         .Replace("{TOGGL_DROID_GOOGLE_SERVICES_CLIENT_ID}", clientId)
                         .Replace("{TOGGL_DROID_GOOGLE_SERVICES_API_KEY}", apiKey)
     };
@@ -348,16 +334,20 @@ private TemporaryFileTransformation GetIosEntitlementsConfigurationTransformatio
 {
     const string path = "Toggl.iOS/Entitlements.plist";
     const string groupIdToReplace = "group.com.toggl.daneel.debug.extensions";
+    const string defaultApsEnvironment = "<string>development</string>";
 
     var groupId = groupIdToReplace;
+    var apsEnvironment = defaultApsEnvironment;
 
     if (target == "Build.Release.iOS.AdHoc")
     {
         groupId = "group.com.toggl.daneel.adhoc.extensions";
+        apsEnvironment = "<string>production</string>";
     }
     else if (target == "Build.Release.iOS.AppStore")
     {
         groupId = "group.com.toggl.daneel.extensions";
+        apsEnvironment = "<string>production</string>";
     }
 
     var filePath = GetFiles(path).Single();
@@ -367,7 +357,7 @@ private TemporaryFileTransformation GetIosEntitlementsConfigurationTransformatio
     {
         Path = path,
         Original = file,
-        Temporary = file.Replace(groupIdToReplace, groupId)
+        Temporary = file.Replace(groupIdToReplace, groupId).Replace(defaultApsEnvironment, apsEnvironment)
     };
 }
 
@@ -534,16 +524,6 @@ private string[] GetUnitTestProjects() => new []
     "./Toggl.Core.Tests/Toggl.Core.Tests.csproj",
 };
 
-private string[] GetIosUITestFiles() => new []
-{
-    "./bin/Release/Toggl.iOS.Tests.UI.dll"
-};
-
-private string[] GetAndroidUITestFiles() => new []
-{
-	".bin/Release/Toggl.Giskard.Tests.UI.dll"
-};
-
 private string[] GetIntegrationTestProjects()
     => new [] { "./Toggl.Networking.Tests.Integration/Toggl.Networking.Tests.Integration.csproj" };
 
@@ -611,10 +591,6 @@ Task("Build.Tests.Sync")
     .IsDependentOn("Nuget")
     .Does(BuildSolution("SyncTests"));
 
-Task("Build.Tests.UI")
-    .IsDependentOn("Nuget")
-    .Does(BuildSolution("UITests"));
-
 Task("BuildSyncDiagramGenerator")
     .IsDependentOn("Nuget")
     .Does(BuildSolution("SyncDiagramGenerator"));
@@ -660,21 +636,10 @@ Task("Tests.Sync")
     .IsDependentOn("Build.Tests.Sync")
     .Does(Test(GetSyncTestProjects()));
 
-//UI Tests
-Task("Tests.UI.iOS")
-    .IsDependentOn("Build.Tests.UI")
-    .Does(UITest(GetIosUITestFiles()));
-
-Task("Tests.UI.Android")
-    .IsDependentOn("Build.Tests.UI")
-    .Does(UITest(GetAndroidUITestFiles()));
-
 // All Tests
 Task("Tests")
     .IsDependentOn("Tests.Unit")
-    .IsDependentOn("Tests.Integration")
-    .IsDependentOn("Tests.UI.iOS")
-	.IsDependentOn("Tests.UI.Android");
+    .IsDependentOn("Tests.Integration");
 
 //Default Operation
 Task("Default")

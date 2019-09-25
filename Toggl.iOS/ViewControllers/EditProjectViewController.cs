@@ -32,6 +32,7 @@ namespace Toggl.iOS.ViewControllers
             ErrorLabel.Text = Resources.ProjectNameTakenError;
             DoneButton.SetTitle(Resources.Create, UIControlState.Normal);
             ProjectNameUsedErrorTextHeight.Constant = 0;
+            PrivateProjectLabel.Text = Resources.PrivateProject;
 
             // Name
             NameTextField.Rx().Text()
@@ -92,13 +93,17 @@ namespace Toggl.iOS.ViewControllers
                 .DisposedBy(DisposeBag);
 
             // Is Private
-            PrivateProjectSwitchContainer.Rx().Tap()
+            PrivateProjectSwitch.Rx().Changed()
                 .Select(_ => PrivateProjectSwitch.On)
                 .Subscribe(ViewModel.IsPrivate.Accept)
                 .DisposedBy(DisposeBag);
 
-            ViewModel.IsPrivate
-                .Subscribe(PrivateProjectSwitch.Rx().On())
+            ViewModel.CanCreatePublicProjects
+                .Subscribe(PrivateProjectSwitchContainer.Rx().IsVisible())
+                .DisposedBy(DisposeBag);
+
+            ViewModel.CanCreatePublicProjects
+                .Subscribe(BottomSeparator.Rx().IsVisible())
                 .DisposedBy(DisposeBag);
 
             // Save

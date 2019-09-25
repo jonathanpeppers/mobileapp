@@ -50,8 +50,8 @@ namespace Toggl.Core.UI.ViewModels
         private bool isDirty => !string.IsNullOrEmpty(textFieldInfo.Value.Description)
                                 || textFieldInfo.Value.Spans.Any(s => s is ProjectSpan || s is TagSpan)
                                 || isBillable.Value
-                                || startTime != parameter.StartTime
-                                || duration != parameter.Duration;
+                                || startTime != parameter?.StartTime
+                                || duration != parameter?.Duration;
 
         private bool hasAnyTags;
         private bool hasAnyProjects;
@@ -92,9 +92,9 @@ namespace Toggl.Core.UI.ViewModels
         public InputAction<AutocompleteSuggestion> SelectSuggestion { get; }
         public InputAction<TimeSpan> SetRunningTime { get; }
         public InputAction<ProjectSuggestion> ToggleTasks { get; }
-        public InputAction<IEnumerable<ISpan>> SetTextSpans { get; }
+        public InputAction<IImmutableList<ISpan>> SetTextSpans { get; }
 
-        public IObservable<IList<SectionModel<string, AutocompleteSuggestion>>> Suggestions { get; }
+        public IObservable<IImmutableList<SectionModel<string, AutocompleteSuggestion>>> Suggestions { get; }
         public IObservable<string> DisplayedTime { get; }
 
         public StartTimeEntryViewModel(
@@ -146,21 +146,21 @@ namespace Toggl.Core.UI.ViewModels
             SelectSuggestion = rxActionFactory.FromAsync<AutocompleteSuggestion>(selectSuggestion);
             SetRunningTime = rxActionFactory.FromAction<TimeSpan>(setRunningTime);
             ToggleTasks = rxActionFactory.FromAction<ProjectSuggestion>(toggleTasks);
-            SetTextSpans = rxActionFactory.FromAction<IEnumerable<ISpan>>(setTextSpans);
+            SetTextSpans = rxActionFactory.FromAction<IImmutableList<ISpan>>(setTextSpans);
 
             var queryByType = queryByTypeSubject
                 .AsObservable()
-                .SelectMany(type => interactorFactory.GetAutocompleteSuggestions(new QueryInfo("", type)).Execute());
+                .Select(type => new QueryInfo("", type));
 
             var queryByText = textFieldInfo
                 .SelectMany(setBillableValues)
                 .Select(QueryInfo.ParseFieldInfo)
                 .Do(onParsedQuery)
-                .ObserveOn(schedulerProvider.BackgroundScheduler)
-                .SelectMany(query => interactorFactory.GetAutocompleteSuggestions(query).Execute());
+                .ObserveOn(schedulerProvider.BackgroundScheduler);
 
             Suggestions = Observable.Merge(queryByText, queryByType)
-                .Select(items => items.ToList()) // This is line is needed for now to read objects from realm
+                .SelectMany(query => interactorFactory.GetAutocompleteSuggestions(query).Execute())
+                .Select(items => items.ToList()) // This is line is needed for now to read objects from realm .ObserveOn(schedulerProvider.BackgroundScheduler)
                 .Select(filter)
                 .Select(group)
                 .CombineLatest(expandedProjects, (groups, _) => groups)
@@ -250,17 +250,21 @@ namespace Toggl.Core.UI.ViewModels
         {
             if (isDirty)
             {
-                var shouldDiscard = await View.ConfirmDestructiveAction(ActionType.DiscardNewTimeEntry);
-                if (!shouldDiscard)
-                    return;
+                var view = View;
+                if (view != null)
+                {
+                    var shouldDiscard = await view.ConfirmDestructiveAction(ActionType.DiscardNewTimeEntry);
+                    if (!shouldDiscard)
+                        return;
+                }
             }
 
             Close();
         }
 
-        private void setTextSpans(IEnumerable<ISpan> spans)
+        private void setTextSpans(IImmutableList<ISpan> spans)
         {
-            textFieldInfo.Accept(textFieldInfo.Value.ReplaceSpans(spans.ToImmutableList()));
+            textFieldInfo.Accept(textFieldInfo.Value.ReplaceSpans(spans));
         }
 
         private void setRunningTime(TimeSpan runningTime)
@@ -488,9 +492,11 @@ namespace Toggl.Core.UI.ViewModels
                 origin = paramOrigin;
             }
 
+            Close();
+
             return interactorFactory.CreateTimeEntry(timeEntry, origin)
                 .Execute()
-                .Do(_ => Close());
+                .SubscribeOn(schedulerProvider.BackgroundScheduler);
         }
 
         private void onParsedQuery(QueryInfo parsedQuery)
@@ -567,7 +573,11 @@ namespace Toggl.Core.UI.ViewModels
                         items = items.Prepend(ProjectSuggestion.NoProject(projectSuggestion.WorkspaceId,
                             projectSuggestion.WorkspaceName));
                     }
-
+                    else if (group.First() is TimeEntrySuggestion timeEntrySuggestion)
+                    {
+                        header = timeEntrySuggestion.WorkspaceName;
+                    }
+                    
                     return new SectionModel<string, AutocompleteSuggestion>(header, items);
                 }
             );
@@ -589,7 +599,7 @@ namespace Toggl.Core.UI.ViewModels
             }
         }
 
-        private IList<SectionModel<string, AutocompleteSuggestion>> addStaticElements(IEnumerable<SectionModel<string, AutocompleteSuggestion>> sections)
+        private IImmutableList<SectionModel<string, AutocompleteSuggestion>> addStaticElements(IEnumerable<SectionModel<string, AutocompleteSuggestion>> sections)
         {
             var suggestions = sections.SelectMany(section => section.Items);
 
@@ -633,7 +643,7 @@ namespace Toggl.Core.UI.ViewModels
                 }
             }
 
-            return sections.ToList();
+            return sections.ToImmutableList();
 
             bool shouldAddProjectCreationSuggestion()
                 => canCreateProjectsInWorkspace && !textFieldInfo.Value.HasProject &&

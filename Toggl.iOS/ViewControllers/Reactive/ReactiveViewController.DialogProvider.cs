@@ -19,5 +19,8 @@ namespace Toggl.iOS.ViewControllers
 
         public IObservable<T> Select<T>(string title, IEnumerable<SelectOption<T>> options, int initialSelectionIndex)
             => this.ShowSelectDialog(title, options, initialSelectionIndex);
+        
+        public IObservable<T> SelectAction<T>(string title, IEnumerable<SelectOption<T>> options)
+            => this.ShowActionSheet(title, options);        
     }
 }

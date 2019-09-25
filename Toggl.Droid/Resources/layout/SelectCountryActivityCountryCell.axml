@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:elevation="1dp"
-    android:background="@android:color/white"
     android:layout_height="48dp"
     android:layout_width="match_parent">
     <TextView
@@ -11,7 +9,7 @@
         android:id="@+id/NameTextView"
         android:textSize="15sp"
         android:textStyle="normal"
-        android:textColor="#000000"
+        android:textColor="@color/primaryText"
         android:fontFamily="sans-serif"
         android:gravity="center_vertical"
         android:layout_marginLeft="16dp"

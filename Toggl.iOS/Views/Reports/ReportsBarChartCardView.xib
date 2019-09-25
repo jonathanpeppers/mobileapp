@@ -216,6 +216,7 @@
                 <outlet property="MaximumHoursLabel" destination="bk5-Da-aaQ" id="HeF-ne-Oha"/>
                 <outlet property="NonBillableLegendLabel" destination="AbJ-Bl-jNf" id="ujm-x4-xpx"/>
                 <outlet property="StartDateLabel" destination="6cK-AI-5go" id="aLE-Rq-Z4J"/>
+                <outlet property="ZeroHoursLabel" destination="scc-o1-3FX" id="rgN-G3-O0g"/>
             </connections>
             <point key="canvasLocation" x="-234.40000000000001" y="-359.82008995502252"/>
         </view>

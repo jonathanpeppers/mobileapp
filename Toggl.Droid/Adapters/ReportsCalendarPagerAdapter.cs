@@ -25,7 +25,7 @@ namespace Toggl.Droid.Adapters
 
         private readonly Context context;
         private readonly RecyclerView.RecycledViewPool recyclerviewPool = new RecyclerView.RecycledViewPool();
-        private IReadOnlyList<ReportsCalendarPageViewModel> currentMonths = ImmutableList<ReportsCalendarPageViewModel>.Empty;
+        private IImmutableList<ReportsCalendarPageViewModel> currentMonths = ImmutableList<ReportsCalendarPageViewModel>.Empty;
         private Subject<ReportsCalendarDayViewModel> dayTaps = new Subject<ReportsCalendarDayViewModel>();
         private Subject<ReportsDateRangeParameter> selectionChanges = new Subject<ReportsDateRangeParameter>();
         private ReportsDateRangeParameter currentDateRange;
@@ -120,10 +120,10 @@ namespace Toggl.Droid.Adapters
         public override bool IsViewFromObject(View view, Object @object)
             => view == @object;
 
-        public void UpdateMonths(List<ReportsCalendarPageViewModel> newMonths)
+        public void UpdateMonths(IImmutableList<ReportsCalendarPageViewModel> newMonths)
         {
-            currentMonths = newMonths.ToImmutableList();
-            mainHandler.Post(NotifyDataSetChanged);
+            currentMonths = newMonths;
+            NotifyDataSetChanged();
             notifyPageContentAdapters();
         }
 

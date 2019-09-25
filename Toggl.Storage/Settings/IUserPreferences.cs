@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Toggl.Shared.Models;
 
 namespace Toggl.Storage.Settings
 {

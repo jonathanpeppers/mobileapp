@@ -1,6 +1,7 @@
 ﻿using Foundation;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive;
 using Toggl.Core.UI.Collections;
@@ -14,18 +15,18 @@ namespace Toggl.iOS.Extensions.Reactive
 {
     public static class UITableViewExtensions
     {
-        public static IObserver<IEnumerable<TSection>> ReloadSections<TSection, THeader, TModel>(
+        public static IObserver<IImmutableList<TSection>> ReloadSections<TSection, THeader, TModel>(
             this IReactive<UITableView> reactive, BaseTableViewSource<TSection, THeader, TModel> dataSource)
         where TSection : ISectionModel<THeader, TModel>, new()
         {
-            return Observer.Create<IEnumerable<TSection>>(list =>
+            return Observer.Create<IImmutableList<TSection>>(list =>
             {
                 dataSource.SetSections(list);
                 reactive.Base.ReloadData();
             });
         }
 
-        public static IObserver<IEnumerable<TSection>> AnimateSections<TSection, THeader, TModel, TKey>(
+        public static IObserver<IImmutableList<TSection>> AnimateSections<TSection, THeader, TModel, TKey>(
             this IReactive<UITableView> reactive,
             BaseTableViewSource<TSection, THeader, TModel> dataSource)
             where TKey : IEquatable<TKey>
@@ -33,7 +34,7 @@ namespace Toggl.iOS.Extensions.Reactive
             where TModel : IDiffable<TKey>, IEquatable<TModel>
             where THeader : IDiffable<TKey>
         {
-            return Observer.Create<IEnumerable<TSection>>(finalSections =>
+            return Observer.Create<IImmutableList<TSection>>(finalSections =>
             {
                 var initialSections = dataSource.Sections;
                 if (initialSections == null || initialSections.Count == 0)
@@ -62,7 +63,7 @@ namespace Toggl.iOS.Extensions.Reactive
                 foreach (var difference in changeset)
                 {
                     reactive.Base.BeginUpdates();
-                    dataSource.SetSections(difference.FinalSections);
+                    dataSource.SetSections(difference.FinalSections.ToImmutableList());
                     reactive.Base.performChangesetUpdates(difference);
                     reactive.Base.EndUpdates();
 
@@ -77,11 +78,11 @@ namespace Toggl.iOS.Extensions.Reactive
             });
         }
 
-        public static IObserver<IEnumerable<TModel>> ReloadItems<TSection, THeader, TModel>(
+        public static IObserver<IImmutableList<TModel>> ReloadItems<TSection, THeader, TModel>(
             this IReactive<UITableView> reactive, BaseTableViewSource<TSection, THeader, TModel> dataSource)
         where TSection : SectionModel<THeader, TModel>, new()
         {
-            return Observer.Create<IEnumerable<TModel>>(list =>
+            return Observer.Create<IImmutableList<TModel>>(list =>
             {
                 dataSource.SetItems(list);
                 reactive.Base.ReloadData();

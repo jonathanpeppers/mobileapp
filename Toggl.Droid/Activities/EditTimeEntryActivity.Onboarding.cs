@@ -18,7 +18,7 @@ namespace Toggl.Droid.Activities
                     this,
                     Resource.Layout.TooltipWithLeftTopArrow,
                     Resource.Id.TooltipText,
-                    Resource.String.CategorizeWithProjects);
+                    Shared.Resources.CategorizeWithProjects);
 
             prepareOnboarding();
         }

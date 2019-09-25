@@ -1,14 +1,12 @@
 ﻿using Android.App;
 using Android.Content.PM;
-using Android.OS;
-using Android.Support.V7.Widget;
+using Android.Runtime;
 using System;
-using System.Reactive;
-using System.Reactive.Linq;
+using Android.OS;
 using Toggl.Core.UI.Extensions;
 using Toggl.Core.UI.ViewModels;
-using Toggl.Droid.Adapters;
 using Toggl.Droid.Extensions.Reactive;
+using Toggl.Droid.Presentation;
 using Toggl.Shared.Extensions;
 
 namespace Toggl.Droid.Activities
@@ -18,29 +16,33 @@ namespace Toggl.Droid.Activities
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public sealed partial class SelectProjectActivity : ReactiveActivity<SelectProjectViewModel>
     {
-        protected override void OnCreate(Bundle bundle)
+        private bool hasToggledTasks = false;
+        public SelectProjectActivity() : base(
+            Resource.Layout.SelectProjectActivity,
+            Resource.Style.AppTheme,
+            Transitions.SlideInFromBottom)
         {
-            SetTheme(Resource.Style.AppTheme_Light_WhiteBackground);
-            base.OnCreate(bundle);
-            if (ViewModelWasNotCached())
-            {
-                BailOutToSplashScreen();
-                return;
-            }
-            SetContentView(Resource.Layout.SelectProjectActivity);
-            OverridePendingTransition(Resource.Animation.abc_slide_in_bottom, Resource.Animation.abc_fade_out);
-            InitializeViews();
+        }
 
-            var adapter = new SelectProjectRecyclerAdapter();
-            recyclerView.SetLayoutManager(new LinearLayoutManager(this));
-            recyclerView.SetAdapter(adapter);
+        public SelectProjectActivity(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
+        {
+        }
 
+        protected override void OnStart()
+        {
+            base.OnStart();
+            searchField.RequestFocus();
+        }
+
+        protected override void InitializeBindings()
+        {
             ViewModel.Suggestions
                 .Subscribe(adapter.Rx().Items())
                 .DisposedBy(DisposeBag);
 
             adapter.ItemsUpdateCompleted
-                .Subscribe(scrollToTop)
+                .Subscribe(scrollToTopIfHasntToggledTasks)
                 .DisposedBy(DisposeBag);
 
             adapter.ItemTapObservable
@@ -48,6 +50,7 @@ namespace Toggl.Droid.Activities
                 .DisposedBy(DisposeBag);
 
             adapter.ToggleTasks
+                .Do(() => hasToggledTasks = true)
                 .Subscribe(ViewModel.ToggleTaskSuggestions.Inputs)
                 .DisposedBy(DisposeBag);
 
@@ -59,20 +62,15 @@ namespace Toggl.Droid.Activities
                 .Subscribe(ViewModel.FilterText)
                 .DisposedBy(DisposeBag);
 
-            closeButton.Rx().Tap()
-                .Subscribe(ViewModel.CloseWithDefaultResult)
-                .DisposedBy(DisposeBag);
-        }
+            void scrollToTopIfHasntToggledTasks()
+            {
+                if (!hasToggledTasks)
+                {
+                    recyclerView.GetLayoutManager().ScrollToPosition(0);
+                }
 
-        private void scrollToTop(Unit _)
-        {
-            recyclerView.GetLayoutManager().ScrollToPosition(0);
-        }
-
-        public override void Finish()
-        {
-            base.Finish();
-            OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_slide_out_bottom);
+                hasToggledTasks = false;
+            }
         }
     }
 }

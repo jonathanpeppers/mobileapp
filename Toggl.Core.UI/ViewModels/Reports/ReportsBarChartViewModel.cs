@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using Toggl.Core.DataSources.Interfaces;
@@ -17,13 +18,13 @@ namespace Toggl.Core.UI.ViewModels.Reports
 
         private const int roundToMultiplesOf = 2;
 
-        private IDisposable reportsDisposable;
+        private readonly IDisposable reportsDisposable;
 
-        public IObservable<BarViewModel[]> Bars { get; }
+        public IObservable<IImmutableList<BarViewModel>> Bars { get; }
 
         public IObservable<int> MaximumHoursPerBar { get; }
 
-        public IObservable<DateTimeOffset[]> HorizontalLegend { get; }
+        public IObservable<IImmutableList<DateTimeOffset>> HorizontalLegend { get; }
 
         public IObservable<DateFormat> DateFormat { get; }
 
@@ -48,13 +49,13 @@ namespace Toggl.Core.UI.ViewModels.Reports
             reportsDisposable = finalReports.Connect();
 
             Bars = finalReports.Select(bars)
-                .AsDriver(onErrorJustReturn: Array.Empty<BarViewModel>(), schedulerProvider: schedulerProvider);
+                .AsDriver(onErrorJustReturn: ImmutableList<BarViewModel>.Empty, schedulerProvider: schedulerProvider);
 
             MaximumHoursPerBar = finalReports.Select(upperHoursLimit)
                 .AsDriver(onErrorJustReturn: 0, schedulerProvider: schedulerProvider);
 
             HorizontalLegend = finalReports.Select(weeklyLegend)
-                .AsDriver(onErrorJustReturn: null, schedulerProvider: schedulerProvider);
+                .AsDriver(onErrorJustReturn: ImmutableList<DateTimeOffset>.Empty, schedulerProvider: schedulerProvider);
         }
 
         public override void ViewDestroyed()
@@ -64,10 +65,10 @@ namespace Toggl.Core.UI.ViewModels.Reports
             reportsDisposable.Dispose();
         }
 
-        private BarViewModel[] bars(ITimeEntriesTotals report)
+        private IImmutableList<BarViewModel> bars(ITimeEntriesTotals report)
         {
             var upperLimit = upperHoursLimit(report);
-            return report.Groups.Select(normalizedBar(upperLimit)).ToArray();
+            return report.Groups.Select(normalizedBar(upperLimit)).ToImmutableList();
         }
 
         private int upperHoursLimit(ITimeEntriesTotals report)
@@ -85,14 +86,14 @@ namespace Toggl.Core.UI.ViewModels.Reports
                 return new BarViewModel(billableHours / maxHours, nonBillableHours / maxHours);
             };
 
-        private DateTimeOffset[] weeklyLegend(ITimeEntriesTotals report)
+        private IImmutableList<DateTimeOffset> weeklyLegend(ITimeEntriesTotals report)
             => report.Groups.Length <= maximumLabeledNumberOfDays && report.Resolution == Resolution.Day
                 ? daysRange(report.Groups.Length, report.StartDate)
-                : null;
+                : ImmutableList<DateTimeOffset>.Empty;
 
-        private DateTimeOffset[] daysRange(int numberOfDays, DateTimeOffset startDate)
+        private IImmutableList<DateTimeOffset> daysRange(int numberOfDays, DateTimeOffset startDate)
             => Enumerable.Range(0, numberOfDays)
                 .Select(i => startDate.AddDays(i))
-                .ToArray();
+                .ToImmutableList();
     }
 }

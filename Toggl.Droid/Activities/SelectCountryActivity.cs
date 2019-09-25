@@ -1,16 +1,11 @@
 ﻿using Android.App;
 using Android.Content.PM;
-using Android.OS;
-using Android.Support.V7.Widget;
-using Android.Views;
+using Android.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Toggl.Core.UI.Extensions;
 using Toggl.Core.UI.ViewModels;
-using Toggl.Droid.Adapters;
 using Toggl.Droid.Extensions.Reactive;
-using Toggl.Droid.ViewHolders.Country;
+using Toggl.Droid.Presentation;
 using Toggl.Shared.Extensions;
 
 namespace Toggl.Droid.Activities
@@ -20,32 +15,21 @@ namespace Toggl.Droid.Activities
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public partial class SelectCountryActivity : ReactiveActivity<SelectCountryViewModel>
     {
-        private SimpleAdapter<SelectableCountryViewModel> recyclerAdapter =
-            new SimpleAdapter<SelectableCountryViewModel>(Resource.Layout.SelectCountryActivityCountryCell,
-                CountrySelectionViewHolder.Create);
+        public SelectCountryActivity() : base(
+            Resource.Layout.SelectCountryActivity,
+            Resource.Style.AppTheme,
+            Transitions.SlideInFromRight)
+        { }
 
-        protected override void OnCreate(Bundle bundle)
+        public SelectCountryActivity(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
         {
-            SetTheme(Resource.Style.AppTheme_Light);
-            base.OnCreate(bundle);
-            if (ViewModelWasNotCached())
-            {
-                BailOutToSplashScreen();
-                return;
-            }
-            SetContentView(Resource.Layout.SelectCountryActivity);
-            OverridePendingTransition(Resource.Animation.abc_slide_in_right, Resource.Animation.abc_fade_out);
+        }
 
-            InitializeViews();
-
-            setupRecyclerView(adapter: recyclerAdapter);
-
+        protected override void InitializeBindings()
+        {
             ViewModel.Countries
-                .Subscribe(replaceCountries)
-                .DisposedBy(DisposeBag);
-
-            backImageView.Rx().Tap()
-                .Subscribe(ViewModel.CloseWithDefaultResult)
+                .Subscribe(recyclerAdapter.Rx().Items())
                 .DisposedBy(DisposeBag);
 
             filterEditText.Rx().Text()
@@ -55,26 +39,6 @@ namespace Toggl.Droid.Activities
             recyclerAdapter.ItemTapObservable
                 .Subscribe(ViewModel.SelectCountry.Inputs)
                 .DisposedBy(DisposeBag);
-        }
-
-        public override void Finish()
-        {
-            base.Finish();
-            OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_slide_out_right);
-        }
-
-        private void setupRecyclerView(SimpleAdapter<SelectableCountryViewModel> adapter)
-        {
-            var layoutManager = new LinearLayoutManager(this);
-            layoutManager.ItemPrefetchEnabled = true;
-            layoutManager.InitialPrefetchItemCount = 4;
-            recyclerView.SetLayoutManager(layoutManager);
-            recyclerView.SetAdapter(adapter);
-        }
-
-        private void replaceCountries(IEnumerable<SelectableCountryViewModel> countries)
-        {
-            recyclerAdapter.Items = countries.ToList();
         }
     }
 }
