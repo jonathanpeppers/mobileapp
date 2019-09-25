@@ -1,6 +1,7 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using Toggl.Core.Services;
 using Toggl.Networking;
 using Toggl.Networking.ApiClients;
@@ -39,6 +40,7 @@ namespace Toggl.Core.Interactors
             if (currentToken.HasValue && currentToken.Value == registeredToken)
             {
                 return pushServicesApi.Unsubscribe(currentToken.Value)
+                    .ToObservable()
                     .Catch<Unit, Exception>(_ => Observable.Return(Unit.Default))
                     .Do(_ => clearTokenReferences());
             }

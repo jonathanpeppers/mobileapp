@@ -1,6 +1,7 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using Toggl.Core.Services;
 using Toggl.Networking;
 using Toggl.Networking.ApiClients;
@@ -50,6 +51,7 @@ namespace Toggl.Core.Interactors.PushNotifications
 
             return pushServicesApi
                 .Subscribe(token.Value)
+                .ToObservable()
                 .Do(_ => pushNotificationsTokenStorage.StoreRegisteredToken(token.Value, timeService.CurrentDateTime))
                 .Catch((Exception ex) => Observable.Return(Unit.Default));
         }

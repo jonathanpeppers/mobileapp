@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Toggl.Networking.Network;
 using Toggl.Networking.Serialization;
 using Toggl.Shared;
@@ -24,15 +23,17 @@ namespace Toggl.Networking.ApiClients
             this.endPoints = endPoints.PushServices;
         }
 
-        public IObservable<List<PushNotificationsToken>> GetAll()
-            => SendRequest<List<string>>(endPoints.Get, AuthHeader)
-                .Select(list => list.Select(token => new PushNotificationsToken(token)).ToList());
+        public async Task<List<PushNotificationsToken>> GetAll()
+        {
+            var list = await SendRequest<List<string>>(endPoints.Get, AuthHeader).ConfigureAwait(false);
+            return list.Select(token => new PushNotificationsToken(token)).ToList();
+        }
 
-        public IObservable<Unit> Subscribe(PushNotificationsToken token)
-            => SendRequest(endPoints.Subscribe, AuthHeader, json(token)).SelectUnit();
+        public Task Subscribe(PushNotificationsToken token)
+            => SendRequest(endPoints.Subscribe, AuthHeader, json(token));
 
-        public IObservable<Unit> Unsubscribe(PushNotificationsToken token)
-            => SendRequest(endPoints.Unsubscribe, AuthHeader, json(token)).SelectUnit();
+        public Task Unsubscribe(PushNotificationsToken token)
+            => SendRequest(endPoints.Unsubscribe, AuthHeader, json(token));
 
         private string json(PushNotificationsToken token)
             => $"{{\"fcm_registration_token\": \"{token}\"}}";
