@@ -24,8 +24,14 @@ namespace Toggl.Core.Tests.TestExtensions
             return collectionAssertions.BeEquivalentTo(expectation, options => options.WithStrictOrdering(), because, becauseArgs);
         }
 
+        public static ConfiguredCall ReturnsCompletedTask(this Task value)
+            => value.Returns(Task.CompletedTask);
+
         public static ConfiguredCall ReturnsTaskOf<T>(this Task<T> value, T returnThis, params T[] returnThese)
             => value.Returns(Task.FromResult(returnThis), returnThese.Select(Task.FromResult).ToArray());
+
+        public static ConfiguredCall ReturnsThrowingTask(this Task value, Exception exception)
+            => value.Returns(Task.FromException(exception));
 
         public static ConfiguredCall ReturnsThrowingTaskOf<T>(this Task<T> value, Exception exception)
             => value.Returns(Task.FromException<T>(exception));

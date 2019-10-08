@@ -208,7 +208,9 @@ namespace Toggl.Core.Tests.Sync.Helpers
 
             if (state.PushNotificationsTokens.Any())
             {
-                await state.PushNotificationsTokens.Select(Api.PushServices.Subscribe).Merge();
+                await state.PushNotificationsTokens
+                    .Select(Api.PushServices.Subscribe)
+                    .Apply(Task.WhenAll);
             }
         }
 

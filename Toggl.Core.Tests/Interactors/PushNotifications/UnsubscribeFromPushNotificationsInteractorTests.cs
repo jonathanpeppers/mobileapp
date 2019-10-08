@@ -79,7 +79,7 @@ namespace Toggl.Core.Tests.Interactors.PushNotifications
         {
             var token = new PushNotificationsToken("token");
             PushNotificationsTokenService.Token.Returns(token);
-            Api.PushServices.Unsubscribe(token).Returns(Observable.Throw<Unit>(new Exception("Whatever")));
+            Api.PushServices.Unsubscribe(token).ReturnsThrowingTask(new Exception("Whatever"));
 
             var testScheduler = new TestScheduler();
             var observer = testScheduler.CreateObserver<Unit>();

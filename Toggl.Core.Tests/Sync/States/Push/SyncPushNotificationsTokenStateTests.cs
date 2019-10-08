@@ -8,6 +8,7 @@ using Toggl.Core.Interactors;
 using Toggl.Core.Services;
 using Toggl.Core.Sync.States.Push;
 using Toggl.Core.Tests.Generators;
+using Toggl.Core.Tests.TestExtensions;
 using Toggl.Networking;
 using Toggl.Shared;
 using Toggl.Storage;
@@ -56,8 +57,7 @@ namespace Toggl.Core.Tests.Sync.States.Push
             [Fact]
             public async Task ReturnsDoneIfInteractorWorked()
             {
-                var unit = Observable.Return(Unit.Default);
-                togglApi.PushServices.Subscribe(Arg.Any<PushNotificationsToken>()).Returns(unit);
+                togglApi.PushServices.Subscribe(Arg.Any<PushNotificationsToken>()).ReturnsCompletedTask();
                 pushNotificationsTokenStorage.PreviouslyRegisteredToken.Returns(new PushNotificationsToken("token"));
                 configureRemoteConfig(shouldSubscribeToPushes: true);
 
@@ -90,9 +90,8 @@ namespace Toggl.Core.Tests.Sync.States.Push
             [Fact, LogIfTooSlow]
             public async Task UnsubscribeIfRemoteConfigSaysTheAppShouldntBeSubscribedToPushNotifications()
             {
-                var unit = Observable.Return(Unit.Default);
-                togglApi.PushServices.Subscribe(Arg.Any<PushNotificationsToken>()).Returns(unit);
-                togglApi.PushServices.Unsubscribe(Arg.Any<PushNotificationsToken>()).Returns(unit);
+                togglApi.PushServices.Subscribe(Arg.Any<PushNotificationsToken>()).ReturnsCompletedTask();
+                togglApi.PushServices.Unsubscribe(Arg.Any<PushNotificationsToken>()).ReturnsCompletedTask();
                 pushNotificationsTokenService.Token.Returns(new PushNotificationsToken("token"));
                 pushNotificationsTokenStorage.PreviouslyRegisteredToken.Returns(new PushNotificationsToken("token"));
                 configureRemoteConfig(shouldSubscribeToPushes: false);
@@ -106,9 +105,8 @@ namespace Toggl.Core.Tests.Sync.States.Push
             [Fact, LogIfTooSlow]
             public async Task SubscribeIfRemoteConfigSaysTheAppShouldBeSubscribedToPushNotifications()
             {
-                var unit = Observable.Return(Unit.Default);
-                togglApi.PushServices.Subscribe(Arg.Any<PushNotificationsToken>()).Returns(unit);
-                togglApi.PushServices.Unsubscribe(Arg.Any<PushNotificationsToken>()).Returns(unit);
+                togglApi.PushServices.Subscribe(Arg.Any<PushNotificationsToken>()).ReturnsCompletedTask();
+                togglApi.PushServices.Unsubscribe(Arg.Any<PushNotificationsToken>()).ReturnsCompletedTask();
                 pushNotificationsTokenService.Token.Returns(new PushNotificationsToken("token"));
                 pushNotificationsTokenStorage.PreviouslyRegisteredToken.Returns(new PushNotificationsToken("token"));
                 configureRemoteConfig(shouldSubscribeToPushes: true);
@@ -122,8 +120,7 @@ namespace Toggl.Core.Tests.Sync.States.Push
             [Fact]
             public async Task ReturnsDoneEvenIfApiFailsThrows()
             {
-                var throwingObservable = Observable.Throw<Unit>(new Exception());
-                togglApi.PushServices.Subscribe(Arg.Any<PushNotificationsToken>()).Returns(throwingObservable);
+                togglApi.PushServices.Subscribe(Arg.Any<PushNotificationsToken>()).ReturnsThrowingTask(new Exception());
                 pushNotificationsTokenStorage.PreviouslyRegisteredToken.Returns(new PushNotificationsToken("token"));
                 configureRemoteConfig(shouldSubscribeToPushes: true);
 
