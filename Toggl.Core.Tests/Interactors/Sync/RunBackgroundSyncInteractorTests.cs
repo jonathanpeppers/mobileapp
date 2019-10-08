@@ -40,21 +40,21 @@ namespace Toggl.Core.Tests.Interactors.Workspace
             [Fact, LogIfTooSlow]
             public async Task ReturnsFailedIfSyncFails()
             {
-                SyncManager.ForceFullSync().Returns(Observable.Throw<SyncState>(new Exception()));
+                SyncManager.PullTimeEntries().Returns(Observable.Throw<SyncState>(new Exception()));
                 (await interactor.Execute().SingleAsync()).Should().Be(SyncOutcome.Failed);
             }
 
             [Fact, LogIfTooSlow]
             public async Task ReturnsNewDataIfSyncSucceeds()
             {
-                SyncManager.ForceFullSync().Returns(Observable.Return(SyncState.Sleep));
+                SyncManager.PullTimeEntries().Returns(Observable.Return(SyncState.Sleep));
                 (await interactor.Execute().SingleAsync()).Should().Be(SyncOutcome.NewData);
             }
 
             [Fact, LogIfTooSlow]
             public async Task TracksIfSyncSucceeds()
             {
-                SyncManager.ForceFullSync().Returns(Observable.Return(SyncState.Sleep));
+                SyncManager.PullTimeEntries().Returns(Observable.Return(SyncState.Sleep));
                 await interactor.Execute().SingleAsync();
                 AnalyticsService.BackgroundSyncStarted.Received().Track();
                 AnalyticsService.BackgroundSyncFinished.Received().Track(nameof(SyncOutcome.NewData));
@@ -65,7 +65,7 @@ namespace Toggl.Core.Tests.Interactors.Workspace
             public async Task TracksIfSyncFails()
             {
                 var exception = new Exception();
-                SyncManager.ForceFullSync().Returns(Observable.Throw<SyncState>(exception));
+                SyncManager.PullTimeEntries().Returns(Observable.Throw<SyncState>(exception));
                 await interactor.Execute().SingleAsync();
                 AnalyticsService.BackgroundSyncStarted.Received().Track();
                 AnalyticsService.BackgroundSyncFinished.Received().Track(nameof(SyncOutcome.Failed));

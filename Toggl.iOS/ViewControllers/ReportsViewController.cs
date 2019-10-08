@@ -209,7 +209,7 @@ namespace Toggl.iOS.ViewControllers
                 return;
 
             // Calendar
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone)
+            if (TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Compact)
             {
                 AddChildViewController(calendarViewController);
                 CalendarContainer.AddSubview(calendarViewController.View);

@@ -22,7 +22,7 @@ namespace Toggl.iOS.ViewControllers
         {
             base.ViewDidLoad();
 
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+            if (TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
                 return;
 
             willShowNotification = UIKeyboard.Notifications.ObserveWillShow(KeyboardWillShow);
@@ -35,7 +35,7 @@ namespace Toggl.iOS.ViewControllers
 
             if (!disposing) return;
 
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+            if (TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
                 return;
 
             NSNotificationCenter.DefaultCenter.RemoveObserver(willShowNotification);

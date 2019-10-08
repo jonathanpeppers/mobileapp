@@ -18,16 +18,13 @@ using Math = System.Math;
 namespace Toggl.iOS.ViewControllers
 {
     public sealed partial class EditDurationViewController
-        : KeyboardAwareViewController<EditDurationViewModel>,
+        : ReactiveViewController<EditDurationViewModel>,
           IUIGestureRecognizerDelegate
     {
-        private const int additionalVerticalContentSize = 100;
         private const int stackViewSpacing = 26;
-        private const double desiredIpadRegularHeight = 435;
-        private const double desiredIpadCompactHeight = 470;
+        private const double cardHeight = 450;
 
         private CompositeDisposable disposeBag = new CompositeDisposable();
-        private CGRect frameBeforeShowingKeyboard;
 
         public EditDurationViewController(EditDurationViewModel viewModel) : base(viewModel, nameof(EditDurationViewController))
         {
@@ -36,6 +33,8 @@ namespace Toggl.iOS.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
+            PreferredContentSize = new CGSize(0, cardHeight);
 
             StartLabel.Text = Resources.Start;
             EndLabel.Text = Resources.End;
@@ -260,12 +259,6 @@ namespace Toggl.iOS.ViewControllers
             disposeBag?.Dispose();
         }
 
-        public override void ViewWillAppear(bool animated)
-        {
-            base.ViewWillAppear(animated);
-            adjustHeight(TraitCollection);
-        }
-
         public override void ViewDidAppear(bool animated)
         {
             base.ViewDidAppear(animated);
@@ -276,47 +269,20 @@ namespace Toggl.iOS.ViewControllers
             }
         }
 
-        protected override void KeyboardWillShow(object sender, UIKeyboardEventArgs e)
-        {
-            frameBeforeShowingKeyboard = View.Frame;
-
-            var safeAreaOffset = UIDevice.CurrentDevice.CheckSystemVersion(11, 0)
-                  ? Math.Max(UIApplication.SharedApplication.KeyWindow.SafeAreaInsets.Top, UIApplication.SharedApplication.StatusBarFrame.Height)
-                  : 0;
-            var distanceFromTop = Math.Max(safeAreaOffset, View.Frame.Y - e.FrameEnd.Height);
-
-            View.Frame = new CGRect(View.Frame.X, distanceFromTop, View.Frame.Width, View.Frame.Height);
-            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
-        }
-
-        protected override void KeyboardWillHide(object sender, UIKeyboardEventArgs e)
-        {
-            View.Frame = frameBeforeShowingKeyboard;
-            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
-        }
-
         public override void ViewDidLayoutSubviews()
         {
             base.ViewDidLayoutSubviews();
-            View.ClipsToBounds |= UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad;
+            View.ClipsToBounds |= TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular;
         }
 
         public override void ViewWillLayoutSubviews()
         {
             base.ViewWillLayoutSubviews();
-            adjustHeight(TraitCollection);
-            View.ClipsToBounds |= UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad;
+            View.ClipsToBounds |= TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular;
         }
 
         private void prepareViews()
         {
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad)
-            {
-                var width = UIScreen.MainScreen.Bounds.Width;
-                var height = width + additionalVerticalContentSize;
-                PreferredContentSize = new CGSize(width, height);
-            }
-
             EndTimeLabel.Font = EndTimeLabel.Font.GetMonospacedDigitFont();
             StartTimeLabel.Font = StartTimeLabel.Font.GetMonospacedDigitFont();
 
@@ -345,25 +311,6 @@ namespace Toggl.iOS.ViewControllers
                 DurationInput.ResignFirstResponder();
 
             ViewModel.StopEditingTime.Execute();
-        }
-
-        private void adjustHeight(UITraitCollection traitCollection)
-        {
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
-            {
-                if (traitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
-                {
-                    PreferredContentSize = new CGSize(0, desiredIpadRegularHeight);
-                }
-                else
-                {
-                    var width = PresentingViewController.View.Frame.Width;
-                    var height = desiredIpadCompactHeight > width + additionalVerticalContentSize
-                        ? width + additionalVerticalContentSize
-                        : desiredIpadCompactHeight;
-                    PreferredContentSize = new CGSize(0, height);
-                }
-            }
         }
 
         [Export("gestureRecognizer:shouldReceiveTouch:")]

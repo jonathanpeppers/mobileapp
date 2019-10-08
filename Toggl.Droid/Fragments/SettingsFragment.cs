@@ -2,6 +2,8 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using System;
+using System.Reactive.Linq;
+using Toggl.Core.Sync;
 using Toggl.Core.UI.Extensions;
 using Toggl.Core.UI.ViewModels;
 using Toggl.Droid.Extensions;
@@ -10,6 +12,7 @@ using Toggl.Droid.Helper;
 using Toggl.Droid.Presentation;
 using Toggl.Shared.Extensions;
 using Toggl.Storage.Settings;
+using Xamarin.Essentials;
 using static Android.Support.V7.App.AppCompatDelegate;
 using static Toggl.Shared.Resources;
 
@@ -46,27 +49,27 @@ namespace Toggl.Droid.Fragments
                 .DisposedBy(DisposeBag);
 
             ViewModel.SwipeActionsEnabled
-                .Subscribe(swipeActionsSwitch.Rx().CheckedObserver())
+                .Subscribe(swipeActionsSwitch.Rx().CheckedObserver(ignoreUnchanged: true))
                 .DisposedBy(DisposeBag);
 
             ViewModel.IsManualModeEnabled
-                .Subscribe(manualModeSwitch.Rx().CheckedObserver())
+                .Subscribe(manualModeSwitch.Rx().CheckedObserver(ignoreUnchanged: true))
                 .DisposedBy(DisposeBag);
 
             ViewModel.IsGroupingTimeEntries
-               .Subscribe(groupTimeEntriesSwitch.Rx().CheckedObserver())
+               .Subscribe(groupTimeEntriesSwitch.Rx().CheckedObserver(ignoreUnchanged: true))
                .DisposedBy(DisposeBag);
 
             ViewModel.UseTwentyFourHourFormat
-                .Subscribe(is24hoursModeSwitch.Rx().CheckedObserver())
+                .Subscribe(is24hoursModeSwitch.Rx().CheckedObserver(ignoreUnchanged: true))
                 .DisposedBy(DisposeBag);
 
             ViewModel.AreRunningTimerNotificationsEnabled
-                .Subscribe(runningTimerNotificationsSwitch.Rx().CheckedObserver())
+                .Subscribe(runningTimerNotificationsSwitch.Rx().CheckedObserver(ignoreUnchanged: true))
                 .DisposedBy(DisposeBag);
 
             ViewModel.AreStoppedTimerNotificationsEnabled
-                .Subscribe(stoppedTimerNotificationsSwitch.Rx().CheckedObserver())
+                .Subscribe(stoppedTimerNotificationsSwitch.Rx().CheckedObserver(ignoreUnchanged: true))
                 .DisposedBy(DisposeBag);
 
             ViewModel.DateFormat
@@ -125,7 +128,15 @@ namespace Toggl.Droid.Fragments
                 .BindAction(ViewModel.ToggleSwipeActions)
                 .DisposedBy(DisposeBag);
 
+            swipeActionsSwitch.Rx()
+                .BindAction(ViewModel.ToggleSwipeActions)
+                .DisposedBy(DisposeBag);
+
             manualModeView.Rx()
+                .BindAction(ViewModel.ToggleManualMode)
+                .DisposedBy(DisposeBag);
+
+            manualModeSwitch.Rx()
                 .BindAction(ViewModel.ToggleManualMode)
                 .DisposedBy(DisposeBag);
 
@@ -133,7 +144,15 @@ namespace Toggl.Droid.Fragments
                 .BindAction(ViewModel.ToggleTimeEntriesGrouping)
                 .DisposedBy(DisposeBag);
 
+            groupTimeEntriesSwitch.Rx()
+                .BindAction(ViewModel.ToggleTimeEntriesGrouping)
+                .DisposedBy(DisposeBag);
+
             is24hoursModeView.Rx()
+                .BindAction(ViewModel.ToggleTwentyFourHourSettings)
+                .DisposedBy(DisposeBag);
+
+            is24hoursModeSwitch.Rx()
                 .BindAction(ViewModel.ToggleTwentyFourHourSettings)
                 .DisposedBy(DisposeBag);
 
@@ -141,7 +160,15 @@ namespace Toggl.Droid.Fragments
                 .Subscribe(ViewModel.ToggleRunningTimerNotifications)
                 .DisposedBy(DisposeBag);
 
+            runningTimerNotificationsSwitch.Rx().Tap()
+                .Subscribe(ViewModel.ToggleRunningTimerNotifications)
+                .DisposedBy(DisposeBag);
+
             stoppedTimerNotificationsView.Rx().Tap()
+                .Subscribe(ViewModel.ToggleStoppedTimerNotifications)
+                .DisposedBy(DisposeBag);
+
+            stoppedTimerNotificationsSwitch.Rx().Tap()
                 .Subscribe(ViewModel.ToggleStoppedTimerNotifications)
                 .DisposedBy(DisposeBag);
 
@@ -164,6 +191,20 @@ namespace Toggl.Droid.Fragments
             smartRemindersView.Rx().Tap()
                 .Subscribe(ViewModel.OpenCalendarSmartReminders.Inputs)
                 .DisposedBy(DisposeBag);
+
+            ViewModel.CurrentSyncStatus
+                .Subscribe(setSyncStatusView)
+                .DisposedBy(DisposeBag);
+        }
+
+        private void setSyncStatusView(PresentableSyncStatus status)
+        {
+            syncStateViews.Values.ForEach(view => view.Visibility = ViewStates.Gone);
+
+            txtStateInProgress.Text = status == PresentableSyncStatus.Syncing ? Syncing : LoggingOutSecurely;
+
+            var visibleView = syncStateViews[status];
+            visibleView.Visibility = ViewStates.Visible;
         }
 
         public void ScrollToTop()

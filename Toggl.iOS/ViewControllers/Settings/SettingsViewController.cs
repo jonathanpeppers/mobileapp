@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Reactive.Linq;
 using CoreGraphics;
 using Foundation;
+using Toggl.Core.Sync;
 using Toggl.Core.UI.Collections;
 using Toggl.Core.UI.Extensions;
 using Toggl.Core.UI.Helper;
@@ -134,8 +135,7 @@ namespace Toggl.iOS.ViewControllers
             {
                 var siriSection = new SettingSection(Resources.Siri, new ISettingRow[]
                 {
-                    new NavigationRow(Resources.SiriShortcuts, ViewModel.OpenSiriShortcuts),
-                    new NavigationRow(Resources.SiriWorkflows, ViewModel.OpenSiriWorkflows),
+                    new NavigationRow(Resources.SiriShortcuts, ViewModel.OpenSiriShortcuts)
                 });
 
                 sections.Add(Observable.Return(siriSection));
@@ -151,20 +151,10 @@ namespace Toggl.iOS.ViewControllers
 
             sections.Add(generalSection);
 
-            var syncStatusObservable = Observable.CombineLatest(
-                ViewModel.IsSynced,
-                ViewModel.IsRunningSync,
-                ViewModel.LoggingOut.SelectValue(true).StartWith(false),
-                (synced, syncing, loggingOut) =>
-                {
-                    if (loggingOut) return SyncStatus.LoggingOut;
-                    return syncing ? SyncStatus.Syncing : SyncStatus.Synced;
-                });
-
-            var footerSection = syncStatusObservable.Select(syncStatus
+            var footerSection = ViewModel.CurrentSyncStatus.Select(syncStatus
                 => new SettingSection("", new ISettingRow[]
                 {
-                    new CustomRow<SyncStatus>(syncStatus),
+                    new CustomRow<PresentableSyncStatus>(syncStatus),
                     new ButtonRow(Resources.SettingsDialogButtonSignOut, ViewModel.TryLogout)
                 }));
 

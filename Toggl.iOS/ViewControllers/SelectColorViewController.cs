@@ -91,10 +91,10 @@ namespace Toggl.iOS.ViewControllers
             PreferredContentSize = new CGSize
             {
                 // ScreenWidth - 32 for 16pt margins on both sides
-                Width = UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad
+                Width = TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular
                     ? 0
-                    : screenWidth > 320 ? screenWidth - 32 : 312,
-                Height = UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad
+                    : screenWidth - 32,
+                Height = TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular
                     ? (ViewModel.AllowCustomColors ? customColorEnabledHeightPad : customColorDisabledHeight)
                     : (ViewModel.AllowCustomColors ? customColorEnabledHeight : customColorDisabledHeight)
             };

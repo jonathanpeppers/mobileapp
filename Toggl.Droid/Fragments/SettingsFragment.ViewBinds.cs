@@ -1,7 +1,10 @@
-﻿using Android.Support.Design.Widget;
+﻿using Toggl.Core.Sync;
+using System.Collections.Generic;
+using Android.Support.Design.Widget;
 using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
+using static Toggl.Core.Sync.PresentableSyncStatus;
 
 namespace Toggl.Droid.Fragments
 {
@@ -51,7 +54,8 @@ namespace Toggl.Droid.Fragments
         private TextView settingsToggleManualModeLabel;
         private TextView settingsToggleManualModeExplanation;
         private TextView feedbackView;
-        private TextView logoutView;
+        private View logoutView;
+        private TextView txtLogout;
 
         private Switch is24hoursModeSwitch;
         private Switch swipeActionsSwitch;
@@ -62,6 +66,12 @@ namespace Toggl.Droid.Fragments
 
         private AppBarLayout appBarLayout;
         private NestedScrollView scrollView;
+
+        private View syncStateSyncedHolder;
+        private View syncStateInProgressHolder;
+        private Dictionary<PresentableSyncStatus, View> syncStateViews = new Dictionary<PresentableSyncStatus, View>();
+        private TextView txtStateSynced;
+        private TextView txtStateInProgress;
 
         protected override void InitializeViews(View fragmentView)
         {
@@ -79,7 +89,8 @@ namespace Toggl.Droid.Fragments
             groupTimeEntriesView = fragmentView.FindViewById(Resource.Id.GroupTimeEntriesView);
             defaultWorkspaceView = fragmentView.FindViewById(Resource.Id.DefaultWorkspaceView);
       
-            logoutView = fragmentView.FindViewById<TextView>(Resource.Id.SettingsLogoutButton);
+            txtLogout = fragmentView.FindViewById<TextView>(Resource.Id.TxtSettingsLogout);
+            logoutView = fragmentView.FindViewById(Resource.Id.SettingsLogoutButton);
             helpView = fragmentView.FindViewById<TextView>(Resource.Id.SettingsHelpButton);
             feedbackView = fragmentView.FindViewById<TextView>(Resource.Id.SettingsSubmitFeedbackButton);
             calendarSettingsView = fragmentView.FindViewById<TextView>(Resource.Id.CalendarSettingsView);
@@ -121,8 +132,16 @@ namespace Toggl.Droid.Fragments
             appBarLayout = fragmentView.FindViewById<AppBarLayout>(Resource.Id.AppBarLayout);
 
             scrollView = fragmentView.FindViewById<NestedScrollView>(Resource.Id.ScrollView);
-
-            logoutView.Text = Shared.Resources.SignOutOfToggl;
+            
+            syncStateSyncedHolder = fragmentView.FindViewById(Resource.Id.SyncStateSyncedHolder);
+            syncStateInProgressHolder = fragmentView.FindViewById(Resource.Id.SyncStateInProgressHolder);
+            syncStateViews.Add(Synced, syncStateSyncedHolder);
+            syncStateViews.Add(Syncing, syncStateInProgressHolder);
+            syncStateViews.Add(LoggingOut, syncStateInProgressHolder);
+            txtStateSynced = fragmentView.FindViewById<TextView>(Resource.Id.TxtStateSynced);
+            txtStateInProgress = fragmentView.FindViewById<TextView>(Resource.Id.TxtStateInProgress);
+            
+            txtLogout.Text = Shared.Resources.SignOutOfToggl;
             helpView.Text = Shared.Resources.Help;
             feedbackView.Text = Shared.Resources.SubmitFeedback;
             calendarSettingsView.Text = Shared.Resources.CalendarSettingsTitle;
@@ -145,6 +164,8 @@ namespace Toggl.Droid.Fragments
             settingsToggleSwipeActionsLabel.Text = Shared.Resources.SwipeActions;
             settingsToggleManualModeLabel.Text = Shared.Resources.ManualMode;
             settingsToggleManualModeExplanation.Text = Shared.Resources.ManualModeDescription;
+            txtStateSynced.Text = Shared.Resources.SyncCompleted;
+            txtStateInProgress.Text = Shared.Resources.Syncing;
         }
     }
 }

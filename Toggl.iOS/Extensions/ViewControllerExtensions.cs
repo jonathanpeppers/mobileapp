@@ -95,7 +95,7 @@ namespace Toggl.iOS.Extensions
                     observer.OnCompleted();
                 });
 
-                if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+                if (viewController.TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
                 {
                     var extraCancelAction = UIAlertAction.Create(cancelText, UIAlertActionStyle.Default, _ =>
                     {
@@ -123,7 +123,7 @@ namespace Toggl.iOS.Extensions
             {
                 return viewController.ShowActionSheet(title, options);
             }
-            
+
             return Observable.Create<T>(observer =>
             {
                 var selector =  new SelectorViewController<T>(title, options, initialSelectionIndex, observer.CompleteWith);
@@ -187,7 +187,7 @@ namespace Toggl.iOS.Extensions
         private static void applyPopoverDetailsIfNeeded(UIViewController presentingController, UIAlertController alert)
         {
             var popoverController = alert.PopoverPresentationController;
-            if (popoverController != null && UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+            if (popoverController != null && presentingController.TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
             {
                 var view = presentingController.View;
                 popoverController.SourceView = view;

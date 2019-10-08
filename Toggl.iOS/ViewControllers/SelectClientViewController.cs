@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive.Linq;
 using Toggl.Core.UI.Extensions;
-using Toggl.Core.UI.Helper;
 using Toggl.Core.UI.ViewModels;
 using Toggl.iOS.Extensions;
 using Toggl.iOS.Extensions.Reactive;
@@ -14,10 +12,8 @@ using UIKit;
 
 namespace Toggl.iOS.ViewControllers
 {
-    public partial class SelectClientViewController : KeyboardAwareViewController<SelectClientViewModel>
+    public partial class SelectClientViewController : ReactiveViewController<SelectClientViewModel>
     {
-        private const double headerHeight = 100;
-
         public SelectClientViewController(SelectClientViewModel viewModel)
             : base(viewModel, nameof(SelectClientViewController))
         {
@@ -37,22 +33,15 @@ namespace Toggl.iOS.ViewControllers
             var tableViewSource = new ClientTableViewSource(SuggestionsTableView);
             SuggestionsTableView.Source = tableViewSource;
 
+            tableViewSource.Rx().DragStarted()
+                .Subscribe(_ => SearchTextField.ResignFirstResponder())
+                .DisposedBy(DisposeBag);
+
             var clientsReplay = ViewModel.Clients.Replay();
 
             clientsReplay
                 .Subscribe(SuggestionsTableView.Rx().ReloadItems(tableViewSource))
                 .DisposedBy(DisposeBag);
-
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
-            {
-                clientsReplay
-                    .Select((clients) =>
-                    {
-                        return new CoreGraphics.CGSize(0, (clients.ToList().Count() * ClientTableViewSource.RowHeight) + headerHeight);
-                    })
-                    .Subscribe(this.Rx().PreferredContentSize())
-                    .DisposedBy(DisposeBag);
-            }
 
             clientsReplay.Connect();
 
@@ -68,7 +57,7 @@ namespace Toggl.iOS.ViewControllers
                 .Subscribe(ViewModel.SelectClient.Inputs)
                 .DisposedBy(DisposeBag);
 
-            BottomConstraint.Active |= UIDevice.CurrentDevice.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad;
+            BottomConstraint.Active |= TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Compact;
         }
 
         public override void ViewWillAppear(bool animated)
@@ -77,28 +66,10 @@ namespace Toggl.iOS.ViewControllers
             SearchTextField.BecomeFirstResponder();
         }
 
-        protected override void KeyboardWillShow(object sender, UIKeyboardEventArgs e)
-        {
-            BottomConstraint.Constant = e.FrameEnd.Height;
-            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
-        }
-
-        protected override void KeyboardWillHide(object sender, UIKeyboardEventArgs e)
-        {
-            BottomConstraint.Constant = 0;
-            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
-        }
-
-        public override void ViewDidLayoutSubviews()
-        {
-            base.ViewDidLayoutSubviews();
-            View.ClipsToBounds |= UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad;
-        }
-
         public override void ViewWillLayoutSubviews()
         {
             base.ViewWillLayoutSubviews();
-            View.ClipsToBounds |= UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad;
+            View.ClipsToBounds |= TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular;
         }
     }
 }

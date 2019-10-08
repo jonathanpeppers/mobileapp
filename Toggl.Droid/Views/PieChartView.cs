@@ -16,8 +16,11 @@ namespace Toggl.Droid.Views
     [Register("toggl.droid.views.PieChartView")]
     public sealed class PieChartView : View
     {
-        private int padding;
+        private int verticalPadding;
+        private int horizontalPadding;
         private double linesSeparatorHeight;
+        private const int minVisibleLetters = 8;
+        private const float paddingMultiplicatorForProjectName = 3.5f;
         private const float fullCircle = 360.0f;
         private const double radToDegree = 180 / Math.PI;
         private readonly TextPaint textPaint = new TextPaint();
@@ -56,8 +59,9 @@ namespace Toggl.Droid.Views
 
         private void initialize(Context context)
         {
-            padding = 16.DpToPixels(context);
-            linesSeparatorHeight = 0.5 * padding;
+            verticalPadding = 16.DpToPixels(context);
+            linesSeparatorHeight = 0.5 * verticalPadding;
+            horizontalPadding = 8.DpToPixels(context);
 
             textPaint.Color = Color.White;
             textPaint.TextAlign = Paint.Align.Left;
@@ -116,6 +120,17 @@ namespace Toggl.Droid.Views
                     var percentageToDraw = $"{integerPercentage}%";
 
                     var (textWidth, textHeight) = getTextWidthAndHeight(nameToDraw);
+                    var initialTextLength = nameToDraw.Length;
+                    
+                    var shortenBy = 1;
+                    while(shortenBy < initialTextLength - minVisibleLetters
+                          && textWidth >= radius - paddingMultiplicatorForProjectName * horizontalPadding)
+                    {
+                        nameToDraw = segment.FormattedName(shortenBy);
+                        (textWidth, textHeight) = getTextWidthAndHeight(nameToDraw);
+                        ++shortenBy;
+                    }
+
                     var (percentWidth, percentHeight) = getTextWidthAndHeight(percentageToDraw);
 
                     // Translate to draw the text
@@ -124,21 +139,21 @@ namespace Toggl.Droid.Views
                     {
                         canvas.Rotate(endDegrees >= 0 ? endDegrees : -endDegrees);
 
-                        nameCoordinates.X = radius - padding - textWidth;
-                        nameCoordinates.Y = -padding + textHeight;
+                        nameCoordinates.X = radius - horizontalPadding - textWidth;
+                        nameCoordinates.Y = -verticalPadding + textHeight;
 
-                        percentageCoordinates.X = radius - padding - percentWidth;
-                        percentageCoordinates.Y = -(padding + linesSeparatorHeight) + -textHeight + percentHeight;
+                        percentageCoordinates.X = radius - horizontalPadding - percentWidth;
+                        percentageCoordinates.Y = -(verticalPadding + linesSeparatorHeight) + -textHeight + percentHeight;
                     }
                     else
                     {
                         canvas.Rotate(endDegrees + 180.0f);
 
-                        nameCoordinates.X = -radius + padding;
-                        nameCoordinates.Y = padding;
+                        nameCoordinates.X = -radius + horizontalPadding;
+                        nameCoordinates.Y = verticalPadding;
 
-                        percentageCoordinates.X = -radius + padding;
-                        percentageCoordinates.Y = textHeight + padding + linesSeparatorHeight;
+                        percentageCoordinates.X = -radius + horizontalPadding;
+                        percentageCoordinates.Y = textHeight + verticalPadding + linesSeparatorHeight;
                     }
 
                     canvas.DrawText(nameToDraw, (float) nameCoordinates.X, (float) nameCoordinates.Y, textPaint);

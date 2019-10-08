@@ -68,9 +68,15 @@ namespace Toggl.iOS.Extensions
             var y = (fontCapHeight - imageSize.Height) / 2;
             attachment.Bounds = new CGRect(0, y, imageSize.Width, imageSize.Height);
 
-            //There neeeds to be a space before the dot, otherwise the colors don't work
-            var result = new NSMutableAttributedString(" ");
-            result.AddAttribute(UIStringAttributeKey.Font, UIFont.SystemFontOfSize(0), new NSRange(0, 1));
+            var result = new NSMutableAttributedString("");
+
+            if (!UIDevice.CurrentDevice.CheckSystemVersion(13, 0))
+            {
+                // For older iOS versions, there neeeds to be a space before the dot, otherwise the colors don't work
+                // in iOS 13, they fixed it and this hack breaks the colors
+                result.Append(new NSAttributedString(" "));
+                result.AddAttribute(UIStringAttributeKey.Font, UIFont.SystemFontOfSize(0), new NSRange(0, 1));
+            }
 
             var attachmentString = NSAttributedString.FromAttachment(attachment);
             result.Append(attachmentString);

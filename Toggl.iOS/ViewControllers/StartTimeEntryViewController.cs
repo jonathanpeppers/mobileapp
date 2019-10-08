@@ -67,7 +67,7 @@ namespace Toggl.iOS.ViewControllers
         {
             base.ViewDidLayoutSubviews();
 
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+            if (TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
             {
                 View.ClipsToBounds = true;
             }
@@ -77,7 +77,7 @@ namespace Toggl.iOS.ViewControllers
         {
             base.ViewWillLayoutSubviews();
 
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+            if (TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
             {
                 View.ClipsToBounds = true;
             }
@@ -206,8 +206,13 @@ namespace Toggl.iOS.ViewControllers
             if (DescriptionTextView.AttributedText.GetHashCode() == attributedText.GetHashCode())
                 return;
 
-            DescriptionTextView.InputDelegate = emptyInputDelegate; //This line is needed for when the user selects from suggestion and the iOS autocorrect is ready to add text at the same time. Without this line both will happen.
+            //This line is needed for when the user selects from suggestion and
+            // the iOS autocorrect is ready to add text at the same time.
+            // Without this line both will happen.
+            DescriptionTextView.InputDelegate = emptyInputDelegate;
             DescriptionTextView.AttributedText = attributedText;
+
+            DescriptionTextView.RejectAutocorrect();
 
             updatePlaceholder();
         }
@@ -251,7 +256,7 @@ namespace Toggl.iOS.ViewControllers
 
         private void prepareViews()
         {
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+            if (TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
             {
                 PreferredContentSize = new CGSize(0, desiredIpadHeight);
             }

@@ -1,9 +1,11 @@
 using CoreGraphics;
 using System;
+using System.Reactive;
 using System.Reactive.Linq;
 using Toggl.Core.UI.Collections;
 using Toggl.Core.UI.Reactive;
 using Toggl.iOS.ViewSources;
+using Toggl.Shared.Extensions;
 
 namespace Toggl.iOS.Extensions.Reactive
 {
@@ -22,5 +24,12 @@ namespace Toggl.iOS.Extensions.Reactive
             => Observable
                 .FromEventPattern<CGPoint>(e => reactive.Base.OnScrolled += e, e => reactive.Base.OnScrolled -= e)
                 .Select(e => e.EventArgs);
+
+        public static IObservable<Unit> DragStarted<TSection, THeader, TModel>(
+            this IReactive<BaseTableViewSource<TSection, THeader, TModel>> reactive)
+            where TSection : ISectionModel<THeader, TModel>, new()
+            => Observable
+                .FromEventPattern(e => reactive.Base.OnDragStarted += e, e => reactive.Base.OnDragStarted -= e)
+                .SelectUnit();
     }
 }

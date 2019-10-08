@@ -54,13 +54,14 @@ namespace Toggl.Core.UI.ViewModels
         public string Title { get; private set; } = Resources.Settings;
         public bool CalendarSettingsEnabled => onboardingStorage.CompletedCalendarOnboarding();
         public string Version => $"{platformInfo.Version} ({platformInfo.BuildNumber})";
-
+        
         public IObservable<string> Name { get; }
         public IObservable<string> Email { get; }
         public IObservable<bool> IsSynced { get; }
         public IObservable<Unit> LoggingOut { get; }
         public IObservable<string> DateFormat { get; }
         public IObservable<bool> IsRunningSync { get; }
+        public IObservable<PresentableSyncStatus> CurrentSyncStatus { get; }
         public IObservable<string> WorkspaceName { get; }
         public IObservable<string> DurationFormat { get; }
         public IObservable<string> BeginningOfWeek { get; }
@@ -74,23 +75,23 @@ namespace Toggl.Core.UI.ViewModels
         public IObservable<string> CalendarSmartReminders { get; }
         public IObservable<bool> SwipeActionsEnabled { get; }
 
-        public UIAction OpenCalendarSettings { get; }
-        public UIAction OpenCalendarSmartReminders { get; }
-        public UIAction OpenNotificationSettings { get; }
-        public UIAction ToggleTwentyFourHourSettings { get; }
-        public UIAction OpenHelpView { get; }
-        public UIAction TryLogout { get; }
-        public UIAction OpenAboutView { get; }
-        public UIAction OpenSiriShortcuts { get; }
-        public UIAction OpenSiriWorkflows { get; }
-        public UIAction SubmitFeedback { get; }
-        public UIAction SelectDateFormat { get; }
-        public UIAction PickDefaultWorkspace { get; }
-        public UIAction SelectDurationFormat { get; }
-        public UIAction ToggleTimeEntriesGrouping { get; }
-        public UIAction SelectBeginningOfWeek { get; }
-        public UIAction ToggleManualMode { get; }
-        public UIAction ToggleSwipeActions { get; }
+        public ViewAction OpenCalendarSettings { get; }
+        public ViewAction OpenCalendarSmartReminders { get; }
+        public ViewAction OpenNotificationSettings { get; }
+        public ViewAction ToggleTwentyFourHourSettings { get; }
+        public ViewAction OpenHelpView { get; }
+        public ViewAction TryLogout { get; }
+        public ViewAction OpenAboutView { get; }
+        public ViewAction OpenSiriShortcuts { get; }
+        public ViewAction OpenSiriWorkflows { get; }
+        public ViewAction SubmitFeedback { get; }
+        public ViewAction SelectDateFormat { get; }
+        public ViewAction PickDefaultWorkspace { get; }
+        public ViewAction SelectDurationFormat { get; }
+        public ViewAction ToggleTimeEntriesGrouping { get; }
+        public ViewAction SelectBeginningOfWeek { get; }
+        public ViewAction ToggleManualMode { get; }
+        public ViewAction ToggleSwipeActions { get; }
 
         public SettingsViewModel(
             ITogglDataSource dataSource,
@@ -207,6 +208,22 @@ namespace Toggl.Core.UI.ViewModels
 
             LoggingOut = loggingOutSubject.AsObservable()
                 .AsDriver(schedulerProvider);
+
+            PresentableSyncStatus combineStatuses(bool synced, bool syncing, bool loggingOut)
+            {
+                if (loggingOut)
+                {
+                    return PresentableSyncStatus.LoggingOut;
+                }
+                
+                return syncing ? PresentableSyncStatus.Syncing : PresentableSyncStatus.Synced;
+            }
+
+            CurrentSyncStatus = Observable.CombineLatest(
+                IsSynced,
+                IsRunningSync,
+                LoggingOut.SelectValue(true).StartWith(false),
+                combineStatuses);
 
             dataSource.User.Current
                 .Subscribe(user => currentUser = user)

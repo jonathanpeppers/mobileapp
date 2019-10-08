@@ -63,7 +63,7 @@ namespace Toggl.iOS.ViewControllers
                 .Subscribe(ProjectNameUsedErrorTextHeight.Rx().Constant())
                 .DisposedBy(DisposeBag);
 
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+            if (TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
             {
                 ViewModel.Error
                     .Select(e => string.IsNullOrEmpty(e) ? desiredIpadHeight : errorVisibleHeight + desiredIpadHeight)

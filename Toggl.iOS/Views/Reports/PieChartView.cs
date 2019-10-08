@@ -18,6 +18,8 @@ namespace Toggl.iOS.Views.Reports
     {
         private const float padding = 8.0f;
         private const float linesSeparatorHeight = 0.5f * padding;
+        private const int minVisibleLetters = 8;
+        private const float paddingMultiplicatorForProjectName = 3.5f;
         
         private Point nameCoordinates = new Point();
         private Point percentageCoordinates = new Point();
@@ -84,6 +86,17 @@ namespace Toggl.iOS.Views.Reports
 
                     var textWidth = nameToDraw.Size.Width;
                     var textHeight = nameToDraw.Size.Height;
+                    var initialTextLength = nameToDraw.Length;
+                    
+                    var shortenBy = 1;
+                    while(shortenBy < initialTextLength - minVisibleLetters
+                          && textWidth >= radius - paddingMultiplicatorForProjectName * padding)
+                    {
+                        nameToDraw = new NSAttributedString(segment.FormattedName(shortenBy), attributes);
+                        textWidth = nameToDraw.Size.Width;
+                        textHeight = nameToDraw.Size.Height;
+                        ++shortenBy;
+                    }
 
                     var percentWidth = percentageToDraw.Size.Width;
                     var percentHeight = percentageToDraw.Size.Height;

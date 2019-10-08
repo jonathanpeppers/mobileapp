@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive.Linq;
 using Toggl.Core.UI.Extensions;
-using Toggl.Core.UI.Helper;
 using Toggl.Core.UI.ViewModels;
 using Toggl.iOS.Extensions;
 using Toggl.iOS.Extensions.Reactive;
@@ -13,11 +11,8 @@ using UIKit;
 
 namespace Toggl.iOS.ViewControllers
 {
-    public sealed partial class SelectTagsViewController : KeyboardAwareViewController<SelectTagsViewModel>
+    public sealed partial class SelectTagsViewController : ReactiveViewController<SelectTagsViewModel>
     {
-        private const double headerHeight = 100;
-        private const double placeholderHeight = 250;
-
         public SelectTagsViewController(SelectTagsViewModel viewModel)
             : base(viewModel, nameof(SelectTagsViewController))
         {
@@ -38,26 +33,15 @@ namespace Toggl.iOS.ViewControllers
                 .Subscribe(ViewModel.SelectTag.Inputs)
                 .DisposedBy(DisposeBag);
 
+            tableViewSource.Rx().DragStarted()
+                .Subscribe(_ => TextField.ResignFirstResponder())
+                .DisposedBy(DisposeBag);
+
             var tagsReplay = ViewModel.Tags.Replay();
 
             tagsReplay
                 .Subscribe(TagsTableView.Rx().ReloadItems(tableViewSource))
                 .DisposedBy(DisposeBag);
-
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
-            {
-                tagsReplay
-                    .Select((tags) =>
-                    {
-                        var count = tags.ToList().Count();
-                        var contentHeight = count > 0
-                            ? count * SelectTagsTableViewSource.RowHeight
-                            : placeholderHeight;
-                        return new CoreGraphics.CGSize(0, contentHeight + headerHeight);
-                    })
-                    .Subscribe(this.Rx().PreferredContentSize())
-                    .DisposedBy(DisposeBag);
-            }
 
             tagsReplay.Connect();
 
@@ -85,7 +69,7 @@ namespace Toggl.iOS.ViewControllers
                 .Subscribe(ViewModel.FilterText)
                 .DisposedBy(DisposeBag);
 
-            BottomConstraint.Active |= UIDevice.CurrentDevice.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad;
+            BottomConstraint.Active |= TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Compact;
         }
 
         public override void ViewWillAppear(bool animated)
@@ -94,28 +78,10 @@ namespace Toggl.iOS.ViewControllers
             TextField.BecomeFirstResponder();
         }
 
-        protected override void KeyboardWillShow(object sender, UIKeyboardEventArgs e)
-        {
-            BottomConstraint.Constant = e.FrameEnd.Height;
-            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
-        }
-
-        protected override void KeyboardWillHide(object sender, UIKeyboardEventArgs e)
-        {
-            BottomConstraint.Constant = 0;
-            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
-        }
-
-        public override void ViewDidLayoutSubviews()
-        {
-            base.ViewDidLayoutSubviews();
-            View.ClipsToBounds |= UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad;
-        }
-
         public override void ViewWillLayoutSubviews()
         {
             base.ViewWillLayoutSubviews();
-            View.ClipsToBounds |= UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad;
+            View.ClipsToBounds |= TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular;
         }
     }
 }

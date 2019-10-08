@@ -60,13 +60,7 @@ namespace Toggl.iOS.Presentation.Transition
 
         public override CGSize GetSizeForChildContentContainer(IUIContentContainer contentContainer, CGSize parentContainerSize)
         {
-            var regualrOrCompactHorizontalSizeClass = PresentingViewController.TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular
-                                                      || PresentingViewController.TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Compact;
-            var regularVerticalSizeClass = PresentingViewController.TraitCollection.VerticalSizeClass == UIUserInterfaceSizeClass.Regular;
-
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad
-                && regualrOrCompactHorizontalSizeClass
-                && regularVerticalSizeClass)
+            if (PresentingViewController.TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
             {
                 var preferredContentHeight = PresentedViewController.PreferredContentSize.Height != 0
                     ? PresentedViewController.PreferredContentSize.Height
@@ -80,7 +74,12 @@ namespace Toggl.iOS.Presentation.Transition
                 return new CGSize(width, height);
             }
 
-            return PresentedViewController.PreferredContentSize;
+            var preferredWidth = Min(parentContainerSize.Width, PresentedViewController.PreferredContentSize.Width);
+            var maxHeight = ContainerView.Bounds.Height - ContainerView.SafeAreaInsets.Top;
+            var preferredHeight = Min(maxHeight, PresentedViewController.PreferredContentSize.Height);
+            return new CGSize(
+                preferredWidth == 0 ? parentContainerSize.Width : preferredWidth,
+                preferredHeight == 0 ? maxHeight : preferredHeight);
         }
 
         public override CGRect FrameOfPresentedViewInContainerView
@@ -93,14 +92,9 @@ namespace Toggl.iOS.Presentation.Transition
                 frame.X = (containerSize.Width - frame.Width) / 2;
                 frame.Y = (containerSize.Height - frame.Height) / 2;
 
-                if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+                if (PresentedViewController.TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular)
                 {
                     frame.Y = (containerSize.Height - frame.Size.Height) / 2 + (nfloat)iPadStackModalViewSpacing * levelsOfModalViews();
-
-                    if (PresentingViewController.PresentingViewController != null)
-                    {
-                        frame.Y = (nfloat)topiPadMargin + (nfloat)iPadStackModalViewSpacing * levelsOfModalViews();
-                    }
                 }
 
                 return frame;

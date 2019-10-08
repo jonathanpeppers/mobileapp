@@ -44,7 +44,7 @@ namespace Toggl.iOS.ViewControllers
             TitleLabel.Text = Resources.ReviewTheTerms;
             AcceptButton.SetTitle(Resources.IAgree, UIControlState.Normal);
 
-            var height = UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad
+            var height = TraitCollection.HorizontalSizeClass == UIUserInterfaceSizeClass.Regular
                 ? 260
                 : View.Frame.Height;
 

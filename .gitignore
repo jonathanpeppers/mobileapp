@@ -316,7 +316,6 @@ Toggl.iOS.IntentStaticLib/bo/
 Toggl.iOS.IntentStaticLib/build/
 Toggl.iOS.IntentStaticLib/libToggl.iOS.IntentStaticLib-arm64.a
 Toggl.iOS.IntentStaticLib/libToggl.iOS.IntentStaticLib-i386.a
-Toggl.iOS.IntentStaticLib/libToggl.iOS.IntentStaticLib-armv7.a
 
 # Bitrise
 **/bitrise.yml

@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using Foundation;
+using Toggl.Core.Sync;
 using Toggl.iOS.Extensions;
 using Toggl.iOS.ViewControllers.Settings.Models;
 using Toggl.iOS.ViewSources;
 using Toggl.Shared;
 using UIKit;
 using Colors = Toggl.Core.UI.Helper.Colors;
+using static Toggl.Core.Sync.PresentableSyncStatus;
 
 namespace Toggl.iOS.Cells.Settings
 {
-    public partial class SettingsSyncCell : BaseTableViewCell<CustomRow<SyncStatus>>
+    public partial class SettingsSyncCell : BaseTableViewCell<CustomRow<PresentableSyncStatus>>
     {
         public static readonly string Identifier = nameof(SettingsSyncCell);
         public static readonly UINib Nib;
@@ -46,19 +48,19 @@ namespace Toggl.iOS.Cells.Settings
         {
             switch (Item.CustomValue)
             {
-                case SyncStatus.Synced:
+                case Synced:
                     StatusLabel.Text = Resources.SyncCompleted;
                     SyncedIcon.Hidden = false;
                     LoadingIcon.Hidden = true;
                     LoadingIcon.StopSpinning();
                     break;
-                case SyncStatus.Syncing:
+                case Syncing:
                     StatusLabel.Text = Resources.Syncing;
                     SyncedIcon.Hidden = true;
                     LoadingIcon.Hidden = false;
                     LoadingIcon.StartSpinning();
                     break;
-                case SyncStatus.LoggingOut:
+                case LoggingOut:
                     StatusLabel.Text = Resources.LoggingOutSecurely;
                     SyncedIcon.Hidden = true;
                     LoadingIcon.Hidden = false;

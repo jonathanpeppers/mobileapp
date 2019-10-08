@@ -56,7 +56,7 @@ namespace Toggl.Core.Reports
                 segment.Color,
                 durationFormat);
 
-        public static string FormattedName(this ChartSegment segment)
-            => segment.ProjectName.TruncatedAt(maxSegmentNameLength);
+        public static string FormattedName(this ChartSegment segment, int shortenBy = 0)
+            => segment.ProjectName.TruncatedAt(maxSegmentNameLength - shortenBy);
     }
 }
