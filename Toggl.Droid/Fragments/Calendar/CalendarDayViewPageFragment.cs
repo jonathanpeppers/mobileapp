@@ -99,6 +99,17 @@ namespace Toggl.Droid.Fragments.Calendar
                 .DisposedBy(DisposeBag);
             
             ViewModel.ContextualMenuViewModel
+                .MenuVisible
+                .Where(menuIsVisible => !menuIsVisible)
+                .Subscribe(_ => calendarDayView.ClearEditMode())
+                .DisposedBy(DisposeBag);
+            
+            ViewModel.ContextualMenuViewModel
+                .DiscardChanges
+                .Subscribe(_ => calendarDayView.DiscardEditModeChanges())
+                .DisposedBy(DisposeBag);
+            
+            ViewModel.ContextualMenuViewModel
                 .TimeEntryPeriod
                 .Subscribe(periodText.Rx().TextObserver())
                 .DisposedBy(DisposeBag);
@@ -108,7 +119,7 @@ namespace Toggl.Droid.Fragments.Calendar
                 .Select(convertTimeEntryInfoToSpannable)
                 .Subscribe(timeEntryDetails.Rx().TextFormattedObserver())
                 .DisposedBy(DisposeBag);
-            
+
             InvalidationListener?
                 .Subscribe(_ => invalidatePage())
                 .DisposedBy(DisposeBag);

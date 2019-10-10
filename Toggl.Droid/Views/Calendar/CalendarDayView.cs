@@ -119,6 +119,18 @@ namespace Toggl.Droid.Views.Calendar
             initEventDrawingBackingFields();
             initEventEditionBackingFields();
         }
+
+        public void DiscardEditModeChanges()
+        {
+            updateItemsAndRecalculateEventsAttrs(originalCalendarItems);
+        }
+        
+        public void ClearEditMode()
+        {
+            editAction = EditAction.None;
+            itemEditInEditMode = CalendarItemEditInfo.None;
+            Invalidate();
+        }
         
         public void SetCurrentDate(DateTimeOffset dateOnView)
         {
@@ -289,13 +301,17 @@ namespace Toggl.Droid.Views.Calendar
                     //todo: shake?
                     return;
                 }
+                
                 if (itemIsAlreadyBeingEdited(calendarItemInfo))
-                {
-                    calendarItemTappedSubject.OnNext(itemEditInEditMode.CalendarItem);
                     return;
-                }
 
                 cancelCurrentEdition();
+                if (calendarItemInfo.CalendarItem.Source == CalendarItemSource.Calendar)
+                {
+                    calendarItemTappedSubject.OnNext(calendarItemInfo.CalendarItem);
+                    return;
+                }
+                
                 beginEdition(calendarItemInfo);
                 return;
             }
@@ -305,6 +321,7 @@ namespace Toggl.Droid.Views.Calendar
                 emptySpansTouchedObservable.OnNext(dateAtYOffset(touchY + scrollOffset));
                 return;
             }
+            
             if (calendarItemInfo.CalendarItem.Source == CalendarItemSource.Calendar)
             {
                 calendarItemTappedSubject.OnNext(calendarItemInfo.CalendarItem);
@@ -325,7 +342,8 @@ namespace Toggl.Droid.Views.Calendar
 
         private void cancelCurrentEdition()
         {
-            
+            ClearEditMode();
+            DiscardEditModeChanges();
         }
         
         private bool itemIsAlreadyBeingEdited(CalendarItemEditInfo calendarItemInfo)

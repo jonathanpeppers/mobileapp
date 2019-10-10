@@ -41,11 +41,6 @@ namespace Toggl.Droid.Views.Calendar
             autoScrollExtraDelta = 5.DpToPixels(Context);
         }
 
-        private void commitEditedChanges()
-        {
-            editCalendarItemSubject.OnNext(itemEditInEditMode.CalendarItem);
-        }
-
         private void onTouchDownWhileEditingItem(MotionEvent e1)
         {
             var activeItemInfo = itemEditInEditMode;
