@@ -11,7 +11,7 @@ namespace Toggl.Droid.Fragments
     {
         private TextView headerTimeEntriesDurationTextView;
         private TextView headerDateTextView;
-        private ViewPager calendarViewPager;
+        private LockableViewPager calendarViewPager;
         private AppBarLayout appBarLayout;
         private Toolbar toolbar;
 
@@ -20,7 +20,7 @@ namespace Toggl.Droid.Fragments
             headerDateTextView = view.FindViewById<TextView>(Resource.Id.HeaderDateTextView);
             headerTimeEntriesDurationTextView = view.FindViewById<TextView>(Resource.Id.HeaderTimeEntriesDurationTextView);
             appBarLayout = view.FindViewById<AppBarLayout>(Resource.Id.HeaderView);
-            calendarViewPager = view.FindViewById<ViewPager>(Resource.Id.Pager);
+            calendarViewPager = view.FindViewById<LockableViewPager>(Resource.Id.Pager);
             toolbar = view.FindViewById<Toolbar>(Resource.Id.Toolbar);
         }
 
