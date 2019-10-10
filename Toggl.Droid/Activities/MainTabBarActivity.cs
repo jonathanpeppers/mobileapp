@@ -263,9 +263,19 @@ namespace Toggl.Droid.Activities
             if (initialFragment is MainFragment mainFragment)
                 mainFragment.SetFragmentIsVisible(true);
 
+            if (!(initialFragment is CalendarFragment))
+            {
+                ChangeBottomBarVisibility(true);
+            }
+
             requestedInitialTab = initialTabItemId;
             navigationView.SelectedItemId = initialTabItemId;
             activeFragment = initialFragment;
+        }
+
+        public void ChangeBottomBarVisibility(bool isVisible)
+        {
+            navigationView.Visibility = isVisible.ToVisibility();
         }
     }
 }
