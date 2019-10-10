@@ -275,6 +275,7 @@ namespace Toggl.Droid.Views.Calendar
 
             itemEditInEditMode = itemEditInEditMode.WithCalendarItem(newCalendarItem, hourHeight, minHourHeight, timeService.CurrentDateTime);
             updateEditingStartEndLabels();
+            calendarItemTappedSubject.OnNext(itemEditInEditMode.CalendarItem);
         }
 
         private void updateEditingStartEndLabels()
