@@ -1,6 +1,7 @@
 using Android.OS;
 using Android.Views;
 using System;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Android.Runtime;
@@ -8,6 +9,7 @@ using Android.Support.V4.App;
 using Android.Support.V4.View;
 using Toggl.Core;
 using Toggl.Core.UI.ViewModels.Calendar;
+using Toggl.Droid.Activities;
 using Toggl.Droid.Extensions;
 using Toggl.Droid.Fragments.Calendar;
 using Toggl.Droid.Helper;
@@ -59,7 +61,18 @@ namespace Toggl.Droid.Fragments
                 .Subscribe(swipeIsLocked => calendarViewPager.IsLocked = swipeIsLocked)
                 .DisposedBy(DisposeBag);
             
+            calendarDayAdapter.MenuVisibilityRelay
+                .Select(CommonFunctions.Invert)
+                .Subscribe(hideBottomBar)
+                .DisposedBy(DisposeBag);
+
             calendarViewPager.SetCurrentItem(calendarPagesCount - 1, false);
+        }
+
+        private void hideBottomBar(bool bottomBarShouldBeHidden)
+        {
+            (Activity as MainTabBarActivity)?.ChangeBottomBarVisibility(bottomBarShouldBeHidden);
+            calendarDayAdapter?.InvalidateCurrentPage();
         }
 
         public void ScrollToStart()
@@ -121,13 +134,11 @@ namespace Toggl.Droid.Fragments
             }
         }
 
-            }
-        }
-
         private class CalendarDayFragmentAdapter : FragmentStatePagerAdapter, ViewPager.IOnPageChangeListener
         {
             private readonly CalendarViewModel calendarViewModel;
             private readonly IObservable<bool> scrollToTopSign;
+            private readonly ISubject<Unit> pageNeedsToBeInvalidated = new Subject<Unit>(); 
             public BehaviorRelay<int> OffsetRelay { get; } = new BehaviorRelay<int>(0);
             public BehaviorRelay<int> CurrentPageRelay { get; } = new BehaviorRelay<int>(0);
             public BehaviorRelay<bool> MenuVisibilityRelay { get; } = new BehaviorRelay<bool>(false);
@@ -152,9 +163,15 @@ namespace Toggl.Droid.Fragments
                     CurrentPageRelay = CurrentPageRelay,
                     MenuVisibilityRelay =  MenuVisibilityRelay,
                     PageNumber = position,
-                    ScrollToStartSign = scrollToTopSign
+                    ScrollToStartSign = scrollToTopSign,
+                    InvalidationListener = pageNeedsToBeInvalidated.AsObservable()
                 };
 
+            public void InvalidateCurrentPage()
+            {
+                pageNeedsToBeInvalidated.OnNext(Unit.Default);
+            }
+            
             public void OnPageSelected(int position)
                 => CurrentPageRelay.Accept(position);
 

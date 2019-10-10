@@ -30,7 +30,8 @@ namespace Toggl.Droid.Fragments.Calendar
         public BehaviorRelay<int> ScrollOffsetRelay { get; set; }
         public BehaviorRelay<bool> MenuVisibilityRelay { get; set; }
         public IObservable<bool> ScrollToStartSign { get; set; }
-            
+        public IObservable<Unit> InvalidationListener { get; set; }
+
         public int PageNumber { get; set; }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -107,7 +108,21 @@ namespace Toggl.Droid.Fragments.Calendar
                 .Select(convertTimeEntryInfoToSpannable)
                 .Subscribe(timeEntryDetails.Rx().TextFormattedObserver())
                 .DisposedBy(DisposeBag);
+            
+            InvalidationListener?
+                .Subscribe(_ => invalidatePage())
+                .DisposedBy(DisposeBag);
         }
+
+        private void invalidatePage()
+        {
+            calendarDayView.Post(() =>
+            {
+                calendarDayView.Invalidate();
+                contextualMenuContainer.Invalidate();
+            });
+        }
+        
         private void updateMenuBindings(CalendarContextualMenu contextualMenu)
         {
             menuActionsAdapter.Items = contextualMenu.Actions;
