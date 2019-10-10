@@ -382,6 +382,7 @@
     <Compile Include="Fragments\Calendar\CalendarDayViewPageFragment.ViewBinds.cs">
       <DependentUpon>CalendarDayViewPageFragment.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fragments\LockableViewPager.cs" />
     <Compile Include="Fragments\ReportsCalendarFragment.cs" />
     <Compile Include="Helper\ActiveTheme.cs" />
     <Compile Include="Presentation\ActivityTransitions.cs" />
