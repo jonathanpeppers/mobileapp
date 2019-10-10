@@ -54,12 +54,19 @@ namespace Toggl.Droid.Fragments
                 .DistinctUntilChanged()
                 .Subscribe(updateAppbarElevation)
                 .DisposedBy(DisposeBag);
+
+            calendarDayAdapter.MenuVisibilityRelay
+                .Subscribe(swipeIsLocked => calendarViewPager.IsLocked = swipeIsLocked)
+                .DisposedBy(DisposeBag);
             
             calendarViewPager.SetCurrentItem(calendarPagesCount - 1, false);
         }
 
         public void ScrollToStart()
         {
+            if (calendarDayAdapter?.MenuVisibilityRelay.Value == true)
+                return;
+            
             scrollToStartSignaler.OnNext(true);
             calendarViewPager.SetCurrentItem(calendarPagesCount - 1, true);
         }
@@ -70,6 +77,9 @@ namespace Toggl.Droid.Fragments
             if (hasResumedOnce) 
                 return;
             hasResumedOnce = true;
+            
+            if (calendarDayAdapter?.MenuVisibilityRelay.Value == true)
+                return;
             
             scrollToStartSignaler.OnNext(false);
         }
@@ -120,6 +130,7 @@ namespace Toggl.Droid.Fragments
             private readonly IObservable<bool> scrollToTopSign;
             public BehaviorRelay<int> OffsetRelay { get; } = new BehaviorRelay<int>(0);
             public BehaviorRelay<int> CurrentPageRelay { get; } = new BehaviorRelay<int>(0);
+            public BehaviorRelay<bool> MenuVisibilityRelay { get; } = new BehaviorRelay<bool>(false);
 
             public CalendarDayFragmentAdapter(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
             {
@@ -139,6 +150,7 @@ namespace Toggl.Droid.Fragments
                     ViewModel = calendarViewModel.DayViewModelAt(-(Count - 1 - position)),
                     ScrollOffsetRelay = OffsetRelay,
                     CurrentPageRelay = CurrentPageRelay,
+                    MenuVisibilityRelay =  MenuVisibilityRelay,
                     PageNumber = position,
                     ScrollToStartSign = scrollToTopSign
                 };
