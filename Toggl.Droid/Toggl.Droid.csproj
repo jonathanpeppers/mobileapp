@@ -379,6 +379,9 @@
     <Compile Include="Fragments\Calendar\CalendarDayViewPageFragment.PermissionHandler.cs">
       <DependentUpon>CalendarDayViewPageFragment.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fragments\Calendar\CalendarDayViewPageFragment.ViewBinds.cs">
+      <DependentUpon>CalendarDayViewPageFragment.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fragments\ReportsCalendarFragment.cs" />
     <Compile Include="Helper\ActiveTheme.cs" />
     <Compile Include="Presentation\ActivityTransitions.cs" />
@@ -680,6 +683,7 @@
     <AndroidResource Include="Resources\drawable\Splash.xml" />
     <AndroidResource Include="Resources\drawable\text_placeholder.xml" />
     <AndroidResource Include="Resources\layout\AboutActivity.axml" />
+    <AndroidResource Include="Resources\layout\CalendarDayFragmentPage.axml" />
     <AndroidResource Include="Resources\layout\ContextualMenuActionCell.axml" />
     <AndroidResource Include="Resources\layout\ReportsCalendar.axml" />
     <AndroidResource Include="Resources\layout\SelectTagsActivity.axml" />

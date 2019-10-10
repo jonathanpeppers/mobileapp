@@ -106,7 +106,11 @@ namespace Toggl.Droid.Fragments
 
             public void TransformPage(View page, float position)
             {
-                ((CalendarDayView) page).SetOffset(verticalOffsetProvider.Value);
+                var calendarDayView = page.FindViewById<CalendarDayView>(Resource.Id.CalendarDayView);
+                calendarDayView?.SetOffset(verticalOffsetProvider.Value);
+            }
+        }
+
             }
         }
 
