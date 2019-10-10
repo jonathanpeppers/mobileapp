@@ -145,6 +145,8 @@ namespace Toggl.Core.UI.ViewModels.Calendar.ContextualMenu
         
         private void closeMenuDismissingUncommittedChanges()
         {
+            currentCalendarItem = default;
+            currentMenuType = ContextualMenuType.Closed;
             currentMenuSubject.OnNext(contextualMenus[ContextualMenuType.Closed]);
             discardChangesSubject.OnNext(Unit.Default);
             menuVisibilitySubject.OnNext(false);
@@ -152,6 +154,8 @@ namespace Toggl.Core.UI.ViewModels.Calendar.ContextualMenu
 
         private void closeMenuWithCommittedChanges()
         {
+            currentCalendarItem = default;
+            currentMenuType = ContextualMenuType.Closed;
             currentMenuSubject.OnNext(contextualMenus[ContextualMenuType.Closed]);
             menuVisibilitySubject.OnNext(false);
         }
