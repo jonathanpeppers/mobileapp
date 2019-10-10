@@ -134,8 +134,8 @@ namespace Toggl.Core.UI.ViewModels.Calendar.ContextualMenu
 
         private string formatCurrentPeriod()
         {
-            var startTimeString = currentStartTimeOffset.ToString(Resources.EditingTwelveHoursFormat);
-            var endTime = currentStartTimeOffset + currentDuration;
+            var startTimeString = currentStartTimeOffset.ToLocalTime().ToString(Resources.EditingTwelveHoursFormat);
+            var endTime = currentStartTimeOffset.ToLocalTime() + currentDuration;
             var endTimeString = endTime.HasValue
                 ? endTime.Value.ToString(Resources.EditingTwelveHoursFormat)
                 : Resources.Now;
