@@ -64,11 +64,7 @@ namespace Toggl.Droid.Fragments.Calendar
                 .Select(emptySpan => (emptySpan, defaultTimeEntryDurationForCreation))
                 .Subscribe(ViewModel.OnDurationSelected.Inputs)
                 .DisposedBy(DisposeBag);
-
-            calendarDayView.EditCalendarItem
-                .Subscribe(ViewModel.OnTimeEntryEdited.Inputs)
-                .DisposedBy(DisposeBag);
-
+            
             ScrollToStartSign?
                 .Subscribe(scrollToStart)
                 .DisposedBy(DisposeBag);

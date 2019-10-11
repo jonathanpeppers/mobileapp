@@ -31,9 +31,6 @@ namespace Toggl.Droid.Views.Calendar
         private int autoScrollExtraDelta;
         private int smoothAutoScrollDurationInMillis = 300;
         private bool shouldTryToAutoScrollToEvent = false;
-        
-        private readonly ISubject<CalendarItem> editCalendarItemSubject = new Subject<CalendarItem>();
-        public IObservable<CalendarItem> EditCalendarItem => editCalendarItemSubject.AsObservable();
 
         partial void initEventEditionBackingFields()
         {
