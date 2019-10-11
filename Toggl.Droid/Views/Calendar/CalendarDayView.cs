@@ -334,7 +334,7 @@ namespace Toggl.Droid.Views.Calendar
         private void beginEdition(CalendarItemEditInfo calendarItemInfo)
         {
             itemEditInEditMode = calendarItemInfo;
-            calendarItemTappedSubject.OnNext(itemEditInEditMode.CalendarItem);
+            notifyUpdateInItemInEditMode();
             updateEditingStartEndLabels();
             allItemsStartAndEndTime = selectItemsStartAndEndTime();
             Invalidate();   

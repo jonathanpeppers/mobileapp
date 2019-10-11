@@ -256,7 +256,7 @@ namespace Toggl.Core.UI.ViewModels.Calendar.ContextualMenu
                 Id = timeEntry.Id,
                 Description = timeEntry.Description,
                 StartTime = calendarItem.StartTime,
-                StopTime = calendarItem.EndTime,
+                StopTime = calendarItem.Duration.HasValue ? calendarItem.EndTime : timeEntry.StopTime(),
                 ProjectId = timeEntry.ProjectId,
                 TaskId = timeEntry.TaskId,
                 Billable = timeEntry.Billable,
