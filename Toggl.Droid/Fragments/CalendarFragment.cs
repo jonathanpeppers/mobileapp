@@ -72,6 +72,7 @@ namespace Toggl.Droid.Fragments
         private void hideBottomBar(bool bottomBarShouldBeHidden)
         {
             (Activity as MainTabBarActivity)?.ChangeBottomBarVisibility(bottomBarShouldBeHidden);
+            calendarViewPager.PostInvalidateOnAnimation();
             calendarDayAdapter?.InvalidateCurrentPage();
         }
 

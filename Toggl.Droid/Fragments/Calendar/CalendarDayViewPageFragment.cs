@@ -51,7 +51,7 @@ namespace Toggl.Droid.Fragments.Calendar
             calendarDayView.SetCurrentDate(ViewModel.Date);
             calendarDayView.SetOffset(ScrollOffsetRelay?.Value ?? 0);
             calendarDayView.UpdateItems(ViewModel.CalendarItems);
-            
+
             ViewModel.CalendarItems.CollectionChange
                 .Subscribe(_ => calendarDayView.UpdateItems(ViewModel.CalendarItems))
                 .DisposedBy(DisposeBag);
@@ -64,7 +64,7 @@ namespace Toggl.Droid.Fragments.Calendar
                 .Select(emptySpan => (emptySpan, defaultTimeEntryDurationForCreation))
                 .Subscribe(ViewModel.OnDurationSelected.Inputs)
                 .DisposedBy(DisposeBag);
-            
+
             ScrollToStartSign?
                 .Subscribe(scrollToStart)
                 .DisposedBy(DisposeBag);
@@ -76,40 +76,40 @@ namespace Toggl.Droid.Fragments.Calendar
             menuActionsAdapter = new SimpleAdapter<CalendarMenuAction>(
                 Resource.Layout.ContextualMenuActionCell,
                 CalendarMenuActionCellViewHolder.Create);
-            
+
             actionsRecyclerView.SetAdapter(menuActionsAdapter);
 
             ViewModel.ContextualMenuViewModel
                 .CurrentMenu
                 .Subscribe(updateMenuBindings)
                 .DisposedBy(DisposeBag);
-            
+
             ViewModel.ContextualMenuViewModel
                 .MenuVisible
                 .Subscribe(contextualMenuContainer.Rx().IsVisible())
                 .DisposedBy(DisposeBag);
-            
+
             ViewModel.ContextualMenuViewModel
                 .MenuVisible
                 .Subscribe(notifyMenuVisibilityIfCurrentPage)
                 .DisposedBy(DisposeBag);
-            
+
             ViewModel.ContextualMenuViewModel
                 .MenuVisible
                 .Where(menuIsVisible => !menuIsVisible)
                 .Subscribe(_ => calendarDayView.ClearEditMode())
                 .DisposedBy(DisposeBag);
-            
+
             ViewModel.ContextualMenuViewModel
                 .DiscardChanges
                 .Subscribe(_ => calendarDayView.DiscardEditModeChanges())
                 .DisposedBy(DisposeBag);
-            
+
             ViewModel.ContextualMenuViewModel
                 .TimeEntryPeriod
                 .Subscribe(periodText.Rx().TextObserver())
                 .DisposedBy(DisposeBag);
-            
+
             ViewModel.ContextualMenuViewModel
                 .TimeEntryInfo
                 .Select(convertTimeEntryInfoToSpannable)
@@ -123,13 +123,11 @@ namespace Toggl.Droid.Fragments.Calendar
 
         private void invalidatePage()
         {
-            calendarDayView.Post(() =>
-            {
-                calendarDayView.Invalidate();
-                contextualMenuContainer.Invalidate();
-            });
+            View.PostInvalidateOnAnimation();
+            calendarDayView.PostInvalidateOnAnimation();
+            contextualMenuContainer.PostInvalidateOnAnimation();
         }
-        
+
         private void updateMenuBindings(CalendarContextualMenu contextualMenu)
         {
             menuActionsAdapter.Items = contextualMenu.Actions;
@@ -163,7 +161,7 @@ namespace Toggl.Droid.Fragments.Calendar
                 false,
                 false
             );
-            
+
             builder.Append(description);
             builder.Append(" ");
             builder.Append(projectTaskClient);
@@ -172,9 +170,9 @@ namespace Toggl.Droid.Fragments.Calendar
 
         private void updateScrollOffsetIfCurrentPage(int scrollOffset)
         {
-            if (PageNumber != CurrentPageRelay?.Value) 
+            if (PageNumber != CurrentPageRelay?.Value)
                 return;
-            
+
             ScrollOffsetRelay?.Accept(scrollOffset);
         }
 
@@ -182,7 +180,7 @@ namespace Toggl.Droid.Fragments.Calendar
         {
             if (PageNumber != CurrentPageRelay?.Value)
                 return;
-            
+
             calendarDayView?.ScrollToCurrentHour(shouldSmoothScroll);
         }
 
