@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -23,7 +24,7 @@ namespace Toggl.Droid.Fragments.Calendar
         private readonly TimeSpan defaultTimeEntryDurationForCreation = TimeSpan.FromMinutes(30);
         private CompositeDisposable DisposeBag = new CompositeDisposable();
         private IDisposable dismissActionDisposeBag;
-        private SimpleAdapter<CalendarMenuAction> menuActionsAdapter;
+        private CalendarContextualMenuActionsAdapter menuActionsAdapter;
 
         public CalendarDayViewModel ViewModel { get; set; }
         public BehaviorRelay<int> CurrentPageRelay { get; set; }
@@ -73,9 +74,7 @@ namespace Toggl.Droid.Fragments.Calendar
                 .Subscribe(updateScrollOffsetIfCurrentPage)
                 .DisposedBy(DisposeBag);
 
-            menuActionsAdapter = new SimpleAdapter<CalendarMenuAction>(
-                Resource.Layout.ContextualMenuActionCell,
-                CalendarMenuActionCellViewHolder.Create);
+            menuActionsAdapter = new CalendarContextualMenuActionsAdapter();
 
             actionsRecyclerView.SetAdapter(menuActionsAdapter);
 
@@ -191,6 +190,36 @@ namespace Toggl.Droid.Fragments.Calendar
             DisposeBag.Dispose();
             DisposeBag = new CompositeDisposable();
             base.OnDestroyView();
+        }
+
+        private class CalendarContextualMenuActionsAdapter : BaseRecyclerAdapter<CalendarMenuAction>
+        {
+            private IImmutableList<CalendarMenuAction> items = ImmutableList<CalendarMenuAction>.Empty;
+
+            public override IImmutableList<CalendarMenuAction> Items
+            {
+                get => items;
+                set => SetItems(value ?? ImmutableList<CalendarMenuAction>.Empty);
+            }
+            
+            protected override void SetItems(IImmutableList<CalendarMenuAction> newItems)
+            {
+                items = newItems;
+                NotifyDataSetChanged();
+            }
+
+            public override CalendarMenuAction GetItem(int viewPosition)
+            {
+                return items[viewPosition];
+            }
+
+            protected override BaseRecyclerViewHolder<CalendarMenuAction> CreateViewHolder(ViewGroup parent, LayoutInflater inflater, int viewType)
+            {
+                var view = inflater.Inflate(Resource.Layout.ContextualMenuActionCell, parent, false);
+                return CalendarMenuActionCellViewHolder.Create(view);
+            }
+
+            public override int ItemCount => items.Count;
         }
     }
 }
