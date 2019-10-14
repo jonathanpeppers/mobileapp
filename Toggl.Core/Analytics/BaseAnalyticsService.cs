@@ -179,13 +179,13 @@ namespace Toggl.Core.Analytics
         public IAnalyticsEvent<SuggestionProviderType> SuggestionStarted { get; }
 
         public IAnalyticsEvent<ApplicationInstallLocation> ApplicationInstallLocation { get; }
-        
+
         public IAnalyticsEvent<string> PushInitiatedSyncFetch { get; protected set; }
-        
+
         public IAnalyticsEvent<string> PushNotificationSyncStarted { get; protected set; }
-        
+
         public IAnalyticsEvent<string> PushNotificationSyncFinished { get; protected set; }
-        
+
         public IAnalyticsEvent<string, string, string, string> PushNotificationSyncFailed { get; protected set; }
 
         public IAnalyticsEvent<string, string, string, string> DebugSchedulerError { get; }
@@ -195,16 +195,18 @@ namespace Toggl.Core.Analytics
         public IAnalyticsEvent<bool> AccessibilityEnabled { get; }
 
         public IAnalyticsEvent<bool> WatchPaired { get; }
-        
+
         public IAnalyticsEvent<CalendarContextualMenuActionType> CalendarEventContextualMenu { get; }
-        
+
         public IAnalyticsEvent<CalendarContextualMenuActionType> CalendarNewTimeEntryContextualMenu { get; }
-        
+
         public IAnalyticsEvent<CalendarContextualMenuActionType> CalendarExistingTimeEntryContextualMenu { get; }
-        
+
         public IAnalyticsEvent<CalendarContextualMenuActionType> CalendarRunningTimeEntryContextualMenu { get; }
-        
+
         public IAnalyticsEvent<CalendarTimeEntryCreatedType, int, string> CalendarTimeEntryCreated { get; }
+
+        public IAnalyticsEvent<int, string> CalendarWeeklyDatePickerSelectionChanged { get; }
 
         protected BaseAnalyticsService()
         {
@@ -299,6 +301,7 @@ namespace Toggl.Core.Analytics
             PushInitiatedSyncFetch = new AnalyticsEvent<string>(this, nameof(PushInitiatedSyncFetch), "NumberOfEntitiesFetched");
             PushNotificationSyncStarted = new AnalyticsEvent<string>(this, nameof(PushNotificationSyncStarted), "Source");
             PushNotificationSyncFinished = new AnalyticsEvent<string>(this, nameof(PushNotificationSyncFinished), "Source");
+            CalendarWeeklyDatePickerSelectionChanged = new AnalyticsEvent<int, string>(this, nameof(CalendarWeeklyDatePickerSelectionChanged), "DaysSinceToday", "DayOfWeek");
             PushNotificationSyncFailed = new AnalyticsEvent<string, string, string, string>(this, nameof(PushNotificationSyncFailed), "Source", "Type", "Message", "StackTrace");
             CalendarEventContextualMenu = new AnalyticsEvent<CalendarContextualMenuActionType>(this, nameof(CalendarEventContextualMenu), "SelectedOption");
             CalendarNewTimeEntryContextualMenu = new AnalyticsEvent<CalendarContextualMenuActionType>(this, nameof(CalendarNewTimeEntryContextualMenu), "SelectedOption");
