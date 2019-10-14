@@ -45,7 +45,7 @@
             android:layout_marginTop="12dp"
             android:fontFamily="sans-serif"
             android:textColor="@color/secondaryText"
-            android:textSize="12sp"
+            android:textSize="12dp"
             android:textStyle="normal"
             app:layout_constraintLeft_toRightOf="@id/DismissButton"
             app:layout_constraintTop_toTopOf="parent"
@@ -53,21 +53,26 @@
 
         <TextView
             android:id="@+id/TimeEntryDetails"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:fontFamily="sans-serif"
             android:lineSpacingExtra="5sp"
-            android:textSize="15sp"
+            android:textSize="15dp"
+            android:layout_marginRight="16dp"
             android:textStyle="normal"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:textColor="@color/primaryText"
             app:layout_constraintLeft_toLeftOf="@+id/PeriodText"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/PeriodText"
             tools:text="Pamphlet design - Design" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/ActionsRecyclerView"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="84dp"
             android:layout_marginTop="4dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
