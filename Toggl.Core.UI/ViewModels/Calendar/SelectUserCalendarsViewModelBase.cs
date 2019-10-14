@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using Toggl.Core.Analytics;
 using Toggl.Core.Exceptions;
 using Toggl.Core.Interactors;
 using Toggl.Core.Services;
@@ -24,6 +26,8 @@ namespace Toggl.Core.UI.ViewModels.Calendar
     public abstract class SelectUserCalendarsViewModelBase : ViewModel<bool, string[]>
     {
         protected IUserPreferences UserPreferences { get; }
+        protected IOnboardingStorage OnboardingStorage { get; }
+        protected IAnalyticsService AnalyticsService { get; }
 
         private readonly IInteractorFactory interactorFactory;
         private readonly CompositeDisposable disposeBag = new CompositeDisposable();
@@ -44,15 +48,22 @@ namespace Toggl.Core.UI.ViewModels.Calendar
         protected SelectUserCalendarsViewModelBase(
             IUserPreferences userPreferences,
             IInteractorFactory interactorFactory,
-            INavigationService navigationService, IRxActionFactory rxActionFactory)
+            IOnboardingStorage onboardingStorage,
+            IAnalyticsService analyticsService,
+            INavigationService navigationService,
+            IRxActionFactory rxActionFactory)
             : base(navigationService)
         {
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
+            Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
+            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(rxActionFactory, nameof(rxActionFactory));
 
             UserPreferences = userPreferences;
             this.interactorFactory = interactorFactory;
+            OnboardingStorage = onboardingStorage;
+            AnalyticsService = analyticsService;
 
             Save = rxActionFactory.FromAction(Done, doneEnabledSubject.AsObservable());
             SelectCalendar = rxActionFactory.FromAction<SelectableUserCalendarViewModel>(toggleCalendarSelection);
@@ -122,6 +133,17 @@ namespace Toggl.Core.UI.ViewModels.Calendar
 
         protected virtual void Done()
         {
+            if (OnboardingStorage.IsFirstTimeConnectingCalendars() && InitialSelectedCalendarIds.Count == 0)
+            {
+                AnalyticsService.NumberOfLinkedCalendarsNewUser.Track(SelectedCalendarIds.Count);
+            }
+            else if (!SelectedCalendarIds.SetEquals(InitialSelectedCalendarIds))
+            {
+                AnalyticsService.NumberOfLinkedCalendarsChanged.Track(SelectedCalendarIds.Count);
+            }
+
+            OnboardingStorage.SetIsFirstTimeConnectingCalendars();
+
             Close(SelectedCalendarIds.ToArray());
         }
     }

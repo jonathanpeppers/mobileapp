@@ -126,6 +126,10 @@ namespace Toggl.Core.Analytics
 
         public IAnalyticsEvent CalendarOnboardingStarted { get; }
 
+        public IAnalyticsEvent<int> NumberOfLinkedCalendarsChanged { get; }
+
+        public IAnalyticsEvent<int> NumberOfLinkedCalendarsNewUser { get; }
+
         public IAnalyticsEvent EditViewOpenedFromCalendar { get; }
 
         public IAnalyticsEvent<CalendarChangeEvent> TimeEntryChangedFromCalendar { get; }
@@ -179,13 +183,13 @@ namespace Toggl.Core.Analytics
         public IAnalyticsEvent<SuggestionProviderType> SuggestionStarted { get; }
 
         public IAnalyticsEvent<ApplicationInstallLocation> ApplicationInstallLocation { get; }
-        
+
         public IAnalyticsEvent<string> PushInitiatedSyncFetch { get; protected set; }
-        
+
         public IAnalyticsEvent<string> PushNotificationSyncStarted { get; protected set; }
-        
+
         public IAnalyticsEvent<string> PushNotificationSyncFinished { get; protected set; }
-        
+
         public IAnalyticsEvent<string, string, string, string> PushNotificationSyncFailed { get; protected set; }
 
         public IAnalyticsEvent<string, string, string, string> DebugSchedulerError { get; }
@@ -265,6 +269,8 @@ namespace Toggl.Core.Analytics
             EntitySynced = new AnalyticsEvent<PushSyncOperation, string>(this, nameof(EntitySynced), "Method", "Entity");
             EntitySyncStatus = new AnalyticsEvent<string, string>(this, nameof(EntitySyncStatus), "Entity", "Status");
             CalendarOnboardingStarted = new AnalyticsEvent(this, nameof(CalendarOnboardingStarted));
+            NumberOfLinkedCalendarsChanged = new AnalyticsEvent<int>(this, nameof(NumberOfLinkedCalendarsChanged), "Count");
+            NumberOfLinkedCalendarsNewUser = new AnalyticsEvent<int>(this, nameof(NumberOfLinkedCalendarsNewUser), "Count");
             EditViewOpenedFromCalendar = new AnalyticsEvent(this, nameof(EditViewOpenedFromCalendar));
             TimeEntryChangedFromCalendar = new AnalyticsEvent<CalendarChangeEvent>(this, nameof(TimeEntryChangedFromCalendar), "ChangeEvent");
             ProjectsInaccesibleAfterCleanUp = new AnalyticsEvent<int>(this, nameof(ProjectsInaccesibleAfterCleanUp), "NumberOfProjectsInaccesibleAfterCleanUp");

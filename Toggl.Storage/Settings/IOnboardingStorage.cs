@@ -50,6 +50,9 @@ namespace Toggl.Storage.Settings
         bool DidShowSiriClipboardInstruction();
         void SetDidShowSiriClipboardInstruction(bool value);
 
+        bool IsFirstTimeConnectingCalendars();
+        void SetIsFirstTimeConnectingCalendars();
+
         void Reset();
     }
 }

@@ -1,4 +1,8 @@
-﻿namespace Toggl.Shared
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Toggl.Shared.Extensions;
+
+namespace Toggl.Shared
 {
     public struct RatingViewConfiguration
     {
@@ -23,19 +27,15 @@
 
     public static class RatingViewCriterionExtensions
     {
-        public static RatingViewCriterion ToRatingViewCriterion(this string criterion)
-        {
-            switch (criterion)
+        private static readonly ReadOnlyDictionary<string, RatingViewCriterion> criterionMapping =
+            new ReadOnlyDictionary<string, RatingViewCriterion>(new Dictionary<string, RatingViewCriterion>
             {
-                case "stop":
-                    return RatingViewCriterion.Stop;
-                case "start":
-                    return RatingViewCriterion.Start;
-                case "continue":
-                    return RatingViewCriterion.Continue;
-                default:
-                    return RatingViewCriterion.None;
-            }
-        }
+                { RatingViewCriterion.Stop.ToString().ToUpper(), RatingViewCriterion.Stop },
+                { RatingViewCriterion.Start.ToString().ToUpper(), RatingViewCriterion.Start },
+                { RatingViewCriterion.Continue.ToString().ToUpper(), RatingViewCriterion.Continue }
+            });
+        
+        public static RatingViewCriterion ToRatingViewCriterion(this string criterion) =>
+            criterionMapping.GetOrDefault((criterion != null ? criterion : string.Empty).ToUpper(), RatingViewCriterion.None);
     }
 }

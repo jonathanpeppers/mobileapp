@@ -18,7 +18,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
             }
 
             protected override SelectUserCalendarsViewModel CreateViewModel()
-                => new SelectUserCalendarsViewModel(UserPreferences, InteractorFactory, NavigationService, RxActionFactory);
+                => new SelectUserCalendarsViewModel(UserPreferences, AnalyticsService, OnboardingStorage, InteractorFactory, NavigationService, RxActionFactory);
         }
 
         public sealed class TheConstructor : SelectUserCalendarsViewModelTest
@@ -27,6 +27,8 @@ namespace Toggl.Core.Tests.UI.ViewModels
             [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useUserPreferences,
+                bool useAnalyticsService,
+                bool useOnboardingStorage,
                 bool useInteractorFactory,
                 bool useNavigationService,
                 bool useRxActionFactory)
@@ -34,6 +36,8 @@ namespace Toggl.Core.Tests.UI.ViewModels
                 Action tryingToConstructWithEmptyParameters =
                     () => new SelectUserCalendarsViewModel(
                         useUserPreferences ? UserPreferences : null,
+                        useAnalyticsService ? AnalyticsService : null,
+                        useOnboardingStorage ? OnboardingStorage : null,
                         useInteractorFactory ? InteractorFactory : null,
                         useNavigationService ? NavigationService : null,
                         useRxActionFactory ? RxActionFactory : null

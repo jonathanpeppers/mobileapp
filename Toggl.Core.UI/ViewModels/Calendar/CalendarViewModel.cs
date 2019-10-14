@@ -27,6 +27,8 @@ namespace Toggl.Core.UI.ViewModels.Calendar
         private readonly ISchedulerProvider schedulerProvider;
         private readonly IRxActionFactory rxActionFactory;
 
+        private readonly string dateFormat = "dddd, MMM d";
+
         public IObservable<string> CurrentlyShownDateString { get; }
 
         public ViewAction OpenSettings { get; }
@@ -73,9 +75,7 @@ namespace Toggl.Core.UI.ViewModels.Calendar
             CurrentlyShownDateString = CurrentlyVisiblePage.AsObservable()
                 .Select(pageIndexToDate)
                 .DistinctUntilChanged()
-                .CombineLatest(
-                    dateFormatObservable,
-                    (date, dateFormat) => DateTimeToFormattedString.Convert(date, dateFormat.Long))
+                .Select(date => DateTimeToFormattedString.Convert(date, dateFormat))
                 .AsDriver(schedulerProvider);
         }
 
@@ -97,7 +97,7 @@ namespace Toggl.Core.UI.ViewModels.Calendar
         }
 
         private DateTimeOffset pageIndexToDate(int index)
-            => timeService.CurrentDateTime.ToLocalTime().Date.AddDays(index);
+            => timeService.CurrentDateTime.Date.AddDays(index);
 
         private Task openSettings()
             => Navigate<SettingsViewModel>();

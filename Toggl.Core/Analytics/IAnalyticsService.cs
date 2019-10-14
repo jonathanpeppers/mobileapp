@@ -121,6 +121,10 @@ namespace Toggl.Core.Analytics
 
         IAnalyticsEvent CalendarOnboardingStarted { get; }
 
+        IAnalyticsEvent<int> NumberOfLinkedCalendarsChanged { get; }
+
+        IAnalyticsEvent<int> NumberOfLinkedCalendarsNewUser { get; }
+
         IAnalyticsEvent EditViewOpenedFromCalendar { get; }
 
         IAnalyticsEvent<CalendarChangeEvent> TimeEntryChangedFromCalendar { get; }

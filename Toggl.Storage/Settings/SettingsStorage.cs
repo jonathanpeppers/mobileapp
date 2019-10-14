@@ -50,6 +50,7 @@ namespace Toggl.Storage.Settings
 
         private const string enabledCalendarsKey = "EnabledCalendars";
         private const char calendarIdSeparator = ';';
+        private const string isFirstTimeConnectingCalendarsKey = "IsFirstTimeConnectingCalendars";
 
         private const string calendarNotificationsEnabledKey = "CalendarNotificationsEnabled";
         private const string timeSpanBeforeCalendarNotificationsKey = "TimeSpanBeforeCalendarNotifications";
@@ -448,6 +449,12 @@ namespace Toggl.Storage.Settings
             keyValueStorage.SetBool(swipeActionsDisabledKey, !enabled);
             swipeActionsEnabledSubject.OnNext(enabled);
         }
+
+        public bool IsFirstTimeConnectingCalendars()
+            => !keyValueStorage.GetBool(isFirstTimeConnectingCalendarsKey);
+
+        public void SetIsFirstTimeConnectingCalendars()
+            => keyValueStorage.SetBool(isFirstTimeConnectingCalendarsKey, true);
 
         #endregion
 

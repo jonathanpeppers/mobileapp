@@ -76,7 +76,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
 
         public sealed class TheCurrentlyShownDateStringObservable : CalendarViewModelTest
         {
-            private static readonly DateTimeOffset now = new DateTimeOffset(2020, 1, 2, 3, 4, 5, TimeSpan.Zero).ToLocalTime().Date;
+            private static readonly DateTimeOffset now = new DateTimeOffset(2020, 1, 2, 3, 4, 5, TimeSpan.Zero).Date;
 
             public TheCurrentlyShownDateStringObservable()
             {
@@ -89,7 +89,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
                 var preferences = Substitute.For<IThreadSafePreferences>();
                 preferences.DateFormat.Returns(DateFormat.ValidDateFormats[0]);
                 DataSource.Preferences.Current.Returns(Observable.Return(preferences));
-                var expectedResult = "01/02/2020";
+                var expectedResult = "Thursday, Jan 2";
                 var observer = TestScheduler.CreateObserver<string>();
                 var viewModel = CreateViewModel();
                 viewModel.CurrentlyShownDateString.Subscribe(observer);
@@ -100,18 +100,15 @@ namespace Toggl.Core.Tests.UI.ViewModels
             }
 
             [Theory, LogIfTooSlow]
-            [InlineData(-1, "01/01/2020")]
-            [InlineData(-2, "12/31/2019")]
-            [InlineData(-7, "12/26/2019")]
-            [InlineData(-14, "12/19/2019")]
+            [InlineData(-1, "Wednesday, Jan 1")]
+            [InlineData(-2, "Tuesday, Dec 31")]
+            [InlineData(-7, "Thursday, Dec 26")]
+            [InlineData(-14, "Thursday, Dec 19")]
             public void EmitsNewDateWhenCurrentlyVisiblePageChanges(int pageIndex, string expectedDate)
             {
-                var preferences = Substitute.For<IThreadSafePreferences>();
-                preferences.DateFormat.Returns(DateFormat.ValidDateFormats[0]);
-                DataSource.Preferences.Current.Returns(Observable.Return(preferences));
                 var expectedResults = new[]
                 {
-                    "01/02/2020",
+                    "Thursday, Jan 2",
                     expectedDate
                 };
                 var observer = TestScheduler.CreateObserver<string>();
@@ -124,51 +121,6 @@ namespace Toggl.Core.Tests.UI.ViewModels
 
                 observer.Values().Should().BeEquivalentTo(expectedResults);
             }
-
-            [Theory, LogIfTooSlow]
-            [MemberData(nameof(DateFormatTestData))]
-            public void EmitsNewDateWhenDateFormatChanges(
-                DateFormat initialDateFormat, DateFormat updatedDateFormat, string[] expectedResults)
-            {
-                IThreadSafePreferences preferencesWithDateFormat(DateFormat dateFormat)
-                {
-                    var preferences = Substitute.For<IThreadSafePreferences>();
-                    preferences.DateFormat.Returns(dateFormat);
-                    return preferences;
-                }
-                var initialPreferences = preferencesWithDateFormat(initialDateFormat);
-                var updatedPreferences = preferencesWithDateFormat(updatedDateFormat);
-                var preferencesObservable = TestScheduler.CreateColdObservable(
-                    OnNext(0, initialPreferences),
-                    OnNext(10, updatedPreferences)
-                );
-                DataSource.Preferences.Current.Returns(preferencesObservable);
-                var observer = TestScheduler.CreateObserver<string>();
-                var viewModel = CreateViewModel();
-                viewModel.CurrentlyShownDateString.Subscribe(observer);
-
-                TestScheduler.AdvanceBy(100);
-
-                observer.Values().Should().BeEquivalentTo(expectedResults);
-            }
-
-            public static IEnumerable<object[]> DateFormatTestData
-            {
-                get
-                {
-                    var initialDateFormat = DateFormat.ValidDateFormats[0];
-                    var nowFormattedToInitialFormat = "01/02/2020";
-                    return new[]
-                    {
-                        new object[] { initialDateFormat, DateFormat.ValidDateFormats[1], new[] { nowFormattedToInitialFormat, "02-01-2020" } },
-                        new object[] { initialDateFormat, DateFormat.ValidDateFormats[2], new[] { nowFormattedToInitialFormat, "01-02-2020" } },
-                        new object[] { initialDateFormat, DateFormat.ValidDateFormats[3], new[] { nowFormattedToInitialFormat, "2020-01-02" } },
-                        new object[] { initialDateFormat, DateFormat.ValidDateFormats[4], new[] { nowFormattedToInitialFormat, "02/01/2020" } },
-                        new object[] { initialDateFormat, DateFormat.ValidDateFormats[5], new[] { nowFormattedToInitialFormat, "02.01.2020" } }
-                    };
-                }
-            }
-
         }
 
         public sealed class TheOpenSettingsAction : CalendarViewModelTest

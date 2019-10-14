@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
+using Toggl.Core.Analytics;
 using Toggl.Core.Interactors;
 using Toggl.Core.Services;
 using Toggl.Core.UI.Extensions;
@@ -34,10 +35,12 @@ namespace Toggl.Core.UI.ViewModels.Settings
         public CalendarSettingsViewModel(
             IUserPreferences userPreferences,
             IInteractorFactory interactorFactory,
+            IOnboardingStorage onboardingStorage,
+            IAnalyticsService analyticsService,
             INavigationService navigationService,
             IRxActionFactory rxActionFactory,
             IPermissionsChecker permissionsChecker)
-            : base(userPreferences, interactorFactory, navigationService, rxActionFactory)
+            : base(userPreferences, interactorFactory, onboardingStorage, analyticsService, navigationService, rxActionFactory)
         {
             Ensure.Argument.IsNotNull(permissionsChecker, nameof(permissionsChecker));
 
@@ -45,10 +48,6 @@ namespace Toggl.Core.UI.ViewModels.Settings
 
             RequestAccess = rxActionFactory.FromAction(requestAccess);
             TogglCalendarIntegration = rxActionFactory.FromAsync(togglCalendarIntegration);
-
-            SelectCalendar
-                .Elements
-                .Subscribe(onCalendarSelected);
 
             CalendarListVisible = calendarListVisibleSubject.AsObservable().DistinctUntilChanged();
         }
@@ -86,11 +85,6 @@ namespace Toggl.Core.UI.ViewModels.Settings
         private void requestAccess()
         {
             View.OpenAppSettings();
-        }
-
-        private void onCalendarSelected()
-        {
-            UserPreferences.SetEnabledCalendars(SelectedCalendarIds.ToArray());
         }
 
         private async Task togglCalendarIntegration()

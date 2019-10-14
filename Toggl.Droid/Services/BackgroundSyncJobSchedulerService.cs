@@ -21,12 +21,12 @@ namespace Toggl.Droid.Services
             var dependencyContainer = AndroidDependencyContainer.Instance;
             if (!dependencyContainer.UserAccessManager.CheckIfLoggedIn())
                 return false;
-
-            disposable = dependencyContainer.SyncManager
-                .PullTimeEntries()
+            
+            disposable = dependencyContainer.InteractorFactory.RunBackgroundSync()
+                .Execute()
                 .Subscribe(DoNothing, DoNothing,
                     () => JobFinished(@params, false));
-
+            
             return true;
         }
 

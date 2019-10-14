@@ -125,7 +125,8 @@ namespace Toggl.iOS.ViewControllers
                 .DisposedBy(DisposeBag);
 
             var containsTags = ViewModel.Tags
-                .Select(tags => tags.Any());
+                .Select(tags => tags.Any())
+                .ObserveOn(IosDependencyContainer.Instance.SchedulerProvider.MainScheduler);
 
             containsTags
                 .Invert()

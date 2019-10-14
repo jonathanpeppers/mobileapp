@@ -4,6 +4,7 @@ using Toggl.Core.UI.ViewModels.Calendar;
 using Toggl.Core.UI.ViewModels.Reports;
 using Toggl.Core.UI.ViewModels.Settings;
 using Toggl.Core.UI.ViewModels.Settings.Siri;
+using Toggl.Storage.Settings;
 
 namespace Toggl.Core.UI.Navigation
 {
@@ -63,6 +64,7 @@ namespace Toggl.Core.UI.Navigation
                     dependencyContainer.TimeService,
                     dependencyContainer.UserAccessManager,
                     dependencyContainer.AnalyticsService,
+                    dependencyContainer.SchedulerProvider,
                     dependencyContainer.NavigationService,
                     dependencyContainer.RxActionFactory);
             }
@@ -330,6 +332,8 @@ namespace Toggl.Core.UI.Navigation
             {
                 return new SelectUserCalendarsViewModel(
                     dependencyContainer.UserPreferences,
+                    dependencyContainer.AnalyticsService,
+                    dependencyContainer.OnboardingStorage,
                     dependencyContainer.InteractorFactory,
                     dependencyContainer.NavigationService,
                     dependencyContainer.RxActionFactory);
@@ -359,6 +363,8 @@ namespace Toggl.Core.UI.Navigation
                 return new CalendarSettingsViewModel(
                     dependencyContainer.UserPreferences,
                     dependencyContainer.InteractorFactory,
+                    dependencyContainer.OnboardingStorage,
+                    dependencyContainer.AnalyticsService,
                     dependencyContainer.NavigationService,
                     dependencyContainer.RxActionFactory,
                     dependencyContainer.PermissionsChecker);

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Toggl.Core.Analytics;
 using Toggl.Core.Exceptions;
 using Toggl.Core.Interactors;
 using Toggl.Core.Services;
@@ -28,9 +29,11 @@ namespace Toggl.Core.Tests.UI.ViewModels
             public MockSelectUserCalendarsViewModel(
                 IUserPreferences userPreferences,
                 IInteractorFactory interactorFactory,
+                IOnboardingStorage onboardingStorage,
+                IAnalyticsService analyticsService,
                 INavigationService navigationService,
                 IRxActionFactory rxActionFactory)
-                : base(userPreferences, interactorFactory, navigationService, rxActionFactory)
+                : base(userPreferences, interactorFactory, onboardingStorage, analyticsService, navigationService, rxActionFactory)
             {
             }
         }
@@ -43,7 +46,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
             }
 
             protected override MockSelectUserCalendarsViewModel CreateViewModel()
-                => new MockSelectUserCalendarsViewModel(UserPreferences, InteractorFactory, NavigationService, RxActionFactory);
+                => new MockSelectUserCalendarsViewModel(UserPreferences, InteractorFactory, OnboardingStorage, AnalyticsService, NavigationService, RxActionFactory);
         }
 
         public sealed class TheConstructor : SelectUserCalendarsViewModelBaseTest
@@ -61,7 +64,7 @@ namespace Toggl.Core.Tests.UI.ViewModels
                     .Apply(Observable.Return);
                 InteractorFactory.GetUserCalendars().Execute().Returns(userCalendarsObservable);
 
-                var viewModel = new MockSelectUserCalendarsViewModel(UserPreferences, InteractorFactory, NavigationService, RxActionFactory);
+                var viewModel = new MockSelectUserCalendarsViewModel(UserPreferences, InteractorFactory, OnboardingStorage, AnalyticsService, NavigationService, RxActionFactory);
 
                 await viewModel.Initialize(false);
                 var calendars = await viewModel.Calendars.FirstAsync();
@@ -301,6 +304,82 @@ namespace Toggl.Core.Tests.UI.ViewModels
                         observer.OnNext(false);
                     });
                 }
+            }
+        }
+
+        public sealed class TheAnalytics : SelectUserCalendarsViewModelBaseTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task TracksNumberOfLinkedCalendarsChanged()
+            {
+                var userCalendars = Enumerable
+                    .Range(0, 9)
+                    .Select(id => new UserCalendar(
+                        id.ToString(),
+                        $"Calendar #{id}",
+                        $"Source #{id % 3}",
+                        false));
+
+                InteractorFactory
+                    .GetUserCalendars()
+                    .Execute()
+                    .Returns(Observable.Return(userCalendars));
+
+                await ViewModel.Initialize(false);
+                var selectedIds = new[] { "0", "2", "4", "7" };
+
+                var calendars = userCalendars
+                    .Where(calendar => selectedIds.Contains(calendar.Id))
+                    .Select(calendar => new SelectableUserCalendarViewModel(calendar, false));
+
+                ViewModel.SelectCalendar.ExecuteSequentally(calendars)
+                    .PrependAction(ViewModel.Save)
+                    .Subscribe();
+
+                TestScheduler.Start();
+
+                AnalyticsService.NumberOfLinkedCalendarsChanged.Received().Track(4);
+                AnalyticsService.NumberOfLinkedCalendarsNewUser.DidNotReceiveWithAnyArgs().Track(4);
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task TracksNumberOfLinkedCalendarsNewUser()
+            {
+                var initialSelectedIds = new List<string> { };
+                UserPreferences.EnabledCalendarIds().Returns(initialSelectedIds);
+                PermissionsChecker.CalendarPermissionGranted.Returns(Observable.Return(true));
+                OnboardingStorage.IsFirstTimeConnectingCalendars().Returns(true);
+
+                var userCalendars = Enumerable
+                    .Range(0, 9)
+                    .Select(id => new UserCalendar(
+                        id.ToString(),
+                        $"Calendar #{id}",
+                        $"Source #{id % 3}",
+                        false));
+
+                InteractorFactory
+                    .GetUserCalendars()
+                    .Execute()
+                    .Returns(Observable.Return(userCalendars));
+
+                await ViewModel.Initialize(false);
+                var selectedIds = new[] { "2", "4", "7" };
+
+                var calendars = userCalendars
+                    .Where(calendar => selectedIds.Contains(calendar.Id))
+                    .Select(calendar => new SelectableUserCalendarViewModel(calendar, false));
+
+                ViewModel.SelectCalendar.ExecuteSequentally(calendars)
+                    .PrependAction(ViewModel.Save)
+                    .Subscribe();
+
+                TestScheduler.Start();
+
+                ViewModel.ViewDisappeared();
+
+                AnalyticsService.NumberOfLinkedCalendarsNewUser.Received().Track(3);
+                AnalyticsService.NumberOfLinkedCalendarsChanged.DidNotReceiveWithAnyArgs().Track(3);
             }
         }
 

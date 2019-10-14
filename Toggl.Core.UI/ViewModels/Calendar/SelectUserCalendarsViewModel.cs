@@ -1,4 +1,5 @@
-﻿using Toggl.Core.Interactors;
+﻿using Toggl.Core.Analytics;
+using Toggl.Core.Interactors;
 using Toggl.Core.Services;
 using Toggl.Core.UI.Navigation;
 using Toggl.Shared;
@@ -11,10 +12,12 @@ namespace Toggl.Core.UI.ViewModels.Calendar
     {
         public SelectUserCalendarsViewModel(
             IUserPreferences userPreferences,
+            IAnalyticsService analyticsService,
+            IOnboardingStorage onboardingStorage,
             IInteractorFactory interactorFactory,
             INavigationService navigationService,
             IRxActionFactory rxActionFactory)
-            : base(userPreferences, interactorFactory, navigationService, rxActionFactory)
+            : base(userPreferences, interactorFactory, onboardingStorage, analyticsService, navigationService, rxActionFactory)
         {
         }
     }
