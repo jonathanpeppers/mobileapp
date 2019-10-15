@@ -16,6 +16,7 @@ using Toggl.Core.Extensions;
 using Toggl.Core.UI.Calendar;
 using Toggl.Droid.Extensions;
 using Toggl.Droid.ViewHelpers;
+using Toggl.Shared.Extensions;
 using Constants = Toggl.Core.Helper.Constants;
 
 namespace Toggl.Droid.Views.Calendar
@@ -51,9 +52,9 @@ namespace Toggl.Droid.Views.Calendar
         private ImmutableList<CalendarItem> calendarItems = ImmutableList<CalendarItem>.Empty;
         private ImmutableList<CalendarItemRectAttributes> calendarItemLayoutAttributes = ImmutableList<CalendarItemRectAttributes>.Empty;
 
-        private readonly ISubject<CalendarItem> calendarItemTappedSubject = new Subject<CalendarItem>();
+        private readonly ISubject<CalendarItem?> calendarItemTappedSubject = new Subject<CalendarItem?>();
 
-        public IObservable<CalendarItem> CalendarItemTappedObservable
+        public IObservable<CalendarItem?> CalendarItemTappedObservable
             => calendarItemTappedSubject.AsObservable();
 
         private readonly ISubject<DateTimeOffset> emptySpansTouchedObservable = new Subject<DateTimeOffset>();
@@ -137,6 +138,25 @@ namespace Toggl.Droid.Views.Calendar
             currentDate = dateOnView.LocalDateTime.Date;
             var today = timeService.CurrentDateTime.LocalDateTime.Date;
             shouldDrawCurrentHourIndicator = currentDate == today;
+        }
+
+        public void SetCurrentItemInEditMode(CalendarItem? calendarItemInEditMode)
+        {
+            if (!calendarItemInEditMode.HasValue)
+            {
+                if (isEditingItem())
+                    cancelCurrentEdition();
+                else
+                    ClearEditMode();
+                return;
+            }
+            
+            var calendarItem = calendarItemInEditMode.Value;
+            var calendarItemsToSearch = calendarItems;
+            var calendarLayoutItems = calendarItemLayoutAttributes;
+            var calendarItemIndex = calendarItemsToSearch.IndexOf(calendarItem);
+            var itemInEditMode = new CalendarItemEditInfo(calendarItem, calendarLayoutItems[calendarItemIndex], calendarItemIndex, hourHeight, minHourHeight, timeService.CurrentDateTime);
+            beginEdition(itemInEditMode);   
         }
 
         partial void initBackgroundBackingFields();
@@ -294,47 +314,26 @@ namespace Toggl.Droid.Views.Calendar
             var calendarItemInfo = findCalendarItemFromPoint(touchX, touchY);
             var touchedEmptySpace = !calendarItemInfo.IsValid;
 
-            if (isEditingItem())
-            {
-                if (touchedEmptySpace)
-                {
-                    //todo: shake?
-                    return;
-                }
-                
-                if (itemIsAlreadyBeingEdited(calendarItemInfo))
-                    return;
-
-                cancelCurrentEdition();
-                if (calendarItemInfo.CalendarItem.Source == CalendarItemSource.Calendar)
-                {
-                    calendarItemTappedSubject.OnNext(calendarItemInfo.CalendarItem);
-                    return;
-                }
-                
-                beginEdition(calendarItemInfo);
-                return;
-            }
-
             if (touchedEmptySpace)
             {
-                emptySpansTouchedObservable.OnNext(dateAtYOffset(touchY + scrollOffset));
+                calendarItemTappedSubject.OnNext(null);
                 return;
             }
             
-            if (calendarItemInfo.CalendarItem.Source == CalendarItemSource.Calendar)
-            {
-                calendarItemTappedSubject.OnNext(calendarItemInfo.CalendarItem);
-                return;
-            }
-
-            beginEdition(calendarItemInfo);
+            calendarItemTappedSubject.OnNext(calendarItemInfo.CalendarItem);
         }
 
         private void beginEdition(CalendarItemEditInfo calendarItemInfo)
         {
+            if (itemIsAlreadyBeingEdited(calendarItemInfo))
+                return;
+
+            cancelCurrentEdition();
+            
+            if (calendarItemInfo.CalendarItem.Source == CalendarItemSource.Calendar)
+                return;
+
             itemEditInEditMode = calendarItemInfo;
-            notifyUpdateInItemInEditMode();
             updateEditingStartEndLabels();
             allItemsStartAndEndTime = selectItemsStartAndEndTime();
             Invalidate();   
@@ -347,7 +346,8 @@ namespace Toggl.Droid.Views.Calendar
         }
         
         private bool itemIsAlreadyBeingEdited(CalendarItemEditInfo calendarItemInfo)
-            => itemEditInEditMode.CalendarItem.Id == calendarItemInfo.CalendarItem.Id;
+            =>  itemEditInEditMode.CalendarItem.Source == calendarItemInfo.CalendarItem.Source
+                && itemEditInEditMode.CalendarItem.Id == calendarItemInfo.CalendarItem.Id;
         
         private bool isEditingItem() => itemEditInEditMode.IsValid;
 

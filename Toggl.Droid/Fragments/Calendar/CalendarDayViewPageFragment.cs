@@ -92,6 +92,11 @@ namespace Toggl.Droid.Fragments.Calendar
                 .MenuVisible
                 .Subscribe(notifyMenuVisibilityIfCurrentPage)
                 .DisposedBy(DisposeBag);
+            
+            ViewModel.ContextualMenuViewModel
+                .CalendarItemInEditMode
+                .Subscribe(calendarDayView.SetCurrentItemInEditMode)
+                .DisposedBy(DisposeBag);
 
             ViewModel.ContextualMenuViewModel
                 .MenuVisible
