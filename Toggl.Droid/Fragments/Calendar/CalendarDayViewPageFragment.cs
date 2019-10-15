@@ -32,6 +32,7 @@ namespace Toggl.Droid.Fragments.Calendar
         public BehaviorRelay<bool> MenuVisibilityRelay { get; set; }
         public IObservable<bool> ScrollToStartSign { get; set; }
         public IObservable<Unit> InvalidationListener { get; set; }
+        public IObservable<Unit> BackPressListener { get; set; }
 
         public int PageNumber { get; set; }
 
@@ -123,6 +124,15 @@ namespace Toggl.Droid.Fragments.Calendar
             InvalidationListener?
                 .Subscribe(_ => invalidatePage())
                 .DisposedBy(DisposeBag);
+            
+            BackPressListener?
+                .Subscribe(_ => discardCurrentItemInEditMode())
+                .DisposedBy(DisposeBag);
+        }
+
+        private void discardCurrentItemInEditMode()
+        {
+            ViewModel.ContextualMenuViewModel.OnCalendarItemUpdated.Execute(null);
         }
 
         private void invalidatePage()

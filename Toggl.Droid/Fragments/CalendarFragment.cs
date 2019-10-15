@@ -20,7 +20,7 @@ using Toggl.Shared.Extensions.Reactive;
 
 namespace Toggl.Droid.Fragments
 {
-    public partial class CalendarFragment : ReactiveTabFragment<CalendarViewModel>, IScrollableToStart
+    public partial class CalendarFragment : ReactiveTabFragment<CalendarViewModel>, IScrollableToStart, IBackPressHandler
     {
         private const int calendarPagesCount = 14;
         private readonly Subject<bool> scrollToStartSignaler = new Subject<bool>();
@@ -67,6 +67,17 @@ namespace Toggl.Droid.Fragments
                 .DisposedBy(DisposeBag);
 
             calendarViewPager.SetCurrentItem(calendarPagesCount - 1, false);
+        }
+
+        public bool HandledBackPress()
+        {
+            if (calendarDayAdapter?.MenuVisibilityRelay.Value == true)
+            {
+                calendarDayAdapter?.OnBackPressed();   
+                return true;
+            }
+
+            return false;
         }
 
         private void hideBottomBar(bool bottomBarShouldBeHidden)
@@ -139,7 +150,8 @@ namespace Toggl.Droid.Fragments
         {
             private readonly CalendarViewModel calendarViewModel;
             private readonly IObservable<bool> scrollToTopSign;
-            private readonly ISubject<Unit> pageNeedsToBeInvalidated = new Subject<Unit>(); 
+            private readonly ISubject<Unit> pageNeedsToBeInvalidated = new Subject<Unit>();
+            private readonly ISubject<Unit> backPressSubject = new Subject<Unit>();
             public BehaviorRelay<int> OffsetRelay { get; } = new BehaviorRelay<int>(0);
             public BehaviorRelay<int> CurrentPageRelay { get; } = new BehaviorRelay<int>(0);
             public BehaviorRelay<bool> MenuVisibilityRelay { get; } = new BehaviorRelay<bool>(false);
@@ -165,12 +177,18 @@ namespace Toggl.Droid.Fragments
                     MenuVisibilityRelay =  MenuVisibilityRelay,
                     PageNumber = position,
                     ScrollToStartSign = scrollToTopSign,
-                    InvalidationListener = pageNeedsToBeInvalidated.AsObservable()
+                    InvalidationListener = pageNeedsToBeInvalidated.AsObservable(),
+                    BackPressListener = backPressSubject.AsObservable()
                 };
 
             public void InvalidateCurrentPage()
             {
                 pageNeedsToBeInvalidated.OnNext(Unit.Default);
+            }
+
+            public void OnBackPressed()
+            {
+                backPressSubject.OnNext(Unit.Default);
             }
             
             public void OnPageSelected(int position)
