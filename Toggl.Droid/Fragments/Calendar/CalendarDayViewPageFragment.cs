@@ -58,7 +58,7 @@ namespace Toggl.Droid.Fragments.Calendar
                 .DisposedBy(DisposeBag);
 
             calendarDayView.CalendarItemTappedObservable
-                .Subscribe(item => ViewModel.ContextualMenuViewModel.OnCalendarItemUpdated.Inputs.OnNext(item))
+                .Subscribe(ViewModel.ContextualMenuViewModel.OnCalendarItemUpdated.Inputs)
                 .DisposedBy(DisposeBag);
 
             calendarDayView.EmptySpansTouchedObservable
