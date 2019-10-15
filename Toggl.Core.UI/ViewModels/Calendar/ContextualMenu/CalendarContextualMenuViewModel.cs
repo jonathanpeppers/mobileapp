@@ -26,6 +26,7 @@ namespace Toggl.Core.UI.ViewModels.Calendar.ContextualMenu
         private readonly ISubject<bool> menuVisibilitySubject = new BehaviorSubject<bool>(false);
         private readonly ISubject<TimeEntryDisplayInfo> timeEntryInfoSubject = new Subject<TimeEntryDisplayInfo>();
         private readonly ISubject<string> timeEntryPeriodSubject = new Subject<string>();
+        private readonly ISubject<CalendarItem?> calendarItemInEditMode = new Subject<CalendarItem?>();
 
         private readonly IInteractorFactory interactorFactory;
         private readonly IAnalyticsService analyticsService;
@@ -52,6 +53,9 @@ namespace Toggl.Core.UI.ViewModels.Calendar.ContextualMenu
 
         public IObservable<string> TimeEntryPeriod
             => timeEntryPeriodSubject.AsObservable();
+
+        public IObservable<CalendarItem?> CalendarItemInEditMode
+            => calendarItemInEditMode.AsObservable();
 
         public InputAction<CalendarItem?> OnCalendarItemUpdated { get; }
 

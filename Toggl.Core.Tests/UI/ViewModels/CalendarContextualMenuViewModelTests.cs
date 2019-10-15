@@ -729,8 +729,353 @@ namespace Toggl.Core.Tests.UI.ViewModels
             }
         }
 
+        public sealed class TheOnCalendarItemUpdatedInputEntry : CalendarContextualMenuViewModelTest
+        {
+            [Fact]
+            public void UpdatesTheCurrentItemInEditModeWhenTheContextualMenuIsClosed()
             {
-                base.TheDismissActionDiscardChangesAndClosesTheMenu();
+                var observer = TestScheduler.CreateObserver<CalendarItem?>();
+                var now = DateTimeOffset.Now;
+                var calendarItem = new CalendarItem(
+                    "",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client");
+                ViewModel.CalendarItemInEditMode.Subscribe(observer);
+                TestScheduler.Start();
+                
+                ViewModel.OnCalendarItemUpdated.Execute(calendarItem);
+                TestScheduler.Start();
+
+                observer.Messages.Should().HaveCount(1);
+                observer.Messages.First().Value.Value.Should()
+                    .Match<CalendarItem?>(ci =>
+                        ci.HasValue &&
+                        ci.Value.Id == ""
+                        && ci.Value.Source == CalendarItemSource.TimeEntry
+                        && ci.Value.StartTime == now
+                        && ci.Value.Duration == TimeSpan.FromMinutes(30)
+                    );
+            }
+
+            [Fact]
+            public void UpdatesTheCurrentItemInEditModeWithoutConfirmationsWhenAnewItemIsInputtedAndCurrentItemInEditModeHasNotChanged()
+            {
+                var observer = TestScheduler.CreateObserver<CalendarItem?>();
+                var now = DateTimeOffset.Now;
+                var view = Substitute.For<IView>();
+                ViewModel.AttachView(view);
+                var startingCalendarItem = new CalendarItem(
+                    "1",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 1);
+                ViewModel.CalendarItemInEditMode.Subscribe(observer);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem);
+                TestScheduler.Start();
+                var newCalendarItem = new CalendarItem(
+                    "2",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 2);
+                
+                ViewModel.OnCalendarItemUpdated.Execute(newCalendarItem);
+                TestScheduler.Start();
+
+                view.DidNotReceiveWithAnyArgs().ConfirmDestructiveAction(Arg.Any<ActionType>());
+                observer.Messages.Should().HaveCount(2);
+                observer.Messages.Last().Value.Value.Should()
+                    .Match<CalendarItem?>(ci =>
+                        ci.HasValue &&
+                        ci.Value.Id == "2"
+                    );
+            }
+            
+            [Fact]
+            public void UpdatesTheCurrentItemInEditModeWhenAnewItemIsInputtedAndCurrentMenuIsFromACalendarEventItem()
+            {
+                var observer = TestScheduler.CreateObserver<CalendarItem?>();
+                var now = DateTimeOffset.Now;
+                var view = Substitute.For<IView>();
+                ViewModel.AttachView(view);
+                var startingCalendarItem = new CalendarItem(
+                    "1",
+                    CalendarItemSource.Calendar,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.Event,
+                    "#c2c2c2",
+                    calendarId: "X");
+                ViewModel.CalendarItemInEditMode.Subscribe(observer);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem);
+                TestScheduler.Start();
+                var newCalendarItem = new CalendarItem(
+                    "2",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 2);
+                
+                ViewModel.OnCalendarItemUpdated.Execute(newCalendarItem);
+                TestScheduler.Start();
+
+                view.DidNotReceiveWithAnyArgs().ConfirmDestructiveAction(Arg.Any<ActionType>());
+                observer.Messages.Should().HaveCount(2);
+                observer.Messages.Last().Value.Value.Should()
+                    .Match<CalendarItem?>(ci =>
+                        ci.HasValue &&
+                        ci.Value.Id == "2"
+                    );
+            }
+            
+            [Fact]
+            public void ConfirmsBeforeUpdatingTheCurrentItemInEditModeWhenANewItemIsInputtedAndTheCurrentItemInEditModeHasChanged()
+            {
+                var observer = TestScheduler.CreateObserver<CalendarItem?>();
+                var now = DateTimeOffset.Now;
+                var view = Substitute.For<IView>();
+                view.ConfirmDestructiveAction(Arg.Any<ActionType>()).Returns(Observable.Return(true));
+                ViewModel.AttachView(view);
+                var startingCalendarItem = new CalendarItem(
+                    "1",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 1);
+                ViewModel.CalendarItemInEditMode.Subscribe(observer);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem.WithDuration(TimeSpan.FromMinutes(15)));
+                TestScheduler.Start();
+                var newCalendarItem = new CalendarItem(
+                    "2",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 2);
+                
+                ViewModel.OnCalendarItemUpdated.Execute(newCalendarItem);
+                TestScheduler.Start();
+
+                view.Received().ConfirmDestructiveAction(Arg.Is(ActionType.DiscardEditingChanges));
+                observer.Messages.Should().HaveCount(2);
+            }
+
+            [Fact]
+            public void ConfirmsBeforeClosingTheMenuWhenANullCalendarItemIsInputtedAndChangesWereMadeToTheCurrentItemInEditMode()
+            {
+                var observer = TestScheduler.CreateObserver<CalendarItem?>();
+                var now = DateTimeOffset.Now;
+                var view = Substitute.For<IView>();
+                view.ConfirmDestructiveAction(Arg.Any<ActionType>()).Returns(Observable.Return(true));
+                ViewModel.AttachView(view);
+                var startingCalendarItem = new CalendarItem(
+                    "1",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 1);
+                ViewModel.CalendarItemInEditMode.Subscribe(observer);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem.WithDuration(TimeSpan.FromMinutes(15)));
+                TestScheduler.Start();
+                
+                ViewModel.OnCalendarItemUpdated.Execute(null);
+                TestScheduler.Start();
+
+                view.Received().ConfirmDestructiveAction(Arg.Is(ActionType.DiscardEditingChanges));
+                observer.Messages.Should().HaveCount(2);
+            }
+            
+            [Fact]
+            public void DoesNotUpdateTheCurrentItemInEditModeWhenANewItemIsInputtedAndTheCurrentItemInEditModeHasChangedButConfirmationIsDenied()
+            {
+                var observer = TestScheduler.CreateObserver<CalendarItem?>();
+                var now = DateTimeOffset.Now;
+                var view = Substitute.For<IView>();
+                view.ConfirmDestructiveAction(Arg.Any<ActionType>()).Returns(Observable.Return(false));
+                ViewModel.AttachView(view);
+                var startingCalendarItem = new CalendarItem(
+                    "1",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 1);
+                ViewModel.CalendarItemInEditMode.Subscribe(observer);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem.WithDuration(TimeSpan.FromMinutes(15)));
+                TestScheduler.Start();
+                var newCalendarItem = new CalendarItem(
+                    "2",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 2);
+                
+                ViewModel.OnCalendarItemUpdated.Execute(newCalendarItem);
+                TestScheduler.Start();
+
+                view.Received().ConfirmDestructiveAction(Arg.Is(ActionType.DiscardEditingChanges));
+                observer.Messages.Should().HaveCount(1);
+            }
+
+            [Fact]
+            public void DoesNotCloseTheMenuWhenANullCalendarItemIsInputtedAndChangesWereMadeToTheCurrentItemInEditModeAndConfirmationIsDenied()
+            {
+                var observer = TestScheduler.CreateObserver<CalendarItem?>();
+                var now = DateTimeOffset.Now;
+                var view = Substitute.For<IView>();
+                view.ConfirmDestructiveAction(Arg.Any<ActionType>()).Returns(Observable.Return(false));
+                ViewModel.AttachView(view);
+                var startingCalendarItem = new CalendarItem(
+                    "1",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 1);
+                ViewModel.CalendarItemInEditMode.Subscribe(observer);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem.WithDuration(TimeSpan.FromMinutes(15)));
+                TestScheduler.Start();
+                
+                ViewModel.OnCalendarItemUpdated.Execute(null);
+                TestScheduler.Start();
+
+                view.Received().ConfirmDestructiveAction(Arg.Is(ActionType.DiscardEditingChanges));
+                observer.Messages.Should().HaveCount(1);
+            }
+            
+            [Fact]
+            public void ClosesTheMenuWhenANullCalendarItemIsInputtedAndNoChangesWereMadeToTheCurrentItemInEditMode()
+            {
+                var observer = TestScheduler.CreateObserver<CalendarItem?>();
+                var now = DateTimeOffset.Now;
+                var view = Substitute.For<IView>();
+                ViewModel.AttachView(view);
+                var startingCalendarItem = new CalendarItem(
+                    "1",
+                    CalendarItemSource.TimeEntry,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.None,
+                    "#c2c2c2",
+                    project: "Such Project",
+                    task: "Such Task",
+                    client: "Such Client",
+                    timeEntryId: 1);
+                ViewModel.CalendarItemInEditMode.Subscribe(observer);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem);
+                TestScheduler.Start();
+
+                ViewModel.OnCalendarItemUpdated.Execute(null);
+                TestScheduler.Start();
+
+                view.DidNotReceiveWithAnyArgs().ConfirmDestructiveAction(Arg.Any<ActionType>());
+                observer.Messages.Should().HaveCount(2);
+                observer.Messages.Last().Value.Value.Should().BeNull();
+            }
+            
+            [Fact]
+            public void ClosesTheMenuWhenANullCalendarItemIsInputtedAndTheCurrentMenuIsFromACalendarEventItem()
+            {
+                var observer = TestScheduler.CreateObserver<CalendarItem?>();
+                var now = DateTimeOffset.Now;
+                var view = Substitute.For<IView>();
+                ViewModel.AttachView(view);
+                var startingCalendarItem = new CalendarItem(
+                    "1",
+                    CalendarItemSource.Calendar,
+                    now,
+                    TimeSpan.FromMinutes(30), 
+                    "Such description",
+                    CalendarIconKind.Event,
+                    "#c2c2c2",
+                    calendarId: "X");
+                ViewModel.CalendarItemInEditMode.Subscribe(observer);
+                TestScheduler.Start();
+                ViewModel.OnCalendarItemUpdated.Execute(startingCalendarItem);
+                TestScheduler.Start();
+                
+                ViewModel.OnCalendarItemUpdated.Execute(null);
+                TestScheduler.Start();
+
+                view.DidNotReceiveWithAnyArgs().ConfirmDestructiveAction(Arg.Any<ActionType>());
+                observer.Messages.Should().HaveCount(2);
+                observer.Messages.Last().Value.Value.Should().BeNull();
             }
         }
 
