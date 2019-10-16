@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/background"
+    android:layout_height="28dp">
+
+    <TextView
+        android:id="@+id/WeekDayOneLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:minWidth="20dp"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/WeekDayTwoLabel"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="S" />
+
+    <TextView
+        android:id="@+id/WeekDayTwoLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:minWidth="20dp"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/WeekDayOneLabel"
+        app:layout_constraintRight_toLeftOf="@+id/WeekDayThreeLabel"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="M" />
+
+    <TextView
+        android:id="@+id/WeekDayThreeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:minWidth="20dp"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/WeekDayTwoLabel"
+        app:layout_constraintRight_toLeftOf="@+id/WeekDayFourLabel"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="T" />
+
+    <TextView
+        android:id="@+id/WeekDayFourLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:minWidth="20dp"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/WeekDayThreeLabel"
+        app:layout_constraintRight_toLeftOf="@+id/WeekDayFiveLabel"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="W" />
+
+    <TextView
+        android:id="@+id/WeekDayFiveLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:minWidth="20dp"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/WeekDayFourLabel"
+        app:layout_constraintRight_toLeftOf="@+id/WeekDaySixLabel"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="T" />
+
+    <TextView
+        android:id="@+id/WeekDaySixLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:minWidth="20dp"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/WeekDayFiveLabel"
+        app:layout_constraintRight_toLeftOf="@+id/WeekDaySevenLabel"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="F" />
+
+    <TextView
+        android:id="@+id/WeekDaySevenLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="22dp"
+        android:gravity="center"
+        android:minWidth="20dp"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/WeekDaySixLabel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="S" />
+    
+</android.support.constraint.ConstraintLayout>

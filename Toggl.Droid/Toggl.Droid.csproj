@@ -675,7 +675,8 @@
     <AndroidResource Include="Resources\drawable\Splash.xml" />
     <AndroidResource Include="Resources\drawable\text_placeholder.xml" />
     <AndroidResource Include="Resources\layout\AboutActivity.axml" />
-    <AndroidResource Include="Resources\layout\CalendarWeekStripeView.axml" />
+    <AndroidResource Include="Resources\layout\CalendarWeekStripeLabelsView.axml" />
+    <AndroidResource Include="Resources\layout\CalendarWeekStripeDaysView.axml" />
     <AndroidResource Include="Resources\layout\ReportsCalendar.axml" />
     <AndroidResource Include="Resources\layout\SelectTagsActivity.axml" />
     <AndroidResource Include="Resources\layout\SelectProjectActivity.axml" />
