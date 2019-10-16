@@ -1,9 +1,10 @@
+using System.Linq;
 using Android.Support.Constraints;
 using Android.Support.Design.Widget;
 using Android.Support.V4.View;
 using Android.Views;
 using Android.Widget;
-using Toggl.Droid.Views.Calendar;
+using Toggl.Droid.Extensions;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Toggl.Droid.Fragments
@@ -14,7 +15,8 @@ namespace Toggl.Droid.Fragments
         private TextView headerDateTextView;
         private ViewPager calendarViewPager;
         private ViewPager calendarWeekStripePager;
-        private ConstraintLayout calendarWeekStripeLabels;
+        private ConstraintLayout calendarWeekStripeLabelsContainer;
+        private TextView[] calendarWeekStripeHeaders;
         private AppBarLayout appBarLayout;
         private Toolbar toolbar;
 
@@ -25,7 +27,9 @@ namespace Toggl.Droid.Fragments
             appBarLayout = view.FindViewById<AppBarLayout>(Resource.Id.HeaderView);
             calendarViewPager = view.FindViewById<ViewPager>(Resource.Id.Pager);
             calendarWeekStripePager = view.FindViewById<ViewPager>(Resource.Id.WeekStripePager);
-            calendarWeekStripeLabels = view.FindViewById<ConstraintLayout>(Resource.Id.CalendarWeekStripeLabels);
+            calendarWeekStripeLabelsContainer = view.FindViewById<ConstraintLayout>(Resource.Id.CalendarWeekStripeLabels);
+            calendarWeekStripeHeaders = calendarWeekStripeLabelsContainer.GetChildren().Cast<TextView>().ToArray();
+                
             toolbar = view.FindViewById<Toolbar>(Resource.Id.Toolbar);
         }
 

@@ -1,6 +1,7 @@
 using Android.OS;
 using Android.Views;
 using System;
+using System.Collections.Immutable;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Android.Runtime;
@@ -56,6 +57,15 @@ namespace Toggl.Droid.Fragments
                 .DisposedBy(DisposeBag);
             
             calendarViewPager.SetCurrentItem(calendarPagesCount - 1, false);
+            ViewModel.WeekViewHeaders
+                .Subscribe(updateWeekViewHeaders)
+                .DisposedBy(DisposeBag);
+        }
+
+        private void updateWeekViewHeaders(IImmutableList<DayOfWeek> days)
+        {
+            for (var i = 0; i < 7; i++)
+                calendarWeekStripeHeaders[i].Text = days[i].Initial();
         }
 
         public void ScrollToStart()
