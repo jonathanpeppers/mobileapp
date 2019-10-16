@@ -45,7 +45,6 @@ namespace Toggl.Core.Services
 
         public bool NeedsToUpdateStoredRemoteConfigData()
         {
-            return true;
             lock (updateLock)
             {
                 var lastFetchAt = keyValueStorage.GetDateTimeOffset(LastFetchAtKey);
@@ -61,7 +60,6 @@ namespace Toggl.Core.Services
             var ratingViewConfiguration = fetchRemoteConfigService.ExtractRatingViewConfigurationFromRemoteConfig();
             var pushNotificationsConfiguration = fetchRemoteConfigService.ExtractPushNotificationsConfigurationFromRemoteConfig();
 
-            System.Diagnostics.Debug.WriteLine($"xxaa got days from remote {ratingViewConfiguration.DayCount}");
             keyValueStorage.SetInt(RatingViewDelayParameter, ratingViewConfiguration.DayCount);
             keyValueStorage.SetString(RatingViewTriggerParameter, ratingViewConfiguration.Criterion.ToString());
             keyValueStorage.SetBool(RegisterPushNotificationsTokenWithServerParameter, pushNotificationsConfiguration.RegisterPushNotificationsTokenWithServer);
