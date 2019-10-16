@@ -12,6 +12,7 @@ namespace Toggl.Droid.Fragments
         private TextView headerTimeEntriesDurationTextView;
         private TextView headerDateTextView;
         private ViewPager calendarViewPager;
+        private ViewPager calendarWeekStripePager;
         private AppBarLayout appBarLayout;
         private Toolbar toolbar;
 
@@ -21,6 +22,7 @@ namespace Toggl.Droid.Fragments
             headerTimeEntriesDurationTextView = view.FindViewById<TextView>(Resource.Id.HeaderTimeEntriesDurationTextView);
             appBarLayout = view.FindViewById<AppBarLayout>(Resource.Id.HeaderView);
             calendarViewPager = view.FindViewById<ViewPager>(Resource.Id.Pager);
+            calendarWeekStripePager = view.FindViewById<ViewPager>(Resource.Id.WeekStripePager);
             toolbar = view.FindViewById<Toolbar>(Resource.Id.Toolbar);
         }
 
