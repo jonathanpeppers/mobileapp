@@ -12,7 +12,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:background="@drawable/Dot"
-        android:backgroundTint="#c2c2c2"
+        android:backgroundTint="@color/accent"
         android:gravity="center"
         android:minWidth="20dp"
         app:layout_constraintBottom_toBottomOf="@id/WeekDaySevenText"
