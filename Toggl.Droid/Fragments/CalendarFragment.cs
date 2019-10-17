@@ -28,6 +28,7 @@ namespace Toggl.Droid.Fragments
         private const int calendarPagesCount = 14;
         private readonly Subject<bool> scrollToStartSignaler = new Subject<bool>();
         private CalendarDayFragmentAdapter calendarDayAdapter;
+        private CalendarWeekStripeAdapter calendarWeekStripeAdapter;
         private ITimeService timeService;
         private int defaultToolbarElevationInDPs;
         private bool hasResumedOnce = false;
@@ -59,11 +60,61 @@ namespace Toggl.Droid.Fragments
                 .DistinctUntilChanged()
                 .Subscribe(updateAppbarElevation)
                 .DisposedBy(DisposeBag);
+
+            var startingCalendarDayViewPage = calculateDayViewPage(ViewModel.CurrentlyShownDate.Value);
+            calendarViewPager.SetCurrentItem(startingCalendarDayViewPage, false);
             
-            calendarViewPager.SetCurrentItem(calendarPagesCount - 1, false);
+            calendarWeekStripeAdapter = new CalendarWeekStripeAdapter(ViewModel.SelectDayFromWeekView);
+            calendarWeekStripePager.Adapter = calendarWeekStripeAdapter;
+            
             ViewModel.WeekViewHeaders
                 .Subscribe(updateWeekViewHeaders)
                 .DisposedBy(DisposeBag);
+            
+            ViewModel.WeekViewDays
+                .Subscribe(weekDays =>
+                {
+                    calendarWeekStripeAdapter.UpdateWeekDays(weekDays);
+                    var updatedCurrentPage = calendarWeekStripeAdapter.GetPageFor(ViewModel.CurrentlyShownDate.Value);
+                    calendarWeekStripePager.SetCurrentItem(updatedCurrentPage, false);
+                })
+                .DisposedBy(DisposeBag);
+            
+            ViewModel.CurrentlyShownDate
+                .Subscribe(calendarWeekStripeAdapter.UpdateSelectedDay)
+                .DisposedBy(DisposeBag);
+            
+            ViewModel.CurrentlyShownDate
+                .Select(calculateDayViewPage)
+                .Subscribe(page => calendarViewPager.SetCurrentItem(page, true))
+                .DisposedBy(DisposeBag);
+
+            var startingPageForCalendarWeekPager = calendarWeekStripeAdapter.GetPageFor(ViewModel.CurrentlyShownDate.Value);
+            calendarWeekStripePager.SetCurrentItem(startingPageForCalendarWeekPager, false);
+            
+            ViewModel.CurrentlyShownDate
+                .Select(calendarWeekStripeAdapter.GetPageFor)
+                .Subscribe(page => calendarWeekStripePager.SetCurrentItem(page, true))
+                .DisposedBy(DisposeBag);
+            
+            calendarDayAdapter.CurrentPageRelay
+                .DistinctUntilChanged()
+                .Select(calculateDayForCalendarDayPage)
+                .Subscribe(ViewModel.CurrentlyShownDate.Accept)
+                .DisposedBy(DisposeBag);
+        }
+
+        private DateTime calculateDayForCalendarDayPage(int currentPage)
+        {
+            var today = AndroidDependencyContainer.Instance.TimeService.CurrentDateTime.ToLocalTime().Date;
+            return today.AddDays(-(calendarPagesCount - currentPage - 1));
+        }
+
+        private int calculateDayViewPage(DateTime newDate)
+        {
+            var today = AndroidDependencyContainer.Instance.TimeService.CurrentDateTime.ToLocalTime().Date;
+            var distanceFromToday = (today - newDate).Days;
+            return calendarPagesCount - distanceFromToday - 1;
         }
 
         private void updateWeekViewHeaders(IImmutableList<DayOfWeek> days)
