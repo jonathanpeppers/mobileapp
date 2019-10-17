@@ -125,6 +125,9 @@ namespace Toggl.Droid.ViewHolders
                 if (dayViewModel.Date != currentlySelectedDate)
                     continue;
 
+                var dayIndicatorColor = weekDayType == CalendarWeekDayType.TodaySelected ? Resource.Color.accent : Resource.Color.darkBackground;
+                currentDayIndicator.BackgroundTintList = ColorStateList.ValueOf(rootView.Context.SafeGetColor(dayIndicatorColor));
+                
                 constraintSet.Connect(currentDayIndicator.Id, ConstraintSet.Top, dayTextView.Id, ConstraintSet.Top);
                 constraintSet.Connect(currentDayIndicator.Id, ConstraintSet.Right, dayTextView.Id, ConstraintSet.Right);
                 constraintSet.Connect(currentDayIndicator.Id, ConstraintSet.Bottom, dayTextView.Id, ConstraintSet.Bottom);
