@@ -111,7 +111,7 @@ namespace Toggl.iOS.Views.Calendar
         {
             get
             {
-                var width = CollectionView.Bounds.Width;
+                var width = CollectionView.Bounds.Width - (CollectionView.ContentInset.Left + CollectionView.ContentInset.Right);
                 var height = ContentViewHeight + hourSupplementaryLabelHeight;
                 return new CGSize(width, height);
             }

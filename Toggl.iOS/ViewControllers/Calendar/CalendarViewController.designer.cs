@@ -7,13 +7,16 @@
 using Foundation;
 using System.CodeDom.Compiler;
 
-namespace Toggl.iOS.ViewControllers.Calendar
+namespace Toggl.iOS.ViewControllers
 {
 	[Register ("CalendarViewController")]
 	partial class CalendarViewController
 	{
 		[Outlet]
 		UIKit.UILabel DailyTrackedTimeLabel { get; set; }
+
+		[Outlet]
+		UIKit.NSLayoutConstraint DailyTrackedTimeLeadingConstraint { get; set; }
 
 		[Outlet]
 		UIKit.UIView DayViewContainer { get; set; }
@@ -23,12 +26,32 @@ namespace Toggl.iOS.ViewControllers.Calendar
 
 		[Outlet]
 		UIKit.UIButton SettingsButton { get; set; }
+
+		[Outlet]
+		UIKit.NSLayoutConstraint SettingsButtonTrailingConstraint { get; set; }
+
+		[Outlet]
+		UIKit.UICollectionView WeekViewCollectionView { get; set; }
+
+		[Outlet]
+		UIKit.UIView WeekViewContainer { get; set; }
+
+		[Outlet]
+		UIKit.NSLayoutConstraint WeekViewContainerWidthConstraint { get; set; }
+
+		[Outlet]
+		UIKit.UIView WeekViewDayHeaderContainer { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
 			if (DailyTrackedTimeLabel != null) {
 				DailyTrackedTimeLabel.Dispose ();
 				DailyTrackedTimeLabel = null;
+			}
+
+			if (DailyTrackedTimeLeadingConstraint != null) {
+				DailyTrackedTimeLeadingConstraint.Dispose ();
+				DailyTrackedTimeLeadingConstraint = null;
 			}
 
 			if (DayViewContainer != null) {
@@ -44,6 +67,31 @@ namespace Toggl.iOS.ViewControllers.Calendar
 			if (SettingsButton != null) {
 				SettingsButton.Dispose ();
 				SettingsButton = null;
+			}
+
+			if (SettingsButtonTrailingConstraint != null) {
+				SettingsButtonTrailingConstraint.Dispose ();
+				SettingsButtonTrailingConstraint = null;
+			}
+
+			if (WeekViewCollectionView != null) {
+				WeekViewCollectionView.Dispose ();
+				WeekViewCollectionView = null;
+			}
+
+			if (WeekViewContainer != null) {
+				WeekViewContainer.Dispose ();
+				WeekViewContainer = null;
+			}
+
+			if (WeekViewContainerWidthConstraint != null) {
+				WeekViewContainerWidthConstraint.Dispose ();
+				WeekViewContainerWidthConstraint = null;
+			}
+
+			if (WeekViewDayHeaderContainer != null) {
+				WeekViewDayHeaderContainer.Dispose ();
+				WeekViewDayHeaderContainer = null;
 			}
 		}
 	}

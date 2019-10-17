@@ -14,6 +14,7 @@ namespace Toggl.iOS.ViewControllers
     {
         private const double minimumOffsetOfCurrentTimeIndicatorFromScreenEdge = 0.2;
         private const double middleOfTheDay = 12;
+        private const int collectionViewHorizontalInset = 20;
 
         private readonly ITimeService timeService;
 
@@ -84,7 +85,34 @@ namespace Toggl.iOS.ViewControllers
         {
             base.ViewWillAppear(animated);
 
+            updateContentInsetForIpad();
             layout.InvalidateCurrentTimeLayout();
+        }
+
+        public override void ViewWillTransitionToSize(CGSize toSize, IUIViewControllerTransitionCoordinator coordinator)
+        {
+            base.ViewWillTransitionToSize(toSize, coordinator);
+            updateContentInsetForIpad();
+        }
+
+        private void updateContentInsetForIpad()
+        {
+            if (TraitCollection.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad) return;
+
+            var deviceOrientation = UIDevice.CurrentDevice.Orientation;
+            if (deviceOrientation == UIDeviceOrientation.LandscapeLeft
+                || deviceOrientation == UIDeviceOrientation.LandscapeRight)
+            {
+                //In landscape mode the collection view content should be the same width as in portrait mode
+                var screenWidthInPortraitMode = UIScreen.MainScreen.Bounds.Height;
+                var collectionViewWidthInPortraitMode = screenWidthInPortraitMode - 2 * collectionViewHorizontalInset;
+                var horizontalContentInset = (UIScreen.MainScreen.Bounds.Width - collectionViewWidthInPortraitMode) / 2;
+                CalendarCollectionView.ContentInset = new UIEdgeInsets(0, horizontalContentInset, 0, horizontalContentInset);
+            }
+            else
+            {
+                CalendarCollectionView.ContentInset = new UIEdgeInsets(0, collectionViewHorizontalInset, 0, collectionViewHorizontalInset);
+            }
         }
 
         public void ScrollToTop()

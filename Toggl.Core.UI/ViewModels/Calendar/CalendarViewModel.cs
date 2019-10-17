@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Toggl.Core.Analytics;
 using Toggl.Core.DataSources;
+using Toggl.Core.Extensions;
 using Toggl.Core.Interactors;
 using Toggl.Core.Services;
 using Toggl.Core.UI.Extensions;
@@ -18,6 +21,9 @@ namespace Toggl.Core.UI.ViewModels.Calendar
     [Preserve(AllMembers = true)]
     public sealed class CalendarViewModel : ViewModel
     {
+        private const int availableDayCount = 14;
+        private const string dateFormat = "dddd, MMM d";
+
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
         private readonly IUserPreferences userPreferences;
@@ -27,13 +33,17 @@ namespace Toggl.Core.UI.ViewModels.Calendar
         private readonly ISchedulerProvider schedulerProvider;
         private readonly IRxActionFactory rxActionFactory;
 
-        private readonly string dateFormat = "dddd, MMM d";
-
         public IObservable<string> CurrentlyShownDateString { get; }
+
+        public BehaviorRelay<DateTime> CurrentlyShownDate { get; }
+
+        public IObservable<IImmutableList<CalendarWeeklyViewDayViewModel>> WeekViewDays { get; }
+
+        public IObservable<IImmutableList<DayOfWeek>> WeekViewHeaders { get; }
 
         public ViewAction OpenSettings { get; }
 
-        public BehaviorRelay<int> CurrentlyVisiblePage { get; }
+        public InputAction<CalendarWeeklyViewDayViewModel> SelectDayFromWeekView { get; }
 
         public CalendarViewModel(
             ITogglDataSource dataSource,
@@ -66,17 +76,54 @@ namespace Toggl.Core.UI.ViewModels.Calendar
             this.schedulerProvider = schedulerProvider;
 
             OpenSettings = rxActionFactory.FromAsync(openSettings);
+            SelectDayFromWeekView = rxActionFactory.FromAction<CalendarWeeklyViewDayViewModel>(selectDayFromWeekView);
 
-            CurrentlyVisiblePage = new BehaviorRelay<int>(0);
+            var beginningOfWeekObservable = dataSource.User.Current.Select(user => user.BeginningOfWeek);
 
-            var dateFormatObservable = dataSource.Preferences.Current
-                .Select(current => current.DateFormat);
+            WeekViewDays = beginningOfWeekObservable
+                .ReemitWhen(timeService.MidnightObservable.SelectUnit())
+                .Select(weekViewDays)
+                .Select(days => days.ToImmutableList())
+                .AsDriver(schedulerProvider);
 
-            CurrentlyShownDateString = CurrentlyVisiblePage.AsObservable()
-                .Select(pageIndexToDate)
+            WeekViewHeaders = beginningOfWeekObservable
+                .Select(weekViewHeaders)
+                .Select(dayOfWeekHeaders => dayOfWeekHeaders.ToImmutableList())
+                .AsDriver(schedulerProvider);
+
+            CurrentlyShownDate = new BehaviorRelay<DateTime>(timeService.CurrentDateTime.ToLocalTime().Date);
+
+            CurrentlyShownDateString = CurrentlyShownDate.AsObservable()
                 .DistinctUntilChanged()
                 .Select(date => DateTimeToFormattedString.Convert(date, dateFormat))
                 .AsDriver(schedulerProvider);
+        }
+
+        private IEnumerable<DayOfWeek> weekViewHeaders(BeginningOfWeek beginningOfWeek)
+        {
+            var currentDay = beginningOfWeek.ToDayOfWeekEnum();
+            for (int i = 0; i < 7; i++)
+            {
+                yield return currentDay;
+                currentDay = currentDay.NextEnumValue();
+            }
+        }
+
+        private IEnumerable<CalendarWeeklyViewDayViewModel> weekViewDays(BeginningOfWeek beginningOfWeek)
+        {
+            var now = timeService.CurrentDateTime.ToLocalTime();
+            var today = now.Date;
+            var firstAvailableDate = now.AddDays(-availableDayCount + 1).Date;
+            var firstShownDate = firstAvailableDate.BeginningOfWeek(beginningOfWeek).Date;
+            var lastShownDate = now.BeginningOfWeek(beginningOfWeek).AddDays(7).Date;
+
+            var currentDate = firstShownDate;
+            while (currentDate != lastShownDate)
+            {
+                var dateIsViewable = currentDate <= today && currentDate >= firstAvailableDate;
+                yield return new CalendarWeeklyViewDayViewModel(currentDate, currentDate == today, dateIsViewable);
+                currentDate = currentDate.AddDays(1);
+            }
         }
 
         public CalendarDayViewModel DayViewModelAt(int index)
@@ -96,10 +143,18 @@ namespace Toggl.Core.UI.ViewModels.Calendar
                 NavigationService);
         }
 
-        private DateTimeOffset pageIndexToDate(int index)
-            => timeService.CurrentDateTime.Date.AddDays(index);
+        public DateTime IndexToDate(int index)
+        {
+            var today = timeService.CurrentDateTime.ToLocalTime().Date;
+            return today.AddDays(index);
+        }
 
         private Task openSettings()
             => Navigate<SettingsViewModel>();
+
+        private void selectDayFromWeekView(CalendarWeeklyViewDayViewModel day)
+        {
+            CurrentlyShownDate.Accept(day.Date);
+        }
     }
 }
