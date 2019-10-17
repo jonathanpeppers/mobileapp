@@ -15,4 +15,5 @@
   <color name="licensesBorder">#BBFFFFFF</color>
   <color name="licensesBackground">#FF303030</color>
   <color name="tagToken">#DDFFFFFF</color>
+  <color name="darkBackground">#DDFFFFFF</color>
 </resources>
