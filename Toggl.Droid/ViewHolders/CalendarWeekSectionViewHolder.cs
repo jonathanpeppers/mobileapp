@@ -210,6 +210,7 @@ namespace Toggl.Droid.ViewHolders
                 case CalendarWeekDayType.Disabled:
                     return context.SafeGetColor(Resource.Color.weekStripeDisabledDayColor);
                 case CalendarWeekDayType.Selected:
+                    return context.SafeGetColor(Resource.Color.primaryTextOnDarkBackground);
                 case CalendarWeekDayType.TodaySelected:
                     return Color.White;
                 case CalendarWeekDayType.Today:

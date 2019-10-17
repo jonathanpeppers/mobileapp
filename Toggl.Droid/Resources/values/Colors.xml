@@ -40,7 +40,6 @@
   <!--Calendar page-->
   <color name="calendarHeaderBackground">#FF959595</color>
   <color name="currentHourColor">#FF328FFF</color>
-  <color name="weekStripeDisabledDayColor">#BDBDBD</color>
 
   <!-- Start Time entry page-->
   <color name="billable">#FF328FFF</color>
