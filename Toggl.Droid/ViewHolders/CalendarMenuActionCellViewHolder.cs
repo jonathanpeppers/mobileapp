@@ -50,13 +50,13 @@ namespace Toggl.Droid.ViewHolders
         private static readonly Dictionary<CalendarMenuActionKind, int> icons = new Dictionary<CalendarMenuActionKind, int>
         {
             { CalendarMenuActionKind.Discard, Resource.Drawable.close },
-            { CalendarMenuActionKind.Edit, Resource.Drawable.unsynced }, //todo: get res from designer
-            { CalendarMenuActionKind.Save, Resource.Drawable.check }, //todo: get res from designer
-            { CalendarMenuActionKind.Delete, Resource.Drawable.delete }, //todo: get res from designer
-            { CalendarMenuActionKind.Copy, Resource.Drawable.unsynced }, //todo: get res from designer
-            { CalendarMenuActionKind.Start, Resource.Drawable.play }, //todo: get res from designer
-            { CalendarMenuActionKind.Continue, Resource.Drawable.play }, //todo: get res from designer
-            { CalendarMenuActionKind.Stop, Resource.Drawable.ic_stop } //todo: get res from designer
+            { CalendarMenuActionKind.Edit, Resource.Drawable.ic_edit },
+            { CalendarMenuActionKind.Save, Resource.Drawable.ic_save },
+            { CalendarMenuActionKind.Delete, Resource.Drawable.ic_delete },
+            { CalendarMenuActionKind.Copy, Resource.Drawable.ic_copy },
+            { CalendarMenuActionKind.Start, Resource.Drawable.ic_play },
+            { CalendarMenuActionKind.Continue, Resource.Drawable.ic_play },
+            { CalendarMenuActionKind.Stop, Resource.Drawable.ic_stop }
         };
         
         private static readonly Dictionary<CalendarMenuActionKind, int> colors = new Dictionary<CalendarMenuActionKind, int>

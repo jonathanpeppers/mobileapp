@@ -678,6 +678,10 @@
     <None Include="FodyWeavers.xml" />
     <AndroidResource Include="Resources\color\FlatButtonTextColor.xml" />
     <AndroidResource Include="Resources\color\ToolbarButtonTextColor.xml" />
+    <AndroidResource Include="Resources\drawable\ic_copy.xml" />
+    <AndroidResource Include="Resources\drawable\ic_delete.xml" />
+    <AndroidResource Include="Resources\drawable\ic_edit.xml" />
+    <AndroidResource Include="Resources\drawable\ic_save.xml" />
     <AndroidResource Include="Resources\drawable\ic_settings.xml" />
     <AndroidResource Include="Resources\drawable\toolbar_close.xml" />
     <AndroidResource Include="Resources\drawable\Dot.xml" />
