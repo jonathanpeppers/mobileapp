@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Support.Constraints;
 using Android.Support.V4.App;
 using Android.Support.V4.View;
+using Android.Util;
 using Toggl.Core;
 using Toggl.Core.UI.ViewModels.Calendar;
 using Toggl.Droid.Extensions;
@@ -64,7 +65,8 @@ namespace Toggl.Droid.Fragments
             var startingCalendarDayViewPage = calculateDayViewPage(ViewModel.CurrentlyShownDate.Value);
             calendarViewPager.SetCurrentItem(startingCalendarDayViewPage, false);
             
-            calendarWeekStripeAdapter = new CalendarWeekStripeAdapter(ViewModel.SelectDayFromWeekView);
+            calendarWeekStripeAdapter = new CalendarWeekStripeAdapter(ViewModel.SelectDayFromWeekView, ViewModel.CurrentlyShownDate);
+            calendarWeekStripePager.AddOnPageChangeListener(calendarWeekStripeAdapter);
             calendarWeekStripePager.Adapter = calendarWeekStripeAdapter;
             
             ViewModel.WeekViewHeaders
@@ -216,16 +218,18 @@ namespace Toggl.Droid.Fragments
             }
         }
         
-        private class CalendarWeekStripeAdapter : PagerAdapter
+        private class CalendarWeekStripeAdapter : PagerAdapter, ViewPager.IOnPageChangeListener
         {
             private readonly InputAction<CalendarWeeklyViewDayViewModel> dayInputAction;
+            private readonly BehaviorRelay<DateTime> currentlyShownDateRelay;
             private readonly Dictionary<int, CalendarWeekSectionViewHolder> pages = new Dictionary<int, CalendarWeekSectionViewHolder>();
             private ImmutableList<ImmutableList<CalendarWeeklyViewDayViewModel>> weekSections = ImmutableList<ImmutableList<CalendarWeeklyViewDayViewModel>>.Empty;
             private DateTime currentlySelectedDate = DateTime.Today;
             
-            public CalendarWeekStripeAdapter(InputAction<CalendarWeeklyViewDayViewModel> dayInputAction)
+            public CalendarWeekStripeAdapter(InputAction<CalendarWeeklyViewDayViewModel> dayInputAction, BehaviorRelay<DateTime> currentlyShownDateRelay)
             {
                 this.dayInputAction = dayInputAction;
+                this.currentlyShownDateRelay = currentlyShownDateRelay;
             }
 
             public override Java.Lang.Object InstantiateItem(ViewGroup container, int position)
@@ -253,6 +257,42 @@ namespace Toggl.Droid.Fragments
                 => view == @object;
 
             public override int Count => weekSections.Count;
+
+            public void OnPageScrollStateChanged(int state)
+            {
+            }
+
+            public void OnPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+            {
+            }
+
+            public void OnPageSelected(int position)
+            {
+                var newDateOnSwipe = selectAppropriateNewDateOnSwipe(position);
+                if (currentlySelectedDate == newDateOnSwipe)
+                    return;
+                
+                currentlyShownDateRelay.Accept(newDateOnSwipe);
+            }
+
+            private DateTime selectAppropriateNewDateOnSwipe(int position)
+            {
+                var currentSections = weekSections;
+                var daysOnPage = currentSections[position];
+                var newDateOnSwipe = currentlySelectedDate;
+                if (currentlySelectedDate > daysOnPage.Last().Date)
+                {
+                    newDateOnSwipe = currentlySelectedDate.AddDays(-7);
+                    newDateOnSwipe = daysOnPage.First(date => date.Enabled && date.Date >= newDateOnSwipe).Date;
+                }
+                else if (currentlySelectedDate < daysOnPage.First().Date)
+                {
+                    newDateOnSwipe = currentlySelectedDate.AddDays(7);
+                    newDateOnSwipe = daysOnPage.Last(date => date.Enabled && date.Date <= newDateOnSwipe).Date;
+                }
+
+                return newDateOnSwipe;
+            }
 
             public void UpdateWeekDays(ImmutableList<CalendarWeeklyViewDayViewModel> newWeekDays)
             {
