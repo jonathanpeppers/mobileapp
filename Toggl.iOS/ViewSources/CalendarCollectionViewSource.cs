@@ -7,13 +7,11 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
 using Toggl.Core;
 using Toggl.Core.Calendar;
 using Toggl.Core.Extensions;
 using Toggl.Core.UI.Calendar;
 using Toggl.Core.UI.Collections;
-using Toggl.Core.UI.Extensions;
 using Toggl.iOS.Cells.Calendar;
 using Toggl.iOS.Views.Calendar;
 using Toggl.Shared;
@@ -25,6 +23,9 @@ namespace Toggl.iOS.ViewSources
 {
     public sealed class CalendarCollectionViewSource : UICollectionViewSource, ICalendarCollectionViewLayoutDataSource
     {
+        private const long NSPerSecond = 10000000;
+        private const long maxGapDuration = 2 * 60 * 60 * NSPerSecond;
+
         private static readonly string twelveHoursFormat = Resources.TwelveHoursFormat;
         private static readonly string twentyFourHoursFormat = Resources.TwentyFourHoursFormat;
         private static readonly string editingTwelveHoursFormat = Resources.EditingTwelveHoursFormat;
@@ -181,6 +182,55 @@ namespace Toggl.iOS.ViewSources
             var startTimes = calendarItems.Select(item => item.StartTime).Distinct();
             var endTimes = calendarItems.Where(item => item.EndTime.HasValue).Select(item => (DateTimeOffset)item.EndTime).Distinct();
             return startTimes.Concat(endTimes).ToList();
+        }
+
+        public List<(DateTimeOffset, TimeSpan)> GapsBetweenTimeEntriesOf2HoursOrLess()
+        {
+            var timeEntries = calendarItems
+                .Where(item => item.CalendarId == "")
+                .OrderBy(te => te.StartTime)
+                .ToList();
+
+            var now = timeService.CurrentDateTime;
+            var dayStart = (DateTimeOffset) DateTimeOffset.Now.LocalDateTime.Date;
+            var dayEnd = dayStart.AddDays(1);
+            var nextGapStart = dayStart;
+            var gaps = new List<(DateTimeOffset, TimeSpan)>();
+
+            foreach (var te in timeEntries)
+            {
+                var startOfGap = nextGapStart;
+
+                if (te.StartTime < startOfGap)
+                {
+                    nextGapStart = te.EndTime ?? now;
+                    continue;
+                }
+
+                var durationOfGap = te.StartTime - startOfGap;
+
+                if (durationOfGap.Ticks == 0)
+                    continue;
+
+                gaps.Add((startOfGap, durationOfGap));
+                nextGapStart = te.EndTime ?? now;
+            }
+
+            var lastTeEndTime = timeEntries
+                .Where(te => te.EndTime.HasValue)
+                .OrderBy(te => te.EndTime)
+                .ToList()
+                .LastOrDefault()
+                .EndTime ?? now;
+
+            if (lastTeEndTime < dayEnd)
+            {
+                gaps.Add((lastTeEndTime, dayEnd - lastTeEndTime));
+            }
+
+            return gaps
+                .Where(gap => gap.Item2.Ticks <= maxGapDuration)
+                .ToList();
         }
 
         public void StartEditing()
