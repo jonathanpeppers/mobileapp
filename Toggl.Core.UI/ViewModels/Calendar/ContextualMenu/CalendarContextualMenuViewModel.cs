@@ -78,7 +78,7 @@ namespace Toggl.Core.UI.ViewModels.Calendar.ContextualMenu
             this.rxActionFactory = rxActionFactory;
             this.timeService = timeService;
 
-            OnCalendarItemUpdated = rxActionFactory.FromAction<CalendarItem?>(handleCalendarItemInput);
+            OnCalendarItemUpdated = rxActionFactory.FromAsync<CalendarItem?>(handleCalendarItemInput);
 
             var closedMenu = new CalendarContextualMenu(ContextualMenuType.Closed, ImmutableList<CalendarMenuAction>.Empty, rxActionFactory.FromAction(CommonFunctions.DoNothing));
             contextualMenus = new Dictionary<ContextualMenuType, CalendarContextualMenu>
@@ -93,7 +93,7 @@ namespace Toggl.Core.UI.ViewModels.Calendar.ContextualMenu
             currentMenuSubject = new BehaviorSubject<CalendarContextualMenu>(closedMenu);
         }
 
-        private async void handleCalendarItemInput(CalendarItem? calendarItem)
+        private async Task handleCalendarItemInput(CalendarItem? calendarItem)
         {
             if (!calendarItem.HasValue)
             {
