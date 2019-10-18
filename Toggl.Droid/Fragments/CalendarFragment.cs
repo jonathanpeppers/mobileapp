@@ -10,10 +10,10 @@ using Android.Runtime;
 using Android.Support.Constraints;
 using Android.Support.V4.App;
 using Android.Support.V4.View;
-using Android.Util;
 using Toggl.Core;
 using Toggl.Core.UI.ViewModels.Calendar;
 using Toggl.Droid.Extensions;
+using Toggl.Droid.Extensions.Reactive;
 using Toggl.Droid.Fragments.Calendar;
 using Toggl.Droid.Helper;
 using Toggl.Droid.Presentation;
@@ -103,6 +103,10 @@ namespace Toggl.Droid.Fragments
                 .DistinctUntilChanged()
                 .Select(calculateDayForCalendarDayPage)
                 .Subscribe(ViewModel.CurrentlyShownDate.Accept)
+                .DisposedBy(DisposeBag);
+
+            calendarWeekStripeLabelsContainer.Rx().TouchEvents()
+                .Subscribe(touch => calendarWeekStripePager.OnTouchEvent(touch))
                 .DisposedBy(DisposeBag);
         }
 
