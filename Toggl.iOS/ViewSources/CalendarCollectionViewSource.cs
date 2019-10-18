@@ -34,7 +34,6 @@ namespace Toggl.iOS.ViewSources
         private readonly string currentTimeReuseIdentifier = nameof(CurrentTimeSupplementaryView);
 
         private readonly ITimeService timeService;
-        private readonly IObservable<TimeFormat> timeOfDayFormatObservable;
         private readonly ObservableGroupedOrderedCollection<CalendarItem> collection;
 
         private IList<CalendarItem> calendarItems;
@@ -65,7 +64,6 @@ namespace Toggl.iOS.ViewSources
             Ensure.Argument.IsNotNull(timeOfDayFormat, nameof(timeOfDayFormat));
             Ensure.Argument.IsNotNull(collection, nameof(collection));
             this.timeService = timeService;
-            this.timeOfDayFormatObservable = timeOfDayFormat;
             this.collection = collection;
             this.collectionView = collectionView;
 
