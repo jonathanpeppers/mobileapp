@@ -308,18 +308,16 @@ namespace Toggl.Droid.Fragments
                 NotifyDataSetChanged();
                 for (var pageIndex = 0; pageIndex < weekSections.Count; pageIndex++)
                 {
-                    pages.TryGetValue(pageIndex, out var page);
-                    page?.UpdateDays(weekSections[pageIndex]);
+                    getPage(pageIndex)?.UpdateDays(weekSections[pageIndex]);
                 }
             }
-            
+
             public void UpdateSelectedDay(DateTime newSelectedDate)
             {
                 currentlySelectedDate = newSelectedDate;
                 for (var pageIndex = 0; pageIndex < weekSections.Count; pageIndex++)
                 {
-                    pages.TryGetValue(pageIndex, out var page);
-                    page?.UpdateCurrentlySelectedDate(newSelectedDate);
+                    getPage(pageIndex)?.UpdateCurrentlySelectedDate(newSelectedDate);
                 }
             }
 
@@ -334,6 +332,12 @@ namespace Toggl.Droid.Fragments
                 }
 
                 return 0;
+            }
+
+            private CalendarWeekSectionViewHolder getPage(int position)
+            {
+                pages.TryGetValue(position, out var page);
+                return page;
             }
 
             private ImmutableList<ImmutableList<CalendarWeeklyViewDayViewModel>> createWeekSections(ImmutableList<CalendarWeeklyViewDayViewModel> newWeekDays)
