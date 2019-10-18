@@ -116,10 +116,10 @@ namespace Toggl.iOS.Views.Calendar
             {
                 foreach (var gap in teGaps)
                 {
-                    if (startTime > gap.Item1 && startTime < gap.Item1 + gap.Item2)
+                    if (startTime > gap.StartTime && startTime < gap.StartTime + gap.Duration)
                     {
-                        duration = gap.Item2;
-                        startTime = gap.Item1;
+                        duration = gap.Duration;
+                        startTime = gap.StartTime;
                         break;
                     }
                 }
