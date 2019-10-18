@@ -22,13 +22,8 @@
 
     <TextView
         android:id="@+id/WeekDayOneText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/CalendarWeekStripeDayTextViewStyle"
         android:layout_marginLeft="22dp"
-        android:gravity="center"
-        android:minWidth="20dp"
-        android:textSize="14dp"
-        android:textColor="@color/secondaryText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -38,12 +33,7 @@
 
     <TextView
         android:id="@+id/WeekDayTwoText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:minWidth="20dp"
-        android:textSize="14dp"
-        android:textColor="@color/secondaryText"
+        style="@style/CalendarWeekStripeDayTextViewStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/WeekDayOneText"
         app:layout_constraintRight_toLeftOf="@+id/WeekDayThreeText"
@@ -52,12 +42,7 @@
 
     <TextView
         android:id="@+id/WeekDayThreeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:minWidth="20dp"
-        android:textSize="14dp"
-        android:textColor="@color/secondaryText"
+        style="@style/CalendarWeekStripeDayTextViewStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/WeekDayTwoText"
         app:layout_constraintRight_toLeftOf="@+id/WeekDayFourText"
@@ -66,12 +51,7 @@
 
     <TextView
         android:id="@+id/WeekDayFourText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:minWidth="20dp"
-        android:textSize="14dp"
-        android:textColor="@color/secondaryText"
+        style="@style/CalendarWeekStripeDayTextViewStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/WeekDayThreeText"
         app:layout_constraintRight_toLeftOf="@+id/WeekDayFiveText"
@@ -80,12 +60,7 @@
 
     <TextView
         android:id="@+id/WeekDayFiveText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:minWidth="20dp"
-        android:textSize="14dp"
-        android:textColor="@color/secondaryText"
+        style="@style/CalendarWeekStripeDayTextViewStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/WeekDayFourText"
         app:layout_constraintRight_toLeftOf="@+id/WeekDaySixText"
@@ -94,12 +69,7 @@
 
     <TextView
         android:id="@+id/WeekDaySixText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:minWidth="20dp"
-        android:textSize="14dp"
-        android:textColor="@color/secondaryText"
+        style="@style/CalendarWeekStripeDayTextViewStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/WeekDayFiveText"
         app:layout_constraintRight_toLeftOf="@+id/WeekDaySevenText"
@@ -108,17 +78,12 @@
 
     <TextView
         android:id="@+id/WeekDaySevenText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/CalendarWeekStripeDayTextViewStyle"
         android:layout_marginRight="22dp"
-        android:gravity="center"
-        android:minWidth="20dp"
-        android:textSize="14dp"
-        android:textColor="@color/secondaryText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/WeekDaySixText"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="7" />
-    
+
 </android.support.constraint.ConstraintLayout>
