@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Android.Support.Constraints;
 using Android.Support.Design.Widget;
@@ -30,6 +31,10 @@ namespace Toggl.Droid.Fragments
             calendarWeekStripeLabelsContainer = view.FindViewById<ConstraintLayout>(Resource.Id.CalendarWeekStripeLabels);
             calendarWeekStripeHeaders = calendarWeekStripeLabelsContainer.GetChildren().Cast<TextView>().ToArray();
                 
+            if (calendarWeekStripeHeaders.Length != NumberOfDaysInTheWeek) {
+                throw new ArgumentOutOfRangeException($"Week headers should contain exactly {NumberOfDaysInTheWeek} text views");
+            }
+            
             toolbar = view.FindViewById<Toolbar>(Resource.Id.Toolbar);
         }
 

@@ -26,6 +26,7 @@ namespace Toggl.Droid.Fragments
 {
     public partial class CalendarFragment : ReactiveTabFragment<CalendarViewModel>, IScrollableToStart
     {
+        public static int NumberOfDaysInTheWeek = 7;
         private const int calendarPagesCount = 14;
         private readonly Subject<bool> scrollToStartSignaler = new Subject<bool>();
         private CalendarDayFragmentAdapter calendarDayAdapter;
@@ -125,8 +126,11 @@ namespace Toggl.Droid.Fragments
 
         private void updateWeekViewHeaders(IImmutableList<DayOfWeek> days)
         {
-            for (var i = 0; i < 7; i++)
-                calendarWeekStripeHeaders[i].Text = days[i].Initial();
+            if (days.Count != NumberOfDaysInTheWeek)
+                throw new ArgumentOutOfRangeException($"Week headers should contain exactly {NumberOfDaysInTheWeek} items");
+
+            calendarWeekStripeHeaders.Indexed()
+                .ForEach((textView, day) => textView.Text = days[day].Initial());
         }
 
         public void ScrollToStart()
@@ -286,12 +290,12 @@ namespace Toggl.Droid.Fragments
                 var newDateOnSwipe = currentlySelectedDate;
                 if (currentlySelectedDate > daysOnPage.Last().Date)
                 {
-                    newDateOnSwipe = currentlySelectedDate.AddDays(-7);
+                    newDateOnSwipe = currentlySelectedDate.AddDays(-NumberOfDaysInTheWeek);
                     newDateOnSwipe = daysOnPage.First(date => date.Enabled && date.Date >= newDateOnSwipe).Date;
                 }
                 else if (currentlySelectedDate < daysOnPage.First().Date)
                 {
-                    newDateOnSwipe = currentlySelectedDate.AddDays(7);
+                    newDateOnSwipe = currentlySelectedDate.AddDays(NumberOfDaysInTheWeek);
                     newDateOnSwipe = daysOnPage.Last(date => date.Enabled && date.Date <= newDateOnSwipe).Date;
                 }
 
@@ -335,9 +339,9 @@ namespace Toggl.Droid.Fragments
             private ImmutableList<ImmutableList<CalendarWeeklyViewDayViewModel>> createWeekSections(ImmutableList<CalendarWeeklyViewDayViewModel> newWeekDays)
             {
                 var weeklySections = new List<ImmutableList<CalendarWeeklyViewDayViewModel>>();
-                for (var i = 0; i < newWeekDays.Count; i += 7)
+                for (var i = 0; i < newWeekDays.Count; i += NumberOfDaysInTheWeek)
                 {
-                    weeklySections.Add(newWeekDays.GetRange(i, 7));
+                    weeklySections.Add(newWeekDays.GetRange(i, NumberOfDaysInTheWeek));
                 }
 
                 return weeklySections.ToImmutableList();
