@@ -43,7 +43,7 @@ namespace Toggl.Core.UI.Calendar
             return attributes;
         }
 
-        public List<CalendarItemLayoutAttributes> CalculateGapsLayoutAttributes(IList<CalendarItem> calendarItems)
+        public List<CalendarItemLayoutAttributes> CalculateTwoHoursOrLessGapsLayoutAttributes(IList<CalendarItem> calendarItems)
         {
             if (calendarItems.None())
                 return emptyAttributes;

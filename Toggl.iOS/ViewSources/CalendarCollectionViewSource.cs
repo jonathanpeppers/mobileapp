@@ -186,7 +186,7 @@ namespace Toggl.iOS.ViewSources
                 .OrderBy(te => te.StartTime)
                 .ToList();
 
-            return layoutCalculator.CalculateGapsLayoutAttributes(timeEntries);
+            return layoutCalculator.CalculateTwoHoursOrLessGapsLayoutAttributes(timeEntries);
         }
 
         public void StartEditing()
