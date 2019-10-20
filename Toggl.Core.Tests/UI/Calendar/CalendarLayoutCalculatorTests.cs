@@ -322,6 +322,32 @@ namespace Toggl.Core.Tests.Calendar
         }
 
         [Fact, LogIfTooSlow]
+        public void GapsAreCalculatedBetweenCalendarItemsThatAreInTwoOrMoreColumns()
+        {
+            var calendarItems = new[]
+            {
+                new CalendarItem("1", CalendarItemSource.TimeEntry, new DateTimeOffset(2019, 11, 21, 1, 30, 0, DateTimeOffset.Now.Offset), TimeSpan.FromMinutes(30), "Item 1", CalendarIconKind.None),
+                new CalendarItem("2", CalendarItemSource.TimeEntry, new DateTimeOffset(2019, 11, 21, 1, 35, 0, DateTimeOffset.Now.Offset), TimeSpan.FromMinutes(20), "Item 2", CalendarIconKind.None),
+                new CalendarItem("3", CalendarItemSource.TimeEntry, new DateTimeOffset(2019, 11, 21, 3, 30, 0, DateTimeOffset.Now.Offset), TimeSpan.FromMinutes(30), "Item 3", CalendarIconKind.None),
+            };
+
+            var timeService = Substitute.For<ITimeService>();
+            var calculator = new CalendarLayoutCalculator(timeService);
+
+            var layoutAttributes = calculator.CalculateTwoHoursOrLessGapsLayoutAttributes(calendarItems);
+
+            var date = calendarItems[0].StartTime;
+            var gapStart = date + TimeSpan.FromMinutes(30);
+
+            layoutAttributes.Should().HaveCount(2)
+                .And.Contain((attributes) =>
+                    attributes.StartTime == gapStart &&
+                    Math.Abs(attributes.Duration.TotalMinutes - 90.0) < 0.1 &&
+                    attributes.TotalColumns == 1 &&
+                    attributes.ColumnIndex == 0);
+        }
+
+        [Fact, LogIfTooSlow]
         public void GapsLongerThanTwoHoursAreNotCalculatedBetweenCalendarItemsOrEdges()
         {
             var calendarItems = new[]
