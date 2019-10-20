@@ -60,7 +60,10 @@ namespace Toggl.Core.UI.Calendar
 
                 if (te.StartTime < startOfGap)
                 {
-                    nextGapStart = te.EndTime ?? now;
+                    var teEnd = te.EndTime ?? now;
+                    if (teEnd > nextGapStart)
+                        nextGapStart = te.EndTime ?? now;
+
                     continue;
                 }
 
