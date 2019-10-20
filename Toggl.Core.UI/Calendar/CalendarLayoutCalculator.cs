@@ -49,8 +49,8 @@ namespace Toggl.Core.UI.Calendar
                 return emptyAttributes;
 
             var now = timeService.CurrentDateTime;
-            var dayStart = (DateTimeOffset)DateTimeOffset.Now.LocalDateTime.Date;
-            var dayEnd = dayStart.AddDays(1);
+            var dayStart = (DateTimeOffset)calendarItems[0].StartTime.LocalDateTime.Date;
+            var dayEnd = dayStart.AddDays(1).AddTicks(-1);
             var nextGapStart = dayStart;
             var gaps = new List<(DateTimeOffset, TimeSpan)>();
 
