@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Toggl.Core.Suggestions;
 using Toggl.Core.UI.Helper;
+using Toggl.Shared.Extensions;
 using Toggl.Shared;
 using static Toggl.Droid.Widgets.WidgetsConstants;
 
@@ -21,6 +22,10 @@ namespace Toggl.Droid.Widgets
         public string ProjectName { get; private set; }
         public string ProjectColor { get; private set; }
         public string ClientName { get; private set; }
+
+        public long? TaskId { get; private set; }
+        public bool IsBillable { get; private set; }
+        public long[] TagsIds { get; private set; }
 
         public bool HasProject => ProjectId.HasValue;
 
@@ -38,9 +43,14 @@ namespace Toggl.Droid.Widgets
 
         private static WidgetSuggestionItem getItem(ISharedPreferences sharedPreferences, int index)
         {
-            var projectId = (int?)sharedPreferences.GetLong($"{prefix}{nameof(ProjectId)}{index}", 0);
-            if (projectId == 0)
-                projectId = null;
+            var projectId = (long?)sharedPreferences.GetLong($"{prefix}{nameof(ProjectId)}{index}", 0);
+            projectId = projectId == 0 ? null : projectId;
+
+            var taskId = (long?)sharedPreferences.GetLong($"{prefix}{nameof(TaskId)}{index}", 0);
+            taskId = taskId == 0 ? null : taskId;
+
+            var tagsIdsString = sharedPreferences.GetString($"{prefix}{nameof(TagsIds)}{index}", "");
+            var tagsIds = tagsIdsString?.ToNullIfEmpty()?.Split(',').Select(long.Parse).ToArray() ?? Array.Empty<long>();
 
             return new WidgetSuggestionItem
             {
@@ -49,7 +59,10 @@ namespace Toggl.Droid.Widgets
                 Description = sharedPreferences.GetString($"{prefix}{nameof(Description)}{index}", ""),
                 ProjectName = sharedPreferences.GetString($"{prefix}{nameof(ProjectName)}{index}", ""),
                 ProjectColor = sharedPreferences.GetString($"{prefix}{nameof(ProjectColor)}{index}", null) ?? Colors.Black.ToHexString(),
-                ClientName = sharedPreferences.GetString($"{prefix}{nameof(ClientName)}{index}", "")
+                ClientName = sharedPreferences.GetString($"{prefix}{nameof(ClientName)}{index}", ""),
+                IsBillable = sharedPreferences.GetBoolean($"{prefix}{nameof(IsBillable)}{index}", false),
+                TaskId = taskId,
+                TagsIds = tagsIds
             };
         }
 
@@ -64,14 +77,15 @@ namespace Toggl.Droid.Widgets
             {
                 var suggestion = suggestions[index];
 
-                if (suggestion.ProjectId.HasValue)
-                    prefsEditor.PutLong($"{prefix}{nameof(ProjectId)}{index}", suggestion.ProjectId.Value);
-
+                prefsEditor.PutLong($"{prefix}{nameof(ProjectId)}{index}", suggestion.ProjectId ?? 0);
                 prefsEditor.PutLong($"{prefix}{nameof(WorkspaceId)}{index}", suggestion.WorkspaceId);
                 prefsEditor.PutString($"{prefix}{nameof(Description)}{index}", suggestion.Description);
                 prefsEditor.PutString($"{prefix}{nameof(ProjectName)}{index}", suggestion.ProjectName);
                 prefsEditor.PutString($"{prefix}{nameof(ProjectColor)}{index}", suggestion.ProjectColor);
                 prefsEditor.PutString($"{prefix}{nameof(ClientName)}{index}", suggestion.ClientName);
+                prefsEditor.PutBoolean($"{prefix}{nameof(IsBillable)}{index}", suggestion.IsBillable);
+                prefsEditor.PutLong($"{prefix}{nameof(TaskId)}{index}", suggestion.TaskId ?? 0);
+                prefsEditor.PutString($"{prefix}{nameof(TagsIds)}{index}", string.Join(',', suggestion.TagIds));
             }
 
             prefsEditor.Commit();

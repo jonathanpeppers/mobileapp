@@ -19,11 +19,7 @@ using Toggl.Droid.Helper;
 
 namespace Toggl.Droid.Services
 {
-    [Service(
-        Exported = true,
-        Name = "com.toggl.giskard.TimerBackgroundService",
-        Permission = "android.permission.BIND_JOB_SERVICE"
-    )]
+    [Service(Permission = "android.permission.BIND_JOB_SERVICE", Exported = true)]
     public sealed class WidgetsBackgroundService : JobIntentService
     { 
         private IInteractorFactory interactorFactory => AndroidDependencyContainer.Instance.InteractorFactory;
@@ -83,7 +79,10 @@ namespace Toggl.Droid.Services
             var timeEntryPrototype = suggestion.Description.AsTimeEntryPrototype(
                 startTime: now,
                 workspaceId: suggestion.WorkspaceId,
-                projectId: suggestion.ProjectId);
+                projectId: suggestion.ProjectId,
+                taskId: suggestion.TaskId,
+                isBillable:suggestion.IsBillable,
+                tagIds: suggestion.TagsIds);
 
             await interactorFactory.CreateTimeEntry(timeEntryPrototype, TimeEntryStartOrigin.Widget).Execute();
         }
