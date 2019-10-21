@@ -278,6 +278,7 @@ namespace Toggl.iOS.ViewControllers
 
             TimeInput.TintColor = Colors.StartTimeEntry.Cursor.ToNativeColor();
 
+            DescriptionTextView.TextColor = ColorAssets.Text;
             DescriptionTextView.TintColor = Colors.StartTimeEntry.Cursor.ToNativeColor();
             DescriptionTextView.BecomeFirstResponder();
 
