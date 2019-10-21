@@ -37,7 +37,7 @@ namespace Toggl.iOS.ViewControllers
 
             var attributedString = new NSMutableAttributedString(
                 tryAgainString,
-                new UIStringAttributes { ForegroundColor = UIColor.Black });
+                new UIStringAttributes { ForegroundColor = ColorAssets.Text });
             attributedString.AddAttributes(
                 new UIStringAttributes { ForegroundColor = Colors.NoWorkspace.ActivityIndicator.ToNativeColor() },
                 range);
