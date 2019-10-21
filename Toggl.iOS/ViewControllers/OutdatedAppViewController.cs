@@ -18,8 +18,6 @@ namespace Toggl.iOS.ViewControllers
         {
             base.ViewDidLoad();
 
-            NavigationController.NavigationBar.Hidden = true;
-
             HeadingLabel.Text = Resources.Oops;
             TextLabel.Text = Resources.AppOutdatedMessage;
             UpdateButton.SetTitle(Resources.UpdateTheApp, UIControlState.Normal);

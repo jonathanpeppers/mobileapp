@@ -22,14 +22,19 @@ namespace Toggl.iOS.Presentation
             typeof(OutdatedAppViewModel),
         };
 
+        private HashSet<Type> viewModelsNotWrappedInNavigationController { get; } = new HashSet<Type>
+        {
+            typeof(MainTabBarViewModel),
+            typeof(OutdatedAppViewModel),
+        };
+
         public RootPresenter(UIWindow window, AppDelegate appDelegate) : base(window, appDelegate)
         {
         }
 
         protected override void PresentOnMainThread<TInput, TOutput>(ViewModel<TInput, TOutput> viewModel, IView view)
         {
-            var shouldWrapInNavigationController = !(viewModel is MainTabBarViewModel);
-            var rootViewController = shouldWrapInNavigationController
+            var rootViewController = !viewModelsNotWrappedInNavigationController.Contains(viewModel.GetType())
                 ? ViewControllerLocator.GetNavigationViewController(viewModel)
                 : ViewControllerLocator.GetViewController(viewModel);
 
