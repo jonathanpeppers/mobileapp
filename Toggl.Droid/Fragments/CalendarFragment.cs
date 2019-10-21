@@ -340,12 +340,6 @@ namespace Toggl.Droid.Fragments
                 return 0;
             }
 
-            private CalendarWeekSectionViewHolder getPage(int position)
-            {
-                pages.TryGetValue(position, out var page);
-                return page;
-            }
-
             private ImmutableList<ImmutableList<CalendarWeeklyViewDayViewModel>> createWeekSections(ImmutableList<CalendarWeeklyViewDayViewModel> newWeekDays)
             {
                 var weeklySections = new List<ImmutableList<CalendarWeeklyViewDayViewModel>>();
