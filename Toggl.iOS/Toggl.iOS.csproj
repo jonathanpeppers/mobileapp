@@ -1319,6 +1319,12 @@
     <ImageAsset Include="Resources\Images.xcassets\bike.imageset\bikeDark%403x.png" />
     <ImageAsset Include="Resources\Colors.xcassets\ErrorText.colorset\Contents.json" />
     <ImageAsset Include="Resources\Colors.xcassets\ErrorBackground.colorset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\icIllustrationProject.imageset\icIllustrationProjects_Dark.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icIllustrationProject.imageset\icIllustrationProjects_Dark%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icIllustrationProject.imageset\icIllustrationProjects_Dark%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icIllustrationErrorWorkspace.imageset\icIllustrationProjects_Dark.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icIllustrationErrorWorkspace.imageset\icIllustrationProjects_Dark%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icIllustrationErrorWorkspace.imageset\icIllustrationProjects_Dark%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
