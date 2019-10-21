@@ -306,18 +306,24 @@ namespace Toggl.Droid.Fragments
             {
                 weekSections = createWeekSections(newWeekDays);
                 NotifyDataSetChanged();
-                for (var pageIndex = 0; pageIndex < weekSections.Count; pageIndex++)
-                {
-                    getPage(pageIndex)?.UpdateDays(weekSections[pageIndex]);
-                }
+                applyToAllPages((pageIndex, page) => page.UpdateDays(weekSections[pageIndex]));
             }
 
             public void UpdateSelectedDay(DateTime newSelectedDate)
             {
                 currentlySelectedDate = newSelectedDate;
+                applyToAllPages((pageIndex, page) => page.UpdateCurrentlySelectedDate(newSelectedDate));
+            }
+            
+            private void applyToAllPages(Action<int, CalendarWeekSectionViewHolder> apply)
+            {
                 for (var pageIndex = 0; pageIndex < weekSections.Count; pageIndex++)
                 {
-                    getPage(pageIndex)?.UpdateCurrentlySelectedDate(newSelectedDate);
+                    pages.TryGetValue(pageIndex, out var page);
+                    if (page != null)
+                    {
+                        apply(pageIndex, page);
+                    }
                 }
             }
 
