@@ -70,6 +70,8 @@ namespace Toggl.Core.Suggestions
 
             TaskName = timeEntry.Task.Name;
             HasTask = true;
+
+            TagIds = timeEntry.TagIds?.ToArray() ?? Array.Empty<long>();
         }
 
         internal Suggestion(CalendarItem calendarItem, long workspaceId, SuggestionProviderType providerType)
