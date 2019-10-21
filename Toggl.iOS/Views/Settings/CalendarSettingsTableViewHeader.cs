@@ -23,6 +23,8 @@ namespace Toggl.iOS
             TextLabel.Text = Resources.AllowCalendarAccess;
             DescriptionLabel.Text = Resources.CalendarAccessExplanation;
             EnableCalendarAccessTapped = EnableCalendarAccessView.Rx().Tap();
+
+            EnableCalendarAccessView.InsertSeparator();
         }
 
         public static CalendarSettingsTableViewHeader Create()

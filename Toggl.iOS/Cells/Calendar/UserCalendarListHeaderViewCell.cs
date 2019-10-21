@@ -1,6 +1,7 @@
 ﻿using Foundation;
 using System;
 using Toggl.Core.UI.ViewModels.Calendar;
+using Toggl.iOS.Extensions;
 using UIKit;
 
 namespace Toggl.iOS.Cells.Calendar
@@ -19,6 +20,12 @@ namespace Toggl.iOS.Cells.Calendar
         protected UserCalendarListHeaderViewCell(IntPtr handle) : base(handle)
         {
             // Note: this .ctor should not contain any initialization logic.
+        }
+
+        public override void AwakeFromNib()
+        {
+            base.AwakeFromNib();
+            ContentView.InsertSeparator();
         }
 
         protected override void UpdateView()

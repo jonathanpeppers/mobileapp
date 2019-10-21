@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -15,24 +14,18 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="106"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2yp-gT-qBE" userLabel="Separator">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
-                    <color key="backgroundColor" red="0.90980392156862744" green="0.90980392156862744" blue="0.90980392156862744" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="1" id="bIM-3H-HaF"/>
-                    </constraints>
-                </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bQZ-O5-xJN">
                     <rect key="frame" x="0.0" y="1" width="375" height="44"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Allow Calendar access" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1RA-iN-lYG">
                             <rect key="frame" x="16" y="13" width="154" height="18"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <nil key="textColor"/>
+                            <color key="textColor" name="Text"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icArrowRight" translatesAutoresizingMaskIntoConstraints="NO" id="HC5-QQ-qmq">
                             <rect key="frame" x="354" y="17" width="5" height="10"/>
+                            <color key="tintColor" name="Text1"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="5" id="F3Y-B9-ioi"/>
                                 <constraint firstAttribute="height" constant="10" id="Ua2-5M-2wV"/>
@@ -41,11 +34,11 @@
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="On" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kEd-eo-VcT">
                             <rect key="frame" x="326" y="13" width="20" height="18"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <color key="textColor" red="0.36862745098039218" green="0.35686274509803922" blue="0.35686274509803922" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="textColor" name="Text1"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <color key="backgroundColor" name="Background"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="44" id="3dt-gd-wIV"/>
                         <constraint firstItem="HC5-QQ-qmq" firstAttribute="leading" secondItem="kEd-eo-VcT" secondAttribute="trailing" constant="8" id="8oV-4U-XkZ"/>
@@ -56,33 +49,20 @@
                         <constraint firstAttribute="trailing" secondItem="HC5-QQ-qmq" secondAttribute="trailing" constant="16" id="dmE-98-amY"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kBG-wm-Duj" userLabel="Separator">
-                    <rect key="frame" x="0.0" y="45" width="375" height="1"/>
-                    <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="1" id="bFG-H0-kky"/>
-                    </constraints>
-                </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Toggl needs access to your calendar in order to display events. Events are visible to you only and won’t appear in Reports." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GRD-zi-I9X">
                     <rect key="frame" x="16" y="54" width="343" height="43"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                    <color key="textColor" red="0.36862745098039218" green="0.35686274509803922" blue="0.35686274509803922" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <color key="textColor" name="Text2"/>
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
-            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color key="backgroundColor" name="TableBackground"/>
             <constraints>
-                <constraint firstItem="2yp-gT-qBE" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="7N7-eC-l5o"/>
-                <constraint firstAttribute="trailing" secondItem="kBG-wm-Duj" secondAttribute="trailing" id="8Or-bg-SX4"/>
-                <constraint firstItem="GRD-zi-I9X" firstAttribute="top" secondItem="kBG-wm-Duj" secondAttribute="bottom" constant="8" id="DEP-Hn-vwk"/>
+                <constraint firstItem="bQZ-O5-xJN" firstAttribute="top" secondItem="1" secondAttribute="top" constant="1" id="KiJ-VO-doe"/>
                 <constraint firstAttribute="trailing" secondItem="bQZ-O5-xJN" secondAttribute="trailing" id="NLm-L2-OhN"/>
                 <constraint firstItem="GRD-zi-I9X" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="16" id="ULr-K8-naq"/>
                 <constraint firstItem="bQZ-O5-xJN" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="YbD-1S-p99"/>
-                <constraint firstAttribute="trailing" secondItem="2yp-gT-qBE" secondAttribute="trailing" id="a2f-hH-akG"/>
-                <constraint firstItem="kBG-wm-Duj" firstAttribute="top" secondItem="bQZ-O5-xJN" secondAttribute="bottom" id="dq6-gy-0bV"/>
-                <constraint firstItem="bQZ-O5-xJN" firstAttribute="top" secondItem="2yp-gT-qBE" secondAttribute="bottom" id="k3f-In-YUY"/>
-                <constraint firstItem="kBG-wm-Duj" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="oe0-DU-cVC"/>
-                <constraint firstItem="2yp-gT-qBE" firstAttribute="top" secondItem="1" secondAttribute="top" id="tjf-Eh-2tO"/>
+                <constraint firstItem="GRD-zi-I9X" firstAttribute="top" secondItem="bQZ-O5-xJN" secondAttribute="bottom" constant="9" id="ru7-dR-qBY"/>
                 <constraint firstAttribute="trailing" secondItem="GRD-zi-I9X" secondAttribute="trailing" constant="16" id="x0O-nO-h2W"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
@@ -92,9 +72,25 @@
                 <outlet property="EnableCalendarAccessView" destination="bQZ-O5-xJN" id="rqu-Gv-gfa"/>
                 <outlet property="TextLabel" destination="1RA-iN-lYG" id="cBY-Iy-ckX"/>
             </connections>
+            <point key="canvasLocation" x="132" y="154"/>
         </view>
     </objects>
     <resources>
         <image name="icArrowRight" width="7" height="12"/>
+        <namedColor name="Background">
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="TableBackground">
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="Text">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="Text1">
+            <color red="0.94117647409439087" green="0.94117647409439087" blue="0.94117647409439087" alpha="0.78431373834609985" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="Text2">
+            <color red="0.92156863212585449" green="0.92156863212585449" blue="0.96078431606292725" alpha="0.60000002384185791" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>
