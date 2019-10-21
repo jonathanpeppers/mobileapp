@@ -49,8 +49,8 @@ namespace Toggl.Droid.Widgets
             var taskId = (long?)sharedPreferences.GetLong($"{prefix}{nameof(TaskId)}{index}", 0);
             taskId = taskId == 0 ? null : taskId;
 
-            var tagsIdsString = sharedPreferences.GetString($"{prefix}{nameof(TagsIds)}{index}", "");
-            var tagsIds = tagsIdsString?.ToNullIfEmpty()?.Split(',').Select(long.Parse).ToArray() ?? Array.Empty<long>();
+            var tagsIdsString = sharedPreferences.GetString($"{prefix}{nameof(TagsIds)}{index}", null);
+            var tagsIds = tagsIdsString?.Split(',').Select(long.Parse).ToArray() ?? Array.Empty<long>();
 
             return new WidgetSuggestionItem
             {
@@ -85,7 +85,7 @@ namespace Toggl.Droid.Widgets
                 prefsEditor.PutString($"{prefix}{nameof(ClientName)}{index}", suggestion.ClientName);
                 prefsEditor.PutBoolean($"{prefix}{nameof(IsBillable)}{index}", suggestion.IsBillable);
                 prefsEditor.PutLong($"{prefix}{nameof(TaskId)}{index}", suggestion.TaskId ?? 0);
-                prefsEditor.PutString($"{prefix}{nameof(TagsIds)}{index}", string.Join(',', suggestion.TagIds));
+                prefsEditor.PutString($"{prefix}{nameof(TagsIds)}{index}", string.Join(',', suggestion.TagIds).ToNullIfEmpty());
             }
 
             prefsEditor.Commit();
